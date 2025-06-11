@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "936025691984",
+    "project_id": "meisterdirekt-902e4",
+    "storage_bucket": "meisterdirekt-902e4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:936025691984:android:8925f99a3b771ad6067e55",
+        "android_client_info": {
+          "package_name": "com.example.meisterdirekt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "936025691984-o7gjl7lbtlg3fqf5or2mel74kls9ck5c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.meisterdirekt",
+            "certificate_hash": "eedd23b1e19f87384c4bc34d266086afcbd0bd9e"
+          }
+        },
+        {
+          "client_id": "936025691984-1q3oei1e9d1jmsa5b4amh85g902ieokf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAC-9K-Xl_Qt3b7hoy3JfPFgwNQuK18XtE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "936025691984-1q3oei1e9d1jmsa5b4amh85g902ieokf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "936025691984-16gguna1hivlj0iv62b46p5nce02ppsm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.meisterdirekt"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

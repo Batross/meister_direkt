@@ -1,0 +1,44 @@
+name: meisterdirekt
+description: "A new Flutter project."
+
+# منع النشر على pub.dev
+publish_to: 'none'
+
+# رقم النسخة
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  provider: ^6.1.5
+  flutter_animate: ^4.5.0
+
+  # Firebase
+  firebase_core: ^2.30.1
+  firebase_auth: ^4.19.5
+  cloud_firestore: ^4.17.1
+  
+  # اختيار الصور
+  image_picker: ^1.1.2
+
+  # أيقونات iOS
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    # تضمين جميع الملفات في مجلد assets/images/
+    - assets/images/ 
+  # fonts:
+  #   - family: CustomFont
+  #     fonts:
+  #       - asset: fonts/CustomFont-Regular.ttf
