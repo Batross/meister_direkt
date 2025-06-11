@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meisterdirekt/admin/pages/admin_dashboard.dart';
+import 'package:meister_direkt/admin/pages/admin_dashboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // <--- أضف هذا الاستيراد
 import '../shared/widgets/custom_button.dart';

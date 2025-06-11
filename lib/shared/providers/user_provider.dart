@@ -1,52 +1,27 @@
+// lib/shared/providers/user_provider.dart
+
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../../data/models/user_model.dart'; // تأكد من المسار الصحيح
+import 'package:meister_direkt/data/models/user_model.dart'; // تأكد من المسار الصحيح لكلاس User
 
 class UserProvider with ChangeNotifier {
-  UserModel? _currentUser;
-  UserModel? get currentUser => _currentUser;
+  User? _user; // متغير لتخزين كائن المستخدم، يمكن أن يكون null
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // Getter للوصول إلى كائن المستخدم
+  User? get user => _user;
 
-  UserProvider() {
-    _auth.authStateChanges().listen((User? user) {
-      if (user != null) {
-        _fetchUser(user.uid);
-      } else {
-        _currentUser = null;
-        notifyListeners();
-      }
-    });
+  // دالة لتعيين كائن المستخدم
+  void setUser(User user) {
+    _user = user;
+    notifyListeners(); // لإعلام جميع الـ widgets التي تستمع لهذا الـ provider بحدوث تغيير
   }
 
-  Future<void> _fetchUser(String uid) async {
-    try {
-      final doc = await _firestore.collection('users').doc(uid).get();
-      if (doc.exists) {
-        _currentUser = UserModel.fromSnapshot(doc);
-        notifyListeners();
-      } else {
-        _currentUser = null;
-        notifyListeners();
-      }
-    } catch (e) {
-      print('Error fetching user: $e');
-      _currentUser = null;
-      notifyListeners();
-    }
-  }
-
-  // يمكن استخدام هذه الوظيفة لتحديث بيانات المستخدم محلياً أو بعد تسجيل الدخول
-  void setCurrentUser(UserModel? user) {
-    _currentUser = user;
+  // دالة لمسح كائن المستخدم (مثلاً عند تسجيل الخروج)
+  void clearUser() {
+    _user = null;
     notifyListeners();
   }
 
-  Future<void> signOut() async {
-    await _auth.signOut();
-    _currentUser = null; // مسح بيانات المستخدم عند تسجيل الخروج
-    notifyListeners();
-  }
+  // يمكنك إضافة دوال أخرى هنا، مثل:
+  // Future<void> loadUserFromFirestore(String uid) async { ... }
+  // Future<void> signOut() async { ... }
 }

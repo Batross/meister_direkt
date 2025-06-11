@@ -1,29 +1,25 @@
+// lib/artisan/widgets/artisan_home_header.dart
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // يجب استيراد provider
+import 'package:meister_direkt/shared/providers/user_provider.dart'; // تأكد من المسار الصحيح
+import 'package:meister_direkt/shared/utils/constants.dart'; // إذا كنت تستخدم هذا الملف لـ AppColors أو غيرها
 
 class ArtisanHomeHeader extends StatelessWidget {
-  final String userName;
-  final String? profilePicUrl;
-  final bool isVerified; // لتمييز الحرفي (مثل شعار "موثق")
-  final VoidCallback onNotificationsPressed;
-  final VoidCallback onSettingsPressed;
-  final VoidCallback onDrawerPressed; // لفتح الـ Drawer
-
-  const ArtisanHomeHeader({
-    super.key,
-    required this.userName,
-    this.profilePicUrl,
-    this.isVerified = false,
-    required this.onNotificationsPressed,
-    required this.onSettingsPressed,
-    required this.onDrawerPressed,
-  });
+  const ArtisanHomeHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // استخدم context.watch للاستماع إلى التغييرات في UserProvider.
+    // هذه هي الطريقة الموصى بها في Provider v6+.
+    final userProvider = context.watch<UserProvider>();
+    final currentUser = userProvider.user; // الوصول إلى كائن المستخدم
+
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor, // نفس لون الرأسية
+        color: AppColors
+            .primaryColor, // تأكد من تعريف AppColors.primaryColor في constants.dart
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),
@@ -35,92 +31,56 @@ class ArtisanHomeHeader extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white),
-                onPressed: onDrawerPressed, // زر لفتح الـ Drawer
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.notifications, color: Colors.white),
-                    onPressed: onNotificationsPressed,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.settings, color: Colors.white),
-                    onPressed: onSettingsPressed,
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.white,
-                backgroundImage: profilePicUrl != null &&
-                        profilePicUrl!.isNotEmpty
-                    ? NetworkImage(profilePicUrl!) as ImageProvider
-                    : const AssetImage(
-                        'assets/images/default_profile.png'), // تأكد من وجود صورة افتراضية
-                child: profilePicUrl == null || profilePicUrl!.isEmpty
-                    ? const Icon(Icons.person, size: 30, color: Colors.grey)
-                    : null,
-              ),
-              const SizedBox(width: 15),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'مرحباً، $userName!',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (isVerified) // عرض شارة "حرفي موثق" إذا كان موثقاً
-                    const Row(
-                      children: [
-                        Icon(Icons.verified,
-                            color: Colors.greenAccent, size: 18),
-                        SizedBox(width: 5),
-                        Text(
-                          'حرفي موثق',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
+                    // الوصول الآمن إلى firstName باستخدام ?.
+                    // إذا كان currentUser أو firstName null، سيعرض 'Artisan'
+                    'Hello, ${currentUser?.firstName ?? 'Artisan'}!',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
+                  ),
+                  if (currentUser?.lastName != null &&
+                      currentUser!.lastName.isNotEmpty)
+                    Text(
+                      // عرض lastName فقط إذا كان موجودًا وغير فارغ
+                      currentUser.lastName,
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                color: Colors.white70,
+                              ),
                     ),
                 ],
+              ),
+              // يمكنك هنا إضافة صورة الملف الشخصي إذا كانت موجودة
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.white,
+                backgroundImage: currentUser?.profileImageUrl != null
+                    ? NetworkImage(currentUser!.profileImageUrl!)
+                    : const AssetImage('assets/images/default_profile.jpg')
+                        as ImageProvider, // تأكد من وجود صورة افتراضية
               ),
             ],
           ),
           const SizedBox(height: 20),
-          // فلتر البحث المتخصص للطلبات
-          TextField(
-            readOnly: true, // لجعله غير قابل للكتابة المباشرة ويفتح شاشة بحث
-            decoration: InputDecoration(
-              hintText: 'ابحث عن طلبات...',
-              hintStyle: TextStyle(color: Colors.grey[600]),
-              prefixIcon: const Icon(Icons.search, color: Color(0xFF2A5C82)),
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
-            ),
-            onTap: () {
-              // TODO: Navigate to a dedicated requests search page
-              print('Requests search field tapped - Navigate to search page');
-            },
-          ),
+          // يمكنك إضافة حقل بحث أو أي عناصر أخرى هنا
+          // مثال:
+          // TextField(
+          //   decoration: InputDecoration(
+          //     hintText: 'Search services...',
+          //     fillColor: Colors.white,
+          //     filled: true,
+          //     border: OutlineInputBorder(
+          //       borderRadius: BorderRadius.circular(10),
+          //       borderSide: BorderSide.none,
+          //     ),
+          //     prefixIcon: Icon(Icons.search),
+          //   ),
+          // ),
         ],
       ),
     );

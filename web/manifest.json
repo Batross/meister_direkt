@@ -1,6 +1,6 @@
 {
-    "name": "meisterdirekt",
-    "short_name": "meisterdirekt",
+    "name": "meister_direkt",
+    "short_name": "meister_direkt",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

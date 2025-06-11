@@ -44,9 +44,9 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyAsDju6PG9DCIo7NeXoc4wD3RCG-z5eCNw',
     appId: '1:936025691984:web:67055daf58905815067e55',
     messagingSenderId: '936025691984',
-    projectId: 'meisterdirekt-902e4',
-    authDomain: 'meisterdirekt-902e4.firebaseapp.com',
-    storageBucket: 'meisterdirekt-902e4.firebasestorage.app',
+    projectId: 'meister_direkt-902e4',
+    authDomain: 'meister_direkt-902e4.firebaseapp.com',
+    storageBucket: 'meister_direkt-902e4.firebasestorage.app',
     measurementId: 'G-XNDNEYHQQQ',
   );
 
@@ -54,35 +54,35 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyAC-9K-Xl_Qt3b7hoy3JfPFgwNQuK18XtE',
     appId: '1:936025691984:android:8925f99a3b771ad6067e55',
     messagingSenderId: '936025691984',
-    projectId: 'meisterdirekt-902e4',
-    storageBucket: 'meisterdirekt-902e4.firebasestorage.app',
+    projectId: 'meister_direkt-902e4',
+    storageBucket: 'meister_direkt-902e4.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBQTGIj5T0EDrkg409pmr_8285Vt6dJEtM',
     appId: '1:936025691984:ios:7192f9a76665900a067e55',
     messagingSenderId: '936025691984',
-    projectId: 'meisterdirekt-902e4',
-    storageBucket: 'meisterdirekt-902e4.firebasestorage.app',
-    iosBundleId: 'com.example.meisterdirekt',
+    projectId: 'meister_direkt-902e4',
+    storageBucket: 'meister_direkt-902e4.firebasestorage.app',
+    iosBundleId: 'com.example.meister_direkt',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBQTGIj5T0EDrkg409pmr_8285Vt6dJEtM',
     appId: '1:936025691984:ios:7192f9a76665900a067e55',
     messagingSenderId: '936025691984',
-    projectId: 'meisterdirekt-902e4',
-    storageBucket: 'meisterdirekt-902e4.firebasestorage.app',
-    iosBundleId: 'com.example.meisterdirekt',
+    projectId: 'meister_direkt-902e4',
+    storageBucket: 'meister_direkt-902e4.firebasestorage.app',
+    iosBundleId: 'com.example.meister_direkt',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyAsDju6PG9DCIo7NeXoc4wD3RCG-z5eCNw',
     appId: '1:936025691984:web:a863b44671790669067e55',
     messagingSenderId: '936025691984',
-    projectId: 'meisterdirekt-902e4',
-    authDomain: 'meisterdirekt-902e4.firebaseapp.com',
-    storageBucket: 'meisterdirekt-902e4.firebasestorage.app',
+    projectId: 'meister_direkt-902e4',
+    authDomain: 'meister_direkt-902e4.firebaseapp.com',
+    storageBucket: 'meister_direkt-902e4.firebasestorage.app',
     measurementId: 'G-S658CWKXFN',
   );
 }
