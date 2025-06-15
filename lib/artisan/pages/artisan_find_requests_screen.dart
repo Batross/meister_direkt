@@ -3,12 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../data/models/user_model.dart';
 import '../../shared/providers/user_provider.dart';
 import '../../data/models/request_model.dart';
-import '../../shared/utils/constants.dart'; // لـ AppColors
 import '../../customer/widgets/video_preview_widget.dart';
 import '../../customer/widgets/file_preview_widget.dart';
+import 'package:meisterdirekt/shared/widgets/pdf_viewer_screen.dart'; // شاشة عرض PDF
 
 // Extension بسيطة لتحويل String إلى Title Case لأغراض العرض
 extension StringCasingExtension on String {
@@ -293,16 +292,43 @@ class _RequestPostCardState extends State<RequestPostCard> {
         lower.endsWith('.webm') ||
         lower.contains('video')) {
       return SizedBox(
-          width: double.infinity,
-          height: 320,
-          child: VideoPreviewWidget(url: url));
-    } else if (lower.endsWith('.pdf')) {
-      return SizedBox(
         width: double.infinity,
         height: 320,
-        child: FilePreviewWidget(url: url, fileName: url),
+        child: VideoPreviewWidget(url: url),
+      );
+    } else if (lower.endsWith('.pdf')) {
+      // عرض صفحة أولى من PDF أو زر فتح
+      return GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) =>
+                  PdfViewerScreen(url: url, title: url.split('/').last),
+            ),
+          );
+        },
+        child: Container(
+          width: double.infinity,
+          height: 320,
+          color: Colors.grey[200],
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.picture_as_pdf, size: 60, color: Colors.red[700]),
+                const SizedBox(height: 12),
+                Text('عرض ملف PDF',
+                    style: TextStyle(fontSize: 18, color: Colors.black87)),
+                const SizedBox(height: 8),
+                Text(url.split('/').last,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              ],
+            ),
+          ),
+        ),
       );
     } else {
+      // أي نوع ملف آخر
       return SizedBox(
         width: double.infinity,
         height: 120,
