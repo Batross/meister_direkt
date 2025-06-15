@@ -6,14 +6,12 @@ import 'package:meisterdirekt/shared/utils/constants.dart';
 
 class ArtisanHomeHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onNotificationsPressed;
-  final VoidCallback onSettingsPressed;
   final VoidCallback onDrawerPressed;
   final VoidCallback? onFilterPressed;
 
   const ArtisanHomeHeader({
     super.key,
     required this.onNotificationsPressed,
-    required this.onSettingsPressed,
     required this.onDrawerPressed,
     this.onFilterPressed,
   });
@@ -149,11 +147,6 @@ class ArtisanHomeHeader extends StatelessWidget implements PreferredSizeWidget {
                         color: Colors.white, size: 28),
                     onPressed: onNotificationsPressed,
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.settings,
-                        color: Colors.white, size: 28),
-                    onPressed: onSettingsPressed,
-                  ),
                 ],
               ),
             ],
@@ -201,7 +194,7 @@ class ArtisanHomeHeader extends StatelessWidget implements PreferredSizeWidget {
                   child: IconButton(
                     icon: const Icon(Icons.tune, color: Colors.white, size: 28),
                     onPressed: onFilterPressed,
-                    tooltip: 'Filters',
+                    tooltip: 'فلترة',
                   ),
                 ),
             ],

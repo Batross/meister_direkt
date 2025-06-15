@@ -51,13 +51,12 @@ class _ArtisanBaseScreenState extends State<ArtisanBaseScreen> {
         onNotificationsPressed: () {
           print('Notifications pressed (Artisan)');
         },
-        onSettingsPressed: () {
-          print('Settings pressed (Artisan)');
-        },
         onDrawerPressed: () {
           _scaffoldKey.currentState?.openDrawer();
         },
-        onFilterPressed: null, // يمكنك تفعيل الفلترة لاحقاً
+        onFilterPressed: () {
+          print('Filter pressed (Artisan)');
+        },
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: ArtisanBottomNavBar(

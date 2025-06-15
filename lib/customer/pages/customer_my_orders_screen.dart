@@ -78,6 +78,40 @@ class CustomerMyOrdersScreen extends StatelessWidget {
     }
   }
 
+  Widget buildMediaPreviewSmart(BuildContext context, String url) {
+    final lower = url.toLowerCase();
+    if (lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.png') ||
+        lower.endsWith('.gif') ||
+        lower.contains('image')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          url,
+          width: 80,
+          height: 80,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              FilePreviewWidget(url: url, fileName: url),
+        ),
+      );
+    } else if (lower.endsWith('.mp4') ||
+        lower.endsWith('.mov') ||
+        lower.endsWith('.webm') ||
+        lower.contains('video')) {
+      return VideoPreviewWidget(url: url);
+    } else if (lower.endsWith('.pdf') ||
+        lower.endsWith('.doc') ||
+        lower.endsWith('.docx') ||
+        lower.endsWith('.xls') ||
+        lower.endsWith('.xlsx')) {
+      return FilePreviewWidget(url: url, fileName: url);
+    } else {
+      return FilePreviewWidget(url: url, fileName: url);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -138,7 +172,7 @@ class CustomerMyOrdersScreen extends StatelessWidget {
                       children: [
                         if (request.images != null &&
                             request.images!.isNotEmpty)
-                          buildMediaPreview(context, request.images!.first)
+                          buildMediaPreviewSmart(context, request.images!.first)
                         else
                           Container(
                             width: 90,
@@ -225,7 +259,7 @@ class CustomerMyOrdersScreen extends StatelessWidget {
                           separatorBuilder: (_, __) => const SizedBox(width: 8),
                           itemBuilder: (context, imgIdx) {
                             if (imgIdx == 0) return const SizedBox.shrink();
-                            return buildMediaPreview(
+                            return buildMediaPreviewSmart(
                                 context, request.images![imgIdx]);
                           },
                         ),
