@@ -57,7 +57,7 @@ class _CustomerEditOrderScreenState extends State<CustomerEditOrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('تعديل الطلب')),
+      appBar: AppBar(title: const Text('Bestellung bearbeiten')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -67,7 +67,7 @@ class _CustomerEditOrderScreenState extends State<CustomerEditOrderScreen> {
               controller: _descriptionController,
               maxLines: 4,
               decoration: const InputDecoration(
-                labelText: 'وصف الطلب',
+                labelText: 'Beschreibung der Bestellung',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -76,7 +76,7 @@ class _CustomerEditOrderScreenState extends State<CustomerEditOrderScreen> {
               controller: _budgetController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
-                labelText: 'الميزانية (اختياري)',
+                labelText: 'Budget (optional)',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -87,7 +87,7 @@ class _CustomerEditOrderScreenState extends State<CustomerEditOrderScreen> {
                 onPressed: _loading ? null : _saveChanges,
                 child: _loading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('حفظ التعديلات'),
+                    : const Text('Änderungen speichern'),
               ),
             ),
           ],

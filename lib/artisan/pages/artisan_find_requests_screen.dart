@@ -145,13 +145,13 @@ class _RequestPostCardState extends State<RequestPostCard> {
   String _getServiceDisplayName(String serviceId) {
     switch (serviceId) {
       case 'electrical_work':
-        return 'أعمال الكهرباء';
+        return 'Elektroarbeiten';
       case 'plumbing':
-        return 'أعمال السباكة';
+        return 'Sanitärarbeiten';
       case 'carpentry':
-        return 'أعمال النجارة';
+        return 'Tischlerarbeiten';
       case 'painting':
-        return 'الدهانات';
+        return 'Malerarbeiten';
       default:
         return serviceId.replaceAll('_', ' ').toTitleCase();
     }
@@ -416,8 +416,8 @@ class _RequestPostCardState extends State<RequestPostCard> {
                               });
                             },
                             child: Text(_showFullDescription
-                                ? 'عرض أقل'
-                                : 'عرض المزيد'),
+                                ? 'Weniger anzeigen'
+                                : 'Mehr anzeigen'),
                           );
                         }
                         return const SizedBox

@@ -49,7 +49,7 @@ class _LoginPageAdminState extends State<LoginPageAdmin> {
       } else {
         setState(() {
           _errorMessage =
-              'هذا الحساب ليس حساب مشرف.\nبيانات Firestore: ${userDoc.data()}';
+              'Dieses Konto ist kein Adminkonto.\nFirestore-Daten: [32m${userDoc.data()}[0m';
         });
         await _auth.signOut();
       }
@@ -59,7 +59,7 @@ class _LoginPageAdminState extends State<LoginPageAdmin> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'حدث خطأ غير متوقع.';
+        _errorMessage = 'Ein unerwarteter Fehler ist aufgetreten.';
       });
     } finally {
       setState(() {
@@ -78,7 +78,7 @@ class _LoginPageAdminState extends State<LoginPageAdmin> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'تسجيل دخول المشرف',
+                'Admin-Login',
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 32),
@@ -86,7 +86,7 @@ class _LoginPageAdminState extends State<LoginPageAdmin> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
-                  labelText: 'البريد الإلكتروني',
+                  labelText: 'E-Mail',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -95,7 +95,7 @@ class _LoginPageAdminState extends State<LoginPageAdmin> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  labelText: 'كلمة المرور',
+                  labelText: 'Passwort',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -115,7 +115,7 @@ class _LoginPageAdminState extends State<LoginPageAdmin> {
                           height: 24,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('تسجيل الدخول'),
+                      : const Text('Anmelden'),
                 ),
               ),
             ],

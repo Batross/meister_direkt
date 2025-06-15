@@ -21,7 +21,7 @@ class CustomerProfileScreen extends StatelessWidget {
       // تم إعادة إضافة Scaffold هنا كونه صفحة مستقلة في PageView
       appBar: AppBar(
         // شريط التطبيق الخاص بالشاشة (اختياري)
-        title: const Text('ملفي الشخصي'),
+        title: const Text('Mein Profil'), // ملفي الشخصي
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -104,26 +104,26 @@ class CustomerProfileScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
             const SizedBox(height: 30),
-            _buildProfileInfoRow(context, Icons.phone, 'رقم الهاتف',
-                user.phoneNumber ?? 'لم يضف بعد'),
-            _buildProfileInfoRow(context, Icons.location_on, 'العنوان',
-                user.address ?? 'لم يضف بعد'),
+            _buildProfileInfoRow(context, Icons.phone, 'Telefonnummer',
+                user.phoneNumber ?? 'Noch nicht hinzugefügt'),
+            _buildProfileInfoRow(context, Icons.location_on, 'Adresse',
+                user.address ?? 'Noch nicht hinzugefügt'),
             _buildProfileInfoRow(
                 context,
                 Icons.work,
-                'الدور',
+                'Rolle',
                 user.role == 'client'
-                    ? 'عميل'
+                    ? 'Kunde'
                     : user.role == 'craftsman'
-                        ? 'حرفي'
-                        : 'غير معروف'),
+                        ? 'Handwerker'
+                        : 'Unbekannt'),
             if (user.role == 'craftsman') ...[
-              _buildProfileInfoRow(context, Icons.handyman, 'المهنة',
-                  user.profession ?? 'لم يضف بعد'),
-              _buildProfileInfoRow(context, Icons.info_outline,
-                  'السيرة الذاتية', user.bio ?? 'لم يضف بعد'),
-              _buildProfileInfoRow(context, Icons.verified_user, 'موثق',
-                  user.isVerified == true ? 'نعم' : 'لا'),
+              _buildProfileInfoRow(context, Icons.handyman, 'Beruf',
+                  user.profession ?? 'Noch nicht hinzugefügt'),
+              _buildProfileInfoRow(context, Icons.info_outline, 'Lebenslauf',
+                  user.bio ?? 'Noch nicht hinzugefügt'),
+              _buildProfileInfoRow(context, Icons.verified_user, 'Verifiziert',
+                  user.isVerified == true ? 'Ja' : 'Nein'),
             ],
             const SizedBox(height: 30),
             ElevatedButton(
@@ -131,7 +131,7 @@ class CustomerProfileScreen extends StatelessWidget {
                 // TODO: الانتقال إلى شاشة تعديل الملف الشخصي
                 print('تم الضغط على زر تعديل الملف الشخصي');
               },
-              child: const Text('تعديل الملف الشخصي'),
+              child: const Text('Profil bearbeiten'),
             ),
           ],
         ),

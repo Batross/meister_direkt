@@ -76,14 +76,14 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),
                           child: Image.network(
-                            'https://placehold.co/600x180/4A90E2/FFFFFF?text=Ad+Space', // صورة إعلانية
+                            'https://placehold.co/600x180/4A90E2/FFFFFF?text=Ad+Space',
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(
                               color: Colors.grey[300],
                               child: Center(
                                 child: Text(
-                                  'مساحة إعلانية',
+                                  'Werbefläche',
                                   style: TextStyle(color: Colors.grey[600]),
                                 ),
                               ),
@@ -98,7 +98,7 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'احصل على أفضل الخدمات الآن!',
+                              'Erhalten Sie jetzt die besten Dienstleistungen!',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -129,7 +129,7 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 10),
                               ),
-                              child: const Text('اكتشف المزيد'),
+                              child: const Text('Mehr entdecken'),
                             ),
                           ],
                         ),
@@ -141,7 +141,7 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    'اختر نوع الخدمة التي تحتاجها:',
+                    'Wählen Sie die gewünschte Dienstleistung aus:',
                     style: Theme.of(context)
                         .textTheme
                         .headlineSmall
@@ -166,10 +166,10 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                     itemBuilder: (context, index) {
                       final service = services[index];
                       return ServiceSelectionCard(
-                        // استخدام ServiceSelectionCard الموحد
                         service: service,
                         onSelect: (selectedService) {
-                          print('تم اختيار خدمة: ${selectedService.nameAr}');
+                          print(
+                              'Dienstleistung ausgewählt: ${selectedService.nameEn}');
                           Navigator.push(
                             context,
                             MaterialPageRoute(

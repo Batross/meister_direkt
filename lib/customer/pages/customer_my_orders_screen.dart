@@ -16,16 +16,17 @@ class CustomerMyOrdersScreen extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('تأكيد الحذف'),
-        content: const Text('هل أنت متأكد أنك تريد حذف هذا الطلب نهائياً؟'),
+        title: const Text('Löschung bestätigen'),
+        content: const Text(
+            'Sind Sie sicher, dass Sie diese Bestellung endgültig löschen möchten?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('إلغاء'),
+            child: const Text('Abbrechen'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('حذف'),
+            child: const Text('Löschen'),
           ),
         ],
       ),
@@ -36,8 +37,8 @@ class CustomerMyOrdersScreen extends StatelessWidget {
           .doc(request.requestId)
           .delete();
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('تم حذف الطلب بنجاح')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Bestellung erfolgreich gelöscht.')));
       }
     }
   }
@@ -132,7 +133,7 @@ class CustomerMyOrdersScreen extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(child: Text('حدث خطأ أثناء تحميل الطلبات.'));
+          return Center(child: Text('Fehler beim Laden der Bestellungen.'));
         }
         final docs = snapshot.data?.docs ?? [];
         if (docs.isEmpty) {
@@ -142,10 +143,11 @@ class CustomerMyOrdersScreen extends StatelessWidget {
               children: const [
                 Icon(Icons.assignment, size: 80, color: Colors.grey),
                 SizedBox(height: 20),
-                Text('لا توجد طلبات حالياً.',
+                Text('Keine Bestellungen vorhanden.',
                     style: TextStyle(fontSize: 18, color: Colors.grey)),
                 SizedBox(height: 10),
-                Text('يمكنك إنشاء طلب جديد من خلال صفحة "إنشاء طلب جديد".',
+                Text(
+                    'Sie können eine neue Bestellung über die Seite "Neue Bestellung erstellen" anlegen.',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 14, color: Colors.grey)),
               ],

@@ -59,9 +59,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
             Center(
               child: Text(
                 '${user.firstName ?? ''} ${user.lastName ?? ''}',
@@ -71,77 +69,40 @@ class ArtisanProfileScreen extends StatelessWidget {
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-
             Center(
               child: Text(
-                user.email ?? 'No email',
+                user.email,
                 style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
             ),
-
-            const SizedBox(height: 10),
-
-            Center(
-              child: Chip(
-                label: Text(
-                  user.isVerified ?? false
-                      ? 'Verifiziert'
-                      : 'Nicht verifiziert', // Verified / Not Verified
-
-                  style: TextStyle(
-                      color: user.isVerified ?? false
-                          ? Colors.white
-                          : Colors.black87),
-                ),
-                backgroundColor:
-                    user.isVerified ?? false ? Colors.green : Colors.amber[200],
-              ),
-            ),
-
-            const Divider(height: 40),
-
-            _buildProfileInfoRow(context, Icons.phone, 'Telefon',
-                user.phoneNumber ?? 'Nicht angegeben'), // Phone / Not specified
-
-            _buildProfileInfoRow(
-                context,
-                Icons.business_center,
-                'Beruf',
-                user.profession ??
-                    'Nicht angegeben'), // Profession / Not specified
-
+            const SizedBox(height: 30),
+            _buildProfileInfoRow(context, Icons.phone, 'Telefonnummer',
+                user.phoneNumber ?? 'Noch nicht hinzugefügt'),
             _buildProfileInfoRow(context, Icons.location_on, 'Adresse',
-                user.address ?? 'Nicht angegeben'), // Address / Not specified
-
+                user.address ?? 'Noch nicht hinzugefügt'),
             _buildProfileInfoRow(
                 context,
-                Icons.description,
-                'Bio',
-                user.bio ??
-                    'Keine Biografie vorhanden'), // Bio / No bio available
+                Icons.work,
+                'Rolle',
+                user.role == 'client'
+                    ? 'Kunde'
+                    : user.role == 'craftsman'
+                        ? 'Handwerker'
+                        : 'Unbekannt'),
+            _buildProfileInfoRow(context, Icons.handyman, 'Beruf',
+                user.profession ?? 'Noch nicht hinzugefügt'),
+            _buildProfileInfoRow(context, Icons.info_outline, 'Lebenslauf',
+                user.bio ?? 'Noch nicht hinzugefügt'),
+            _buildProfileInfoRow(context, Icons.verified_user, 'Verifiziert',
+                user.isVerified == true ? 'Ja' : 'Nein'),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                // TODO: Navigate to EditProfileScreen
 
-            const SizedBox(height: 20),
-
-            Center(
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Navigate to EditProfileScreen
-
-                  print('Profil bearbeiten gedrückt'); // Edit profile pressed
-                },
-
-                icon: const Icon(Icons.edit),
-
-                label: const Text('Profil bearbeiten'), // Edit Profile
-
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-              ),
+                print('Profil bearbeiten gedrückt'); // Edit profile pressed
+              },
+              child: const Text('Profil bearbeiten'),
             ),
           ],
         ),
