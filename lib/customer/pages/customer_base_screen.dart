@@ -5,7 +5,6 @@ import 'package:meisterdirekt/shared/providers/user_provider.dart';
 import 'package:meisterdirekt/shared/widgets/main_drawer.dart';
 import 'package:meisterdirekt/customer/widgets/customer_bottom_navbar.dart';
 import 'package:meisterdirekt/data/models/user_model.dart';
-import 'package:meisterdirekt/shared/widgets/customer_home_header.dart';
 import 'package:meisterdirekt/shared/providers/auth_provider.dart'; // Import AuthProvider for sign-out
 
 // استيراد صفحات العميل - تأكد من هذه المسارات
@@ -40,10 +39,6 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
     super.dispose();
   }
 
-  void _handleFilterPressed() {
-    print('Filter button pressed!');
-  }
-
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -57,36 +52,113 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      body: CustomScrollView(
-        slivers: [
-          CustomerHomeHeader(
-            onNotificationsPressed: () {
-              print('Notifications pressed (Customer)');
-            },
-            onDrawerPressed: () {
-              _scaffoldKey.currentState?.openDrawer();
-            },
-            onFilterPressed: _handleFilterPressed,
-          ),
-          SliverFillRemaining(
-            child: PageView(
-              controller: _pageController,
-              physics:
-                  const NeverScrollableScrollPhysics(), // لمنع التمرير اليدوي بين الصفحات
-              children: const [
-                // ملاحظة: هذه الفئات يجب أن تكون معرفة في ملفاتها الخاصة
-                // ومستوردة بشكل صحيح في أعلى هذا الملف.
-                CustomerMyOrdersScreen(), // Meine Bestellungen (Index 0)
-                CustomerCreateOrderScreen(), // Bestellung erstellen (Startseite) (Index 1)
-                CustomerProfileScreen(), // Mein Profil (Index 2)
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          // الهيدر مع البحث والفلاتر
+          Container(
+            color: Theme.of(context).primaryColor,
+            padding:
+                const EdgeInsets.only(top: 36, left: 12, right: 12, bottom: 8),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.menu,
+                              color: Colors.white, size: 24),
+                          onPressed: () {
+                            _scaffoldKey.currentState?.openDrawer();
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.notifications,
+                              color: Colors.white, size: 24),
+                          onPressed: () {
+                            // إشعار
+                          },
+                        ),
+                      ],
+                    ),
+                    Text(
+                      'MeisterDirekt',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            hintText:
+                                'Suche nach Dienstleistungen oder Handwerkern...',
+                            hintStyle: TextStyle(fontSize: 13),
+                            border: InputBorder.none,
+                            prefixIcon:
+                                Icon(Icons.search, color: Color(0xFF2A5C82)),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 8),
+                          ),
+                          onTap: () {},
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Material(
+                      color: Colors.white,
+                      shape: const CircleBorder(),
+                      child: IconButton(
+                        icon: const Icon(Icons.tune, color: Color(0xFF2A5C82)),
+                        onPressed: () {
+                          // فلتر
+                        },
+                        tooltip: 'Filter',
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
+          ),
+          // محتوى الصفحة
+          PageView(
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: const [
+              CustomerMyOrdersScreen(),
+              CustomerCreateOrderScreen(),
+              CustomerProfileScreen(),
+            ],
           ),
         ],
       ),
       drawer: MainDrawer(
         userName: user.firstName ?? 'Kunde',
-        userRole: user.role ?? 'customer',
+        userRole: user.role, // الحقل ليس null أبداً
         profilePicUrl: user.profileImageUrl,
         onSignOut: () async {
           // منطق تسجيل الخروج يتم التعامل معه في AuthProvider

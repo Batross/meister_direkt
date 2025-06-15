@@ -46,9 +46,10 @@ class _ArtisanBaseScreenState extends State<ArtisanBaseScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      body: Column(
+      body: ListView(
+        padding: EdgeInsets.zero,
         children: [
-          // الهيدر الجديد (مثل فيسبوك ويوتيوب) مع البحث والفلاتر
+          // الهيدر مع البحث والفلاتر
           Container(
             color: Theme.of(context).primaryColor,
             padding:
@@ -137,10 +138,8 @@ class _ArtisanBaseScreenState extends State<ArtisanBaseScreen> {
               ],
             ),
           ),
-          // محتوى الصفحة مع التمرير
-          Expanded(
-            child: _pages[_selectedIndex],
-          ),
+          // محتوى الصفحة
+          _pages[_selectedIndex],
         ],
       ),
       drawer: MainDrawer(
