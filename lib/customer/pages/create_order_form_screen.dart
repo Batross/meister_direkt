@@ -1,14 +1,19 @@
-// lib/customer/pages/create_order_form_screen.dart
 import 'package:flutter/material.dart';
-import '../../data/models/service_model.dart'; // استيراد كلاس الخدمة الجديد
-import 'package:image_picker/image_picker.dart'; // لاختيار الصور
-import 'dart:io'; // لاستخدام File
+import 'dart:io' show File;
+import 'dart:typed_data'; // For Uint8List on web
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
+import 'package:flutter/foundation.dart'
+    show kIsWeb; // للتحقق مما إذا كان يعمل على الويب
+import 'package:file_picker/file_picker.dart';
 
-// تعريف QuestionType (ربما كان موجودًا في مكان آخر)
-// سنستخدم FieldType من service_model.dart الآن
+import 'package:meisterdirekt/data/models/service_model.dart';
+import 'package:meisterdirekt/data/models/request_model.dart';
 
 class CreateOrderFormScreen extends StatefulWidget {
-  final Service service; // استخدام Service بدلاً من ServiceCard
+  final Service service;
 
   const CreateOrderFormScreen({super.key, required this.service});
 
@@ -18,21 +23,31 @@ class CreateOrderFormScreen extends StatefulWidget {
 
 class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
   int _currentStepIndex = 0;
-  List<SubCategory> subCategories = []; // لتخزين الفئات الفرعية للخدمة
-  Map<String, dynamic> formData = {}; // لتخزين إجابات المستخدم
+  List<SubCategory> subCategories = [];
+  Map<String, dynamic> formData = {};
   final Map<String, TextEditingController> _controllers = {};
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    // جلب الفئات الفرعية من الخدمة الممررة
     subCategories = widget.service.subCategories;
 
-    // تهيئة controllers لكل حقل نصي
+    // تهيئة المتحكمات و formData للحقول الموجودة
     for (var subCategory in subCategories) {
       for (var field in subCategory.fields) {
         if (field.type == FieldType.text || field.type == FieldType.number) {
           _controllers[field.fieldId] = TextEditingController();
+          // إذا كانت هناك بيانات موجودة، قم بتعبئة المتحكم
+          if (formData.containsKey(field.fieldId)) {
+            _controllers[field.fieldId]?.text =
+                formData[field.fieldId].toString();
+          }
+        }
+        // تهيئة حقول image_upload كقوائم فارغة من PlatformFile
+        if (field.type == FieldType.image_upload &&
+            !formData.containsKey(field.fieldId)) {
+          formData[field.fieldId] = <PlatformFile>[];
         }
       }
     }
@@ -40,18 +55,53 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
 
   @override
   void dispose() {
-    // التخلص من controllers
     _controllers.forEach((key, controller) => controller.dispose());
     super.dispose();
   }
 
+  bool _validateCurrentStep() {
+    SubCategory currentSubCategory = subCategories[_currentStepIndex];
+    for (var field in currentSubCategory.fields) {
+      if (field.required) {
+        if ((field.type == FieldType.text ||
+                field.type == FieldType.number ||
+                field.type == FieldType.dropdown ||
+                field.type == FieldType.date) &&
+            (!formData.containsKey(field.fieldId) ||
+                formData[field.fieldId] == null ||
+                (formData[field.fieldId] is String &&
+                    formData[field.fieldId].toString().trim().isEmpty))) {
+          if (!mounted) return false;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text('الرجاء ملء الحقل المطلوب: ${field.labelAr}')),
+          );
+          return false;
+        }
+        if (field.type == FieldType.image_upload &&
+            (!formData.containsKey(field.fieldId) ||
+                (formData[field.fieldId] as List<PlatformFile>).isEmpty)) {
+          if (!mounted) return false;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'الرجاء تحميل ملف واحد على الأقل لـ: ${field.labelAr}')),
+          );
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   void _nextStep() {
-    // يمكنك إضافة منطق التحقق من صحة الإدخال هنا قبل التقدم
+    if (!_validateCurrentStep()) {
+      return;
+    }
     setState(() {
       if (_currentStepIndex < subCategories.length - 1) {
         _currentStepIndex++;
       } else {
-        // لقد وصلنا إلى نهاية النموذج، يمكن إرسال الطلب هنا
         _submitOrder();
       }
     });
@@ -69,26 +119,208 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
     setState(() {
       formData[fieldId] = value;
     });
-    print('Form Data updated: $formData'); // لتتبع البيانات
+    print('تم تحديث بيانات النموذج لـ $fieldId: $value');
   }
 
-  Future<void> _pickImage(String fieldId) async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      _updateFormData(fieldId, image.path); // حفظ مسار الصورة المؤقت
+  Future<void> _pickFiles(String fieldId) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'pdf'],
+      allowMultiple: true,
+      withData: kIsWeb, // للويب، احصل على البايتات مباشرة
+      withReadStream: !kIsWeb, // لغير الويب، استخدم دفق القراءة
+    );
+
+    if (result != null && result.files.isNotEmpty) {
+      List<PlatformFile> currentFiles =
+          (formData[fieldId] as List<PlatformFile>?) ?? [];
+      setState(() {
+        currentFiles.addAll(result.files);
+        formData[fieldId] = currentFiles;
+      });
+      print(
+          'الملفات المحددة لـ $fieldId: ${currentFiles.map((f) => f.name).join(', ')}');
     }
   }
 
-  void _submitOrder() {
-    // منطق إرسال الطلب إلى Firestore
-    // هنا، لديك كل البيانات في `formData`
-    print('Final Order Data: $formData');
-    // قم بمعالجة البيانات وإرسالها إلى Firestore (مثلاً، إلى collection 'requests')
-    // Navigator.pop(context); // العودة بعد الإرسال
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('تم إرسال طلبك بنجاح!')));
+  Future<List<String>> _uploadFiles(Map<String, dynamic> data) async {
+    List<String> uploadedFileUrls = [];
+    final uuid = const Uuid();
+    List<Future<String?>> uploadFutures = [];
+
+    for (var subCategory in subCategories) {
+      for (var field in subCategory.fields) {
+        if (field.type == FieldType.image_upload &&
+            data.containsKey(field.fieldId)) {
+          dynamic value = data[field.fieldId];
+          if (value is List) {
+            for (var file in value) {
+              if (file is PlatformFile) {
+                uploadFutures.add(() async {
+                  try {
+                    String? fileExtension = file.extension;
+                    if (fileExtension == null) {
+                      print('خطأ: امتداد الملف فارغ للملف: ${file.name}');
+                      return null;
+                    }
+
+                    String fileName =
+                        'requests_media/${uuid.v4()}_${field.fieldId}.${fileExtension}';
+
+                    String? contentType;
+                    if (['jpg', 'jpeg', 'png', 'gif']
+                        .contains(fileExtension.toLowerCase())) {
+                      contentType = 'image/$fileExtension';
+                    } else if (['mp4', 'mov']
+                        .contains(fileExtension.toLowerCase())) {
+                      contentType = 'video/$fileExtension';
+                    } else if (fileExtension.toLowerCase() == 'pdf') {
+                      contentType = 'application/pdf';
+                    }
+
+                    UploadTask? uploadTask;
+                    if (kIsWeb) {
+                      if (file.bytes != null) {
+                        uploadTask = FirebaseStorage.instance
+                            .ref()
+                            .child(fileName)
+                            .putData(file.bytes!,
+                                SettableMetadata(contentType: contentType));
+                      } else {
+                        print(
+                            'خطأ: بايتات PlatformFile فارغة لتحميل الويب للحقل: ${field.fieldId}');
+                        return null;
+                      }
+                    } else {
+                      if (file.path != null && file.path!.isNotEmpty) {
+                        uploadTask = FirebaseStorage.instance
+                            .ref()
+                            .child(fileName)
+                            .putFile(File(file.path!),
+                                SettableMetadata(contentType: contentType));
+                      } else {
+                        print(
+                            'خطأ: مسار PlatformFile فارغ لمنصة غير الويب للحقل: ${field.fieldId}');
+                        return null;
+                      }
+                    }
+
+                    if (uploadTask == null) {
+                      return null;
+                    }
+
+                    TaskSnapshot snapshot = await uploadTask;
+                    String downloadUrl = await snapshot.ref.getDownloadURL();
+                    print(
+                        'تم تحميل الملف إلى: $downloadUrl للحقل: ${field.fieldId}, النوع: $fileExtension');
+                    return downloadUrl;
+                  } catch (e) {
+                    print('خطأ في تحميل الملف للحقل ${field.fieldId}: $e');
+                    return null;
+                  }
+                }());
+              }
+            }
+          }
+        }
+      }
+    }
+
+    List<String?> results = await Future.wait(uploadFutures);
+    for (String? url in results) {
+      if (url != null) {
+        uploadedFileUrls.add(url);
+      }
+    }
+
+    if (uploadedFileUrls.length < uploadFutures.length && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text(
+                'تم رفع بعض الملفات بنجاح، لكن حدثت أخطاء في رفع ملفات أخرى.')),
+      );
+    }
+
+    return uploadedFileUrls;
+  }
+
+  void _submitOrder() async {
+    if (!_validateCurrentStep()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('الرجاء تسجيل الدخول لإرسال الطلب.')),
+        );
+        return;
+      }
+
+      // تحميل الملفات والحصول على العناوين (URLs)
+      List<String> uploadedFileUrls = await _uploadFiles(formData);
+
+      // إعداد تفاصيل الخدمة النهائية، باستثناء كائنات PlatformFile
+      Map<String, dynamic> finalServiceDetails = {};
+      formData.forEach((key, value) {
+        bool isFileField = subCategories.any((subCat) => subCat.fields.any(
+            (field) =>
+                field.fieldId == key && field.type == FieldType.image_upload));
+        if (!isFileField) {
+          finalServiceDetails[key] = value;
+        }
+      });
+
+      GeoPoint?
+          currentLocation; // تنفيذ جلب الموقع إذا لزم الأمر، وإلا تركه فارغًا
+
+      RequestModel newRequest = RequestModel(
+        requestId: '', // سيتولى Firestore تعيين هذا
+        clientId: user.uid,
+        serviceId: widget.service.serviceId,
+        serviceDetails: finalServiceDetails,
+        description: finalServiceDetails['damage_description'] ??
+            finalServiceDetails['issue_desc'] ??
+            finalServiceDetails['installation_item'] ??
+            finalServiceDetails['leak_location'] ??
+            'لم يتم تقديم وصف محدد لطلب الخدمة هذا.',
+        status: 'pending_offers',
+        location: currentLocation,
+        images: uploadedFileUrls.isNotEmpty ? uploadedFileUrls : null,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        budget:
+            (formData['budget'] is num) ? formData['budget'].toDouble() : null,
+        acceptedOfferId: null,
+        acceptedArtisanId: null,
+      );
+
+      await FirebaseFirestore.instance
+          .collection('requests')
+          .add(newRequest.toMap());
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم إرسال طلبك بنجاح!')),
+      );
+      Navigator.pop(context); // العودة بعد الإرسال الناجح
+    } catch (e) {
+      print('خطأ في إرسال الطلب: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء إرسال الطلب: $e')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -120,7 +352,6 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
                 itemCount: currentSubCategory.fields.length,
                 itemBuilder: (context, index) {
                   ServiceField field = currentSubCategory.fields[index];
-                  // بناء الواجهة بناءً على نوع الحقل
                   switch (field.type) {
                     case FieldType.text:
                       return Padding(
@@ -131,6 +362,7 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
                             labelText: field.labelAr,
                             hintText: field.placeholderAr,
                             suffixText: field.unitAr,
+                            border: const OutlineInputBorder(),
                           ),
                           onChanged: (value) =>
                               _updateFormData(field.fieldId, value),
@@ -145,6 +377,7 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
                             labelText: field.labelAr,
                             hintText: field.placeholderAr,
                             suffixText: field.unitAr,
+                            border: const OutlineInputBorder(),
                           ),
                           keyboardType: TextInputType.number,
                           onChanged: (value) => _updateFormData(
@@ -157,9 +390,12 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: DropdownButtonFormField<String>(
-                          decoration: InputDecoration(labelText: field.labelAr),
+                          decoration: InputDecoration(
+                            labelText: field.labelAr,
+                            border: const OutlineInputBorder(),
+                          ),
                           value: formData[field.fieldId],
-                          items: field.options!.map((option) {
+                          items: field.options?.map((option) {
                             return DropdownMenuItem(
                               value: option,
                               child: Text(option),
@@ -205,6 +441,9 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
                         },
                       );
                     case FieldType.image_upload:
+                      final List<PlatformFile> selectedFiles =
+                          (formData[field.fieldId] as List<PlatformFile>?) ??
+                              [];
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -214,27 +453,130 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
                           ),
                           const SizedBox(height: 8),
                           ElevatedButton.icon(
-                            onPressed: () => _pickImage(field.fieldId),
+                            onPressed: () => _pickFiles(field.fieldId),
                             icon: const Icon(Icons.upload_file),
-                            label: const Text('تحميل صورة'),
+                            label: const Text('تحميل ملفات'),
                           ),
-                          if (formData[field.fieldId] != null)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 8.0,
-                              ),
-                              child: Image.file(
-                                File(formData[field.fieldId]),
-                                height: 100,
-                                width: 100,
-                                fit: BoxFit.cover,
-                              ),
+                          const SizedBox(height: 10),
+                          if (selectedFiles.isNotEmpty)
+                            Wrap(
+                              spacing: 8.0,
+                              runSpacing: 4.0,
+                              children: selectedFiles.map((file) {
+                                if (_isImageFile(file.extension)) {
+                                  return Stack(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: kIsWeb
+                                            ? FutureBuilder<Uint8List?>(
+                                                future: file.bytes != null
+                                                    ? Future.value(file.bytes)
+                                                    : null,
+                                                builder: (context, snapshot) {
+                                                  if (snapshot.connectionState ==
+                                                          ConnectionState
+                                                              .done &&
+                                                      snapshot.hasData) {
+                                                    return Image.memory(
+                                                        snapshot.data!,
+                                                        height: 100,
+                                                        width: 100,
+                                                        fit: BoxFit.cover);
+                                                  }
+                                                  return Container(
+                                                    height: 100,
+                                                    width: 100,
+                                                    color: Colors.grey[200],
+                                                    child: const Icon(
+                                                        Icons
+                                                            .image_not_supported,
+                                                        color: Colors.grey),
+                                                  );
+                                                },
+                                              )
+                                            : (file.path != null &&
+                                                    file.path!.isNotEmpty
+                                                ? Image.file(
+                                                    File(file.path!),
+                                                    height: 100,
+                                                    width: 100,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder: (context,
+                                                            error,
+                                                            stackTrace) =>
+                                                        Container(
+                                                      width: 100,
+                                                      height: 100,
+                                                      color: Colors.grey[200],
+                                                      child: Icon(
+                                                          Icons.broken_image,
+                                                          color:
+                                                              Colors.grey[600]),
+                                                    ),
+                                                  )
+                                                : Container(
+                                                    height: 100,
+                                                    width: 100,
+                                                    color: Colors.grey[200],
+                                                    child: const Icon(
+                                                        Icons
+                                                            .image_not_supported,
+                                                        color: Colors.grey),
+                                                  )),
+                                      ),
+                                      Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              selectedFiles.remove(file);
+                                              _updateFormData(
+                                                  field.fieldId, selectedFiles);
+                                            });
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.black54,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: const Icon(Icons.close,
+                                                color: Colors.white, size: 20),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return Chip(
+                                    avatar: _getFileIcon(file.extension),
+                                    label: Text(file.name),
+                                    onDeleted: () {
+                                      setState(() {
+                                        selectedFiles.remove(file);
+                                        _updateFormData(
+                                            field.fieldId, selectedFiles);
+                                      });
+                                    },
+                                  );
+                                }
+                              }).toList(),
                             ),
                           const SizedBox(height: 10),
                         ],
                       );
+                    case FieldType.unknown:
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          'خطأ: نوع حقل غير معروف: ${field.labelAr}',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
                     default:
-                      return Container(); // للأنواع غير المدعومة أو غير المعروفة
+                      return Container();
                   }
                 },
               ),
@@ -248,12 +590,17 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
                     child: const Text('السابق'),
                   ),
                 ElevatedButton(
-                  onPressed: _nextStep,
-                  child: Text(
-                    _currentStepIndex == subCategories.length - 1
-                        ? 'إرسال الطلب'
-                        : 'التالي',
-                  ),
+                  onPressed: _isLoading ? null : _nextStep,
+                  child: _isLoading
+                      ? const CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
+                      : Text(
+                          _currentStepIndex == subCategories.length - 1
+                              ? 'إرسال الطلب'
+                              : 'التالي',
+                        ),
                 ),
               ],
             ),
@@ -261,5 +608,27 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
         ),
       ),
     );
+  }
+
+  Widget _getFileIcon(String? extension) {
+    switch (extension?.toLowerCase()) {
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+        return const Icon(Icons.image, color: Colors.blue);
+      case 'mp4':
+      case 'mov':
+        return const Icon(Icons.video_file, color: Colors.red);
+      case 'pdf':
+        return const Icon(Icons.picture_as_pdf, color: Colors.purple);
+      default:
+        return const Icon(Icons.insert_drive_file, color: Colors.grey);
+    }
+  }
+
+  bool _isImageFile(String? extension) {
+    if (extension == null) return false;
+    return ['jpg', 'jpeg', 'png', 'gif'].contains(extension.toLowerCase());
   }
 }

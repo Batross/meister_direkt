@@ -1,4 +1,4 @@
-// lib/models/service_model.dart
+// lib/data/models/service_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Service {
@@ -29,11 +29,21 @@ class Service {
       descriptionAr: data['description_ar'] ?? '',
       descriptionEn: data['description_en'] ?? '',
       iconUrl: data['iconUrl'] ?? '',
-      subCategories:
-          (data['subCategories'] as List? ?? [])
-              .map((item) => SubCategory.fromMap(item as Map<String, dynamic>))
-              .toList(),
+      subCategories: (data['subCategories'] as List? ?? [])
+          .map((item) => SubCategory.fromMap(item as Map<String, dynamic>))
+          .toList(),
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name_ar': nameAr,
+      'name_en': nameEn,
+      'description_ar': descriptionAr,
+      'description_en': descriptionEn,
+      'iconUrl': iconUrl,
+      'subCategories': subCategories.map((e) => e.toMap()).toList(),
+    };
   }
 }
 
@@ -55,11 +65,19 @@ class SubCategory {
       subCategoryId: map['subCategoryId'] ?? '',
       nameAr: map['name_ar'] ?? '',
       nameEn: map['name_en'] ?? '',
-      fields:
-          (map['fields'] as List? ?? [])
-              .map((item) => ServiceField.fromMap(item as Map<String, dynamic>))
-              .toList(),
+      fields: (map['fields'] as List? ?? [])
+          .map((item) => ServiceField.fromMap(item as Map<String, dynamic>))
+          .toList(),
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'subCategoryId': subCategoryId,
+      'name_ar': nameAr,
+      'name_en': nameEn,
+      'fields': fields.map((e) => e.toMap()).toList(),
+    };
   }
 }
 
@@ -70,7 +88,7 @@ enum FieldType {
   checkbox,
   date,
   image_upload,
-  unknown, // إضافة قيمة للتعامل مع الأنواع غير المعروفة
+  unknown,
 }
 
 class ServiceField {
@@ -84,7 +102,7 @@ class ServiceField {
   final String? placeholderEn;
   final String? unitAr;
   final String? unitEn;
-  final int? step; // لـ multi-step forms
+  final int? step;
 
   ServiceField({
     required this.fieldId,
@@ -107,7 +125,7 @@ class ServiceField {
         (e) => e.toString().split('.').last == map['type'],
       );
     } catch (e) {
-      parsedType = FieldType.unknown; // تعيين قيمة افتراضية أو التعامل مع الخطأ
+      parsedType = FieldType.unknown;
     }
 
     return ServiceField(
@@ -124,5 +142,21 @@ class ServiceField {
       unitEn: map['unit_en'],
       step: map['step'],
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'fieldId': fieldId,
+      'type': type.toString().split('.').last,
+      'label_ar': labelAr,
+      'label_en': labelEn,
+      'options': options,
+      'required': required,
+      'placeholder_ar': placeholderAr,
+      'placeholder_en': placeholderEn,
+      'unit_ar': unitAr,
+      'unit_en': unitEn,
+      'step': step,
+    };
   }
 }

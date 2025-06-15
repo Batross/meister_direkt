@@ -1,71 +1,94 @@
 // lib/data/models/user_model.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class User {
+class UserModel {
   final String uid;
   final String email;
-  final String userType; // customer, artisan, admin
-  final String? firstName; // قد يكون null في بعض الحالات (مثل إذا لم يُضف بعد)
-  final String? lastName; // قد يكون null في بعض الحالات (مثل إذا لم يُضف بعد)
+  final String role; // 'client', 'craftsman', 'admin'
+  final String? firstName;
+  final String? lastName;
   final String? phoneNumber;
-  final String? profileImageUrl;
   final String? address;
-  final String? city;
-  final String? country;
-  final String? zipCode;
-  final String? bio; // للسير الذاتية للحرفيين
-  final double? rating; // لتقييمات الحرفيين
+  final String? profileImageUrl;
+  final String? profession; // Only for craftsmen
+  final String? bio; // For craftsmen
+  final bool? isVerified; // For craftsmen
 
-  User({
+  UserModel({
     required this.uid,
     required this.email,
-    required this.userType,
+    required this.role, // يجب أن يكون الدور مطلوبًا
     this.firstName,
     this.lastName,
     this.phoneNumber,
-    this.profileImageUrl,
     this.address,
-    this.city,
-    this.country,
-    this.zipCode,
+    this.profileImageUrl,
+    this.profession,
     this.bio,
-    this.rating,
+    this.isVerified,
   });
 
-  // دالة fromJson لتحويل البيانات من Firestore/JSON إلى كائن User
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      uid: json['uid'] as String,
-      email: json['email'] as String,
-      userType: json['userType'] as String,
-      firstName: json['firstName'] as String?, // تأكد من أن مفاتيح JSON صحيحة
-      lastName: json['lastName'] as String?, // تأكد من أن مفاتيح JSON صحيحة
-      phoneNumber: json['phoneNumber'] as String?,
-      profileImageUrl: json['profileImageUrl'] as String?,
-      address: json['address'] as String?,
-      city: json['city'] as String?,
-      country: json['country'] as String?,
-      zipCode: json['zipCode'] as String?,
-      bio: json['bio'] as String?,
-      rating: (json['rating'] as num?)?.toDouble(), // قد يكون رقم أو null
+  // مُنشئ المصنع لإنشاء UserModel من DocumentSnapshot في Firestore
+  factory UserModel.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return UserModel(
+      uid: doc.id,
+      email: data['email'] ?? '',
+      role: data['role'] ?? 'client', // الدور الافتراضي إذا لم يكن موجودًا
+      firstName: data['firstName'],
+      lastName: data['lastName'],
+      phoneNumber: data['phoneNumber'],
+      address: data['address'],
+      profileImageUrl: data['profileImageUrl'],
+      profession: data['profession'],
+      bio: data['bio'],
+      isVerified: data['isVerified'],
     );
   }
 
-  // دالة toJson لتحويل كائن User إلى Map لرفعه إلى Firestore/JSON
-  Map<String, dynamic> toJson() {
+  // دالة لتحويل UserModel إلى Map لـ Firestore
+  Map<String, dynamic> toMap() {
     return {
-      'uid': uid,
       'email': email,
-      'userType': userType,
+      'role': role,
       'firstName': firstName,
       'lastName': lastName,
       'phoneNumber': phoneNumber,
-      'profileImageUrl': profileImageUrl,
       'address': address,
-      'city': city,
-      'country': country,
-      'zipCode': zipCode,
+      'profileImageUrl': profileImageUrl,
+      'profession': profession,
       'bio': bio,
-      'rating': rating,
+      'isVerified': isVerified,
+      'updatedAt': FieldValue.serverTimestamp(), // إضافة طابع زمني للتحديث
     };
+  }
+
+  // اختياري: إضافة دالة copyWith للمساعدة في التحديثات
+  UserModel copyWith({
+    String? uid,
+    String? email,
+    String? role,
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? address,
+    String? profileImageUrl,
+    String? profession,
+    String? bio,
+    bool? isVerified,
+  }) {
+    return UserModel(
+      uid: uid ?? this.uid,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      address: address ?? this.address,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      profession: profession ?? this.profession,
+      bio: bio ?? this.bio,
+      isVerified: isVerified ?? this.isVerified,
+    );
   }
 }

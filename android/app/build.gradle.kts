@@ -8,12 +8,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.meister_direkt"
+    namespace = "com.example.meisterdirekt"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973" // تم إضافة هذا السطر بناءً على الخطأ السابق
 
     defaultConfig {
-        applicationId = "com.example.meister_direkt"
+        applicationId = "com.example.meisterdirekt"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

@@ -1,5 +1,6 @@
 // lib/customer/widgets/customer_bottom_navbar.dart
 import 'package:flutter/material.dart';
+import 'package:meisterdirekt/shared/utils/constants.dart'; // For AppColors
 
 class CustomerBottomNavBar extends StatelessWidget {
   final int selectedIndex;
@@ -13,25 +14,53 @@ class CustomerBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.list_alt),
-          label: 'Meine Aufträge', // طلباتي
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.add_circle_outline),
-          label: 'Neuer Auftrag', // إنشاء طلب (الصفحة الرئيسية)
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profil', // بروفايلي
+        child: BottomNavigationBar(
+          currentIndex: selectedIndex,
+          onTap: onItemSelected,
+          backgroundColor: Colors.white,
+          selectedItemColor: AppColors.primaryColor, // استخدام AppColors
+          unselectedItemColor: Colors.grey[600],
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed, // لضمان تباعد ثابت
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.list_alt),
+              label: 'طلباتي',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add_circle_outline),
+              label: 'إنشاء طلب',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'ملفي',
+            ),
+          ],
         ),
-      ],
-      currentIndex: selectedIndex,
-      selectedItemColor: Theme.of(context).primaryColor,
-      unselectedItemColor: Colors.grey,
-      onTap: onItemSelected,
+      ),
     );
   }
 }

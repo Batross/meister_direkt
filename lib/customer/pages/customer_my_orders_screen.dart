@@ -1,34 +1,29 @@
-// lib/customer/pages/my_orders_screen.dart
+// lib/customer/pages/customer_my_orders_screen.dart
 import 'package:flutter/material.dart';
-import '../../shared/widgets/custom_app_bar.dart'; // استيراد CustomAppBar
 
-class MyOrdersScreen extends StatelessWidget {
-  const MyOrdersScreen({super.key});
+class CustomerMyOrdersScreen extends StatelessWidget {
+  const CustomerMyOrdersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: 'طلباتي', // عنوان مخصص لهذه الصفحة
-        leadingIcon: IconButton(
-          icon: const Icon(Icons.arrow_back), // زر رجوع
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search), // أيقونة بحث مثلاً
-            onPressed: () {
-              print('Search orders');
-            },
-          ),
-        ],
-      ),
-      body: const Center(
-        child: Text(
-          'لا توجد طلبات سابقة لعرضها.',
-          style: TextStyle(fontSize: 18, color: Colors.grey),
+    return const Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.assignment, size: 80, color: Colors.grey),
+            SizedBox(height: 20),
+            Text(
+              'لا توجد طلبات حالياً.',
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'يمكنك إنشاء طلب جديد من خلال صفحة "إنشاء طلب جديد".',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ],
         ),
       ),
     );

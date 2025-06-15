@@ -1,27 +1,78 @@
 // lib/shared/providers/user_provider.dart
-
 import 'package:flutter/material.dart';
-import 'package:meister_direkt/data/models/user_model.dart'; // تأكد من المسار الصحيح لكلاس User
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:meisterdirekt/data/models/user_model.dart'; // تأكد من المسار الصحيح لـ UserModel
 
 class UserProvider with ChangeNotifier {
-  User? _user; // متغير لتخزين كائن المستخدم، يمكن أن يكون null
+  UserModel? _currentUser;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Getter للوصول إلى كائن المستخدم
-  User? get user => _user;
+  UserModel? get currentUser => _currentUser;
 
-  // دالة لتعيين كائن المستخدم
-  void setUser(User user) {
-    _user = user;
-    notifyListeners(); // لإعلام جميع الـ widgets التي تستمع لهذا الـ provider بحدوث تغيير
+  UserProvider() {
+    _auth.authStateChanges().listen((User? user) async {
+      if (user != null) {
+        await _fetchUserDetails(user.uid);
+      } else {
+        _currentUser = null;
+        notifyListeners();
+      }
+    });
   }
 
-  // دالة لمسح كائن المستخدم (مثلاً عند تسجيل الخروج)
-  void clearUser() {
-    _user = null;
+  Future<void> _fetchUserDetails(String uid) async {
+    try {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(uid).get();
+      if (userDoc.exists) {
+        _currentUser = UserModel.fromFirestore(userDoc);
+      } else {
+        // إذا كان المستخدم موجودًا في Auth ولكن ليس في Firestore، قم بإنشاء إدخال أساسي
+        // (لا ينبغي أن يحدث مع التسجيل الصحيح الذي ينشئ مستند المستخدم)
+        final email = _auth.currentUser?.email ?? 'unknown@example.com';
+        // الدور الافتراضي للعميل إذا لم يتم العثور عليه في Firestore
+        _currentUser = UserModel(uid: uid, email: email, role: 'client');
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .set(_currentUser!.toMap());
+        print('تم إنشاء إدخال مستخدم أساسي لـ $uid في Firestore.');
+      }
+    } catch (e) {
+      print('خطأ في جلب أو إنشاء تفاصيل المستخدم: $e');
+      _currentUser = null;
+    }
     notifyListeners();
   }
 
-  // يمكنك إضافة دوال أخرى هنا، مثل:
-  // Future<void> loadUserFromFirestore(String uid) async { ... }
-  // Future<void> signOut() async { ... }
+  // دالة مكشوفة ليتم استدعاؤها من SplashScreen أو تدفقات تسجيل الدخول/التسجيل الأخرى
+  Future<void> fetchUserDetails(String uid) => _fetchUserDetails(uid);
+
+  // دالة لتحديث تفاصيل المستخدم في المزود و Firestore
+  Future<void> updateUserDetails(UserModel updatedUser) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(updatedUser.uid)
+          .update(updatedUser.toMap());
+      _currentUser = updatedUser; // تحديث الحالة المحلية
+      notifyListeners();
+    } catch (e) {
+      print('خطأ في تحديث تفاصيل المستخدم: $e');
+    }
+  }
+
+  // دالة لتعيين المستخدم (مفيدة بعد تسجيل الدخول أو التسجيل لتحديث الحالة الفوري)
+  void setUser(UserModel user) {
+    _currentUser = user;
+    notifyListeners();
+  }
+
+  // مسح بيانات المستخدم عند تسجيل الخروج (على الرغم من أن authStateChanges يجب أن تتعامل مع هذا)
+  void clearUser() {
+    _currentUser = null;
+    notifyListeners();
+  }
 }

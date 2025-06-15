@@ -1,13 +1,12 @@
-// lib/artisan/pages/artisan_home_page.dart
+// lib/artisan/pages/artisan_find_requests_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// لا نحتاج لـ Header أو Drawer هنا لأنها ستأتي من ArtisanBaseScreen
-// import '../../shared/widgets/artisan_home_header.dart';
-// import '../../shared/widgets/main_drawer.dart';
 import '../../data/models/user_model.dart';
 import '../../shared/providers/user_provider.dart';
 import '../../data/models/request_model.dart';
+import '../../shared/utils/constants.dart'; // لـ AppColors
 
 // Extension بسيطة لتحويل String إلى Title Case لأغراض العرض
 extension StringCasingExtension on String {
@@ -19,13 +18,7 @@ extension StringCasingExtension on String {
       .join(' ');
 }
 
-// ArtisanHomePage هي الآن مجرد محتوى داخل ArtisanBaseScreen
-// بما أن ArtisanHomePage تحتوي على dummyRequests وlogic لعرض الطلبات الجديدة
-// فهي فعلياً شاشة "البحث عن طلبات" (Anfragen finden).
-// سأغير اسم الكلاس والملف لاحقاً لتوضيح الغرض.
-
 class ArtisanFindRequestsScreen extends StatefulWidget {
-  // غيرت الاسم
   const ArtisanFindRequestsScreen({super.key});
 
   @override
@@ -34,63 +27,6 @@ class ArtisanFindRequestsScreen extends StatefulWidget {
 }
 
 class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
-  // لا حاجة لـ _scaffoldKey هنا بعد الآن
-
-  final List<RequestModel> _dummyRequests = [
-    RequestModel(
-      requestId: 'req1',
-      clientId: 'client1',
-      serviceId: 'electrical_work',
-      serviceDetails: {
-        'type': 'Lampenwechsel',
-        'quantity': '5'
-      }, // Lampenwechsel
-      description:
-          'Ich brauche einen Elektriker, um einige Lampen im Haus zu wechseln.', // أحتاج كهربائي
-      status: 'pending_offers',
-      location: const GeoPoint(48.1351, 11.5820), // Munich
-      images: [
-        'https://via.placeholder.com/150/FF5733/FFFFFF?text=Light1',
-        'https://via.placeholder.com/150/33FF57/FFFFFF?text=Light2',
-      ],
-      createdAt: DateTime.now().subtract(const Duration(hours: 3)),
-      budget: 50.0,
-    ),
-    RequestModel(
-      requestId: 'req2',
-      clientId: 'client2',
-      serviceId: 'plumbing',
-      serviceDetails: {
-        'issue': 'Wasserleck',
-        'location': 'Küche'
-      }, // Wasserleck, Küche
-      description:
-          'Es gibt ein Wasserleck unter der Spüle in der Küche, ich brauche sofort einen Klempner.', // تسرب مياه
-      status: 'pending_offers',
-      location: const GeoPoint(52.5200, 13.4050), // Berlin
-      images: [
-        'https://via.placeholder.com/150/33A2FF/FFFFFF?text=Leak1',
-      ],
-      createdAt: DateTime.now().subtract(const Duration(days: 1)),
-      budget: 120.0,
-    ),
-    RequestModel(
-      requestId: 'req3',
-      clientId: 'client3',
-      serviceId: 'carpentry',
-      serviceDetails: {
-        'item': 'Regalmontage',
-        'material': 'Holz'
-      }, // Regalmontage, Holz
-      description:
-          'Ich möchte 3 Holzregale im Wohnzimmer installieren lassen.', // تركيب رفوف
-      status: 'pending_offers',
-      location: const GeoPoint(51.5074, -0.1278), // London
-      images: [],
-      createdAt: DateTime.now().subtract(const Duration(days: 2)),
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -100,70 +36,144 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
       return const Center(child: CircularProgressIndicator()); // فقط محتوى
     }
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // تم نقل ArtisanHomeHeader إلى ArtisanBaseScreen
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    'Neue Serviceanfragen', // طلبات الخدمات الجديدة
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                _dummyRequests.isEmpty
-                    ? const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: Text(
-                            'Derzeit keine neuen Anfragen verfügbar.', // لا توجد طلبات جديدة حاليًا.
-                            style: TextStyle(fontSize: 18, color: Colors.grey),
-                          ),
-                        ),
-                      )
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _dummyRequests.length,
-                        itemBuilder: (context, index) {
-                          final request = _dummyRequests[index];
-                          return RequestPostCard(request: request);
-                        },
-                      ),
-              ],
+    return StreamBuilder<QuerySnapshot>(
+      // جلب الطلبات التي حالتها 'pending_offers' ولم يتم تعيين حرفي لها بعد
+      stream: FirebaseFirestore.instance
+          .collection('requests')
+          .where('status', isEqualTo: 'pending_offers')
+          .where('acceptedArtisanId',
+              isNull: true) // هذا هو الحقل الصحيح في RequestModel
+          .orderBy('createdAt', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          // رسالة خطأ أكثر وضوحاً
+          return Center(
+              child: Text(
+                  'خطأ في تحميل الطلبات: ${snapshot.error}\n\nتأكد من إنشاء الفهارس المطلوبة في Firestore Console.'));
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                'Derzeit keine neuen Anfragen verfügbar.', // لا توجد طلبات جديدة حاليًا.
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
             ),
+          );
+        }
+
+        List<RequestModel> requests = snapshot.data!.docs
+            .map((doc) => RequestModel.fromSnapshot(doc))
+            .toList();
+
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Neue Serviceanfragen', // طلبات الخدمات الجديدة
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: requests.length,
+                      itemBuilder: (context, index) {
+                        final request = requests[index];
+                        return RequestPostCard(request: request);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
 // Widget لتمثيل كرت الطلب (مشابه لمنشور فيسبوك)
-class RequestPostCard extends StatelessWidget {
+class RequestPostCard extends StatefulWidget {
   final RequestModel request;
 
   const RequestPostCard({super.key, required this.request});
 
   @override
+  State<RequestPostCard> createState() => _RequestPostCardState();
+}
+
+class _RequestPostCardState extends State<RequestPostCard> {
+  bool _showFullDescription =
+      false; // لتحديد ما إذا كان الوصف كاملاً أم مختصراً
+  static const int _maxDescriptionLines =
+      3; // الحد الأقصى لعدد الأسطر قبل "إظهار المزيد"
+
+  String _getServiceDisplayName(String serviceId) {
+    switch (serviceId) {
+      case 'electrical_work':
+        return 'أعمال الكهرباء';
+      case 'plumbing':
+        return 'أعمال السباكة';
+      case 'carpentry':
+        return 'أعمال النجارة';
+      case 'painting':
+        return 'الدهانات';
+      default:
+        return serviceId.replaceAll('_', ' ').toTitleCase();
+    }
+  }
+
+  // دالة مساعدة لتحديد ما إذا كانت التفاصيل طويلة وتحتاج لـ "إظهار المزيد"
+  bool _isDescriptionLong(String description) {
+    // استخدم LayoutBuilder للحصول على العرض المتاح قبل حساب النص
+    final textSpan =
+        TextSpan(text: description, style: const TextStyle(fontSize: 16));
+    final textPainter = TextPainter(
+      text: textSpan,
+      maxLines: _maxDescriptionLines,
+      textDirection: TextDirection.ltr, // أو TextDirection.rtl حسب اللغة
+    );
+
+    // Calculate layout for the text with a reasonable max width
+    // We can't use MediaQuery.of(context).size.width directly here without LayoutBuilder
+    // but a fixed large width or a width close to expected card width can be used for estimation
+    textPainter.layout(maxWidth: 300); // Estimating max width for calculation
+
+    return textPainter.didExceedMaxLines;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    String formattedDate =
+        '${widget.request.createdAt.toLocal().day}/${widget.request.createdAt.toLocal().month}/${widget.request.createdAt.toLocal().year}';
+    String formattedTime =
+        '${widget.request.createdAt.toLocal().hour}:${widget.request.createdAt.toLocal().minute.toString().padLeft(2, '0')}';
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
         onTap: () {
-          // TODO: Navigate to RequestDetailsPage
-          print('Anfrage getippt: ${request.requestId}'); // Request tapped
+          print('Anfrage getippt: ${widget.request.requestId}');
         },
         borderRadius: BorderRadius.circular(15),
         child: Padding(
@@ -171,34 +181,87 @@ class RequestPostCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Serviceanfrage: ${request.serviceId.replaceAll('_', ' ').toTitleCase()}', // طلب خدمة
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${request.createdAt.toLocal().hour}:${request.createdAt.toLocal().minute} - ${request.createdAt.toLocal().day}/${request.createdAt.toLocal().month}/${request.createdAt.toLocal().year}',
-                style: const TextStyle(color: Colors.grey),
+              Row(
+                children: [
+                  Icon(Icons.assignment,
+                      color: Theme.of(context).primaryColor, size: 24),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Serviceanfrage: ${_getServiceDisplayName(widget.request.serviceId)}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          '$formattedTime - $formattedDate',
+                          style:
+                              const TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 15),
-              Text(
-                request.description,
-                style: const TextStyle(fontSize: 16),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+
+              // الوصف مع "إظهار المزيد"
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.request.description,
+                    style: const TextStyle(fontSize: 16),
+                    maxLines:
+                        _showFullDescription ? null : _maxDescriptionLines,
+                    overflow: TextOverflow.fade,
+                  ),
+                  // استخدام LayoutBuilder هنا للحصول على العرض الفعلي للـ Text widget
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textPainter = TextPainter(
+                        text: TextSpan(
+                            text: widget.request.description,
+                            style: const TextStyle(fontSize: 16)),
+                        maxLines: _maxDescriptionLines,
+                        textDirection: TextDirection.ltr,
+                      )..layout(maxWidth: constraints.maxWidth);
+
+                      if (textPainter.didExceedMaxLines) {
+                        return TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _showFullDescription = !_showFullDescription;
+                            });
+                          },
+                          child: Text(
+                              _showFullDescription ? 'عرض أقل' : 'عرض المزيد'),
+                        );
+                      }
+                      return const SizedBox
+                          .shrink(); // لا شيء إذا لم يتجاوز الحد الأقصى
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
-              if (request.serviceDetails.isNotEmpty)
+
+              // عرض تفاصيل الخدمة (serviceDetails)
+              if (widget.request.serviceDetails.isNotEmpty)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: request.serviceDetails.entries.map((entry) {
+                  children: widget.request.serviceDetails.entries
+                      .where((e) => e.key != 'uploadedImageUrls')
+                      .map((entry) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2.0),
                       child: Text(
-                        '${entry.key.toTitleCase()}: ${entry.value}',
+                        '${entry.key.replaceAll('_', ' ').toTitleCase()}: ${entry.value.toString()}',
                         style: const TextStyle(
                             fontSize: 14, color: Colors.black87),
                       ),
@@ -206,30 +269,57 @@ class RequestPostCard extends StatelessWidget {
                   }).toList(),
                 ),
               const SizedBox(height: 15),
-              if (request.images != null && request.images!.isNotEmpty)
+
+              // عرض الصور (كألبوم/صف واحد)
+              if (widget.request.images != null &&
+                  widget.request.images!.isNotEmpty)
                 SizedBox(
-                  height: 100,
+                  height: 180, // ارتفاع مناسب لعرض الصور
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: request.images!.length,
+                    itemCount: widget.request.images!.length,
                     itemBuilder: (context, imgIndex) {
+                      final imageUrl = widget.request.images![imgIndex];
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius:
+                              BorderRadius.circular(10), // زوايا دائرية
                           child: Image.network(
-                            request.images![imgIndex],
-                            width: 100,
-                            height: 100,
+                            imageUrl,
+                            width: 250, // عرض أكبر للصور
+                            height: 180,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              width: 100,
-                              height: 100,
-                              color: Colors.grey[200],
-                              child: const Icon(Icons.broken_image,
-                                  color: Colors.grey),
-                            ),
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                width: 250,
+                                height: 180,
+                                color: Colors.grey[200],
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              print(
+                                  'Error loading image from URL: $imageUrl - Error: $error');
+                              return Container(
+                                width: 250,
+                                height: 180,
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.broken_image,
+                                    color: Colors.grey, size: 50),
+                              );
+                            },
                           ),
                         ),
                       );
@@ -237,15 +327,19 @@ class RequestPostCard extends StatelessWidget {
                   ),
                 ),
               const SizedBox(height: 15),
-              if (request.budget != null)
+
+              // عرض الميزانية التقديرية
+              if (widget.request.budget != null)
                 Text(
-                  'Geschätztes Budget: ${request.budget!.toStringAsFixed(2)} €', // ميزانية تقديرية
+                  'Geschätztes Budget: ${widget.request.budget!.toStringAsFixed(2)} €', // ميزانية تقديرية
                   style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       color: Colors.green),
                 ),
               const Divider(height: 25),
+
+              // أزرار الإجراءات
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -253,8 +347,8 @@ class RequestPostCard extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () {
                         print(
-                            'Angebot senden für ${request.requestId}'); // تقديم عرض
-                        // TODO: Navigate to SubmitOfferPage for this request
+                            'Angebot senden für ${widget.request.requestId}'); // تقديم عرض
+                        // TODO: Implement logic to make an offer
                       },
                       icon: const Icon(Icons.send),
                       label: const Text('Angebot senden'), // تقديم عرض
@@ -266,6 +360,8 @@ class RequestPostCard extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
+                        textStyle: const TextStyle(
+                            fontSize: 14), // حجم خط أصغر للأزرار
                       ),
                     ),
                   ),
@@ -274,7 +370,7 @@ class RequestPostCard extends StatelessWidget {
                     child: TextButton.icon(
                       onPressed: () {
                         print(
-                            'Zusätzliche Informationen anfordern für ${request.requestId}'); // طلب معلومات إضافية
+                            'Zusätzliche Informationen anfordern für ${widget.request.requestId}'); // طلب معلومات إضافية
                         // TODO: Open a chat or send a message
                       },
                       icon: const Icon(Icons.help_outline),
@@ -287,6 +383,8 @@ class RequestPostCard extends StatelessWidget {
                           side:
                               BorderSide(color: Theme.of(context).primaryColor),
                         ),
+                        textStyle: const TextStyle(
+                            fontSize: 14), // حجم خط أصغر للأزرار
                       ),
                     ),
                   ),
@@ -294,11 +392,12 @@ class RequestPostCard extends StatelessWidget {
                   IconButton(
                     onPressed: () {
                       print(
-                          'Als Favorit speichern ${request.requestId}'); // حفظ في المفضلة
+                          'Als Favorit speichern ${widget.request.requestId}'); // حفظ في المفضلة
                       // TODO: Implement save/bookmark logic
                     },
                     icon: const Icon(Icons.favorite_border),
                     color: Colors.grey[600],
+                    tooltip: 'Als Favorit speichern',
                   ),
                 ],
               ),

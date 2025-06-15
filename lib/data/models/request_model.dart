@@ -4,19 +4,19 @@ class RequestModel {
   final String requestId;
   final String clientId;
   final String
-      serviceId; // ID الخدمة المطلوبة (مثل 'electrical_work', 'plumbing')
+      serviceId; // ID of the requested service (e.g., 'electrical_work', 'plumbing')
   final Map<String, dynamic>
-      serviceDetails; // تفاصيل إضافية للخدمة (مثل نوع المشكلة، المواد)
+      serviceDetails; // Additional service details (e.g., problem type, materials)
   final String description;
   final String
       status; // 'pending_offers', 'accepted_offer', 'in_progress', 'completed', 'cancelled'
-  final GeoPoint? location; // موقع الطلب
-  final List<String>? images; // URLs لصور مرفقة بالطلب
+  final GeoPoint? location; // Request location
+  final List<String>? images; // URLs of attached images for the request
   final DateTime createdAt;
   final DateTime? updatedAt;
-  final double? budget; // ميزانية تقديرية من العميل
-  final String? acceptedOfferId; // ID العرض الذي تم قبوله
-  final String? acceptedArtisanId; // ID الحرفي الذي تم قبول عرضه
+  final double? budget; // Estimated budget from the client
+  final String? acceptedOfferId; // ID of the accepted offer
+  final String? acceptedArtisanId; // ID of the artisan whose offer was accepted
 
   RequestModel({
     required this.requestId,

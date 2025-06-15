@@ -10,7 +10,6 @@ class AuthBaseScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          // تم تغيير 'const' إلى 'null' أو حذفها
           color: Colors.grey[200], // يمكنك تخصيص هذا اللون
         ),
         child: Center(

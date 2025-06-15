@@ -1,18 +1,9 @@
-// lib/screens/splash_screen.dart
+// lib/shared/pages/splash_screen.dart
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-
-import '../data/models/user_model.dart';
-import '../shared/providers/user_provider.dart';
-
-// استيراد الشاشات الأساسية (Base Screens)
-import '../customer/pages/customer_base_screen.dart'; // هذه هي الشاشة التي ستعرض شريط التنقل السفلي للعميل
-import '../artisan/artisan_base_screen.dart'; // هذه هي الشاشة التي ستعرض شريط التنقل السفلي للحرفي
-import '../admin/pages/admin_base_screen.dart'; // افترض وجودها
-
-// استيراد شاشة اختيار نوع المستخدم
-import '../auth/pages/select_user_type_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:meisterdirekt/shared/providers/user_provider.dart';
+import 'package:meisterdirekt/data/repositories/service_repository.dart'; // استيراد ServiceRepository
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -25,61 +16,48 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _navigateToNextScreen();
+    _checkAuthAndNavigate();
   }
 
-  Future<void> _navigateToNextScreen() async {
-    // عرض شاشة البداية لمدة 3 ثوانٍ
-    await Future.delayed(const Duration(seconds: 3));
+  Future<void> _checkAuthAndNavigate() async {
+    // إضافة تأخير صغير لتأثير شاشة البداية
+    await Future.delayed(const Duration(seconds: 2));
 
-    // التحقق من حالة المصادقة
-    User? firebaseUser = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final serviceRepository =
+        Provider.of<ServiceRepository>(context, listen: false);
 
-    if (firebaseUser != null) {
-      try {
-        await Future.wait([
-          Future.microtask(() => userProvider.currentUser != null
-              ? null
-              : Future.delayed(const Duration(milliseconds: 500))),
-        ]);
+    // التأكد من تحميل الخدمات الأولية (يعمل مرة واحدة إذا كانت المجموعة فارغة)
+    await serviceRepository.uploadInitialServices();
 
-        if (userProvider.currentUser != null) {
-          UserModel userModel = userProvider.currentUser!;
-          String role = userModel.role;
-
-          print('DEBUG: User role is: $role'); // للمساعدة في التصحيح
-
-          if (role == 'client') {
-            // توجيه العميل إلى CustomerBaseScreen
-            _goToScreen(const CustomerBaseScreen());
-          } else if (role == 'craftsman') {
-            // توجيه الحرفي إلى ArtisanBaseScreen
-            _goToScreen(const ArtisanBaseScreen());
-          } else if (role == 'admin') {
-            _goToScreen(const AdminBaseScreen());
-          } else {
-            print('DEBUG: Unknown role: $role');
-            _goToScreen(const SelectUserTypePage());
-          }
-        } else {
-          print(
-              'DEBUG: User document not loaded or does not exist for UID: ${firebaseUser.uid}');
-          _goToScreen(const SelectUserTypePage());
-        }
-      } catch (e) {
-        print('ERROR: Failed to fetch user role via Provider: $e');
-        _goToScreen(const SelectUserTypePage());
-      }
+    if (user == null) {
+      // المستخدم غير مسجل الدخول، الانتقال إلى شاشة اختيار نوع المستخدم
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/select-user-type');
     } else {
-      print('DEBUG: No user logged in.');
-      _goToScreen(const SelectUserTypePage());
+      // المستخدم مسجل الدخول، جلب تفاصيل المستخدم والانتقال إلى الشاشة الرئيسية المناسبة
+      await userProvider
+          .fetchUserDetails(user.uid); // التأكد من جلب تفاصيل المستخدم
+      if (userProvider.currentUser != null) {
+        String role = userProvider.currentUser!.role;
+        if (!mounted) return;
+        if (role == 'client') {
+          Navigator.pushReplacementNamed(context, '/customer-home');
+        } else if (role == 'craftsman') {
+          Navigator.pushReplacementNamed(context, '/artisan-home');
+        } else if (role == 'admin') {
+          Navigator.pushReplacementNamed(context, '/admin-home');
+        } else {
+          // بديل إذا كان الدور غير معروف أو لم يتم تعيينه
+          Navigator.pushReplacementNamed(context, '/select-user-type');
+        }
+      } else {
+        // المستخدم موجود في Firebase Auth ولكن لا توجد تفاصيل في Firestore (لا ينبغي أن يحدث مع التسجيل الصحيح)
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, '/select-user-type');
+      }
     }
-  }
-
-  void _goToScreen(Widget screen) {
-    Navigator.of(context)
-        .pushReplacement(MaterialPageRoute(builder: (context) => screen));
   }
 
   @override
@@ -89,20 +67,21 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              'assets/images/app_logo.png',
-              height: 100,
-              width: 100,
-            ),
+            // استبدل هذا بشعار تطبيقك / صورة شاشة البداية
+            Image.asset('assets/images/meisterdirekt_logo.png', height: 150),
             const SizedBox(height: 20),
             const Text(
               'Meister Direkt',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
             const CircularProgressIndicator(),
-            const SizedBox(height: 10),
-            const Text('Laden...'), // جاري التحميل...
+            const SizedBox(height: 20),
+            const Text('جاري التحميل...', style: TextStyle(color: Colors.grey)),
           ],
         ),
       ),

@@ -1,10 +1,8 @@
-name: meister_direkt
+name: meisterdirekt
 description: "A new Flutter project."
 
-# منع النشر على pub.dev
 publish_to: 'none'
 
-# رقم النسخة
 version: 1.0.0+1
 
 environment:
@@ -17,15 +15,22 @@ dependencies:
   provider: ^6.1.5
   flutter_animate: ^4.5.0
 
-  # Firebase
-  firebase_core: ^2.30.1
-  firebase_auth: ^4.19.5
+  # Firebase Core
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.20.0
   cloud_firestore: ^4.17.1
-  
-  # اختيار الصور
-  image_picker: ^1.1.2
+  firebase_storage: ^11.7.7
+  uuid: ^4.4.0
 
-  # أيقونات iOS
+  # File picking for images, videos, and PDFs
+  file_picker: ^8.0.7
+  video_player: ^2.8.1
+  chewie: ^1.7.5
+  
+  # For GeoLocation
+  geolocator: ^12.0.0
+  geocoding: ^3.0.0
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
@@ -35,10 +40,17 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
   assets:
-    # تضمين جميع الملفات في مجلد assets/images/
-    - assets/images/ 
-  # fonts:
-  #   - family: CustomFont
-  #     fonts:
-  #       - asset: fonts/CustomFont-Regular.ttf
+    - assets/images/default_profile.png
+    - assets/data/initial_services.json
+    - assets/icons/carpentry.png
+    - assets/icons/electrical.png # تأكد من أن هذا الاسم صحيح (وليس electrical.png)
+    - assets/icons/plumbing.png
+    - assets/icons/painting.png
+    - assets/icons/cleaning.png
+    - assets/icons/ac.png
+    - assets/images/meisterdirekt_logo.png
+    - assets/images/customer_login_icon.png
+    - assets/images/artisan_login_icon.png
+    - assets/images/logo.png # تأكد من وجود هذا إذا كان يستخدم في SplashScreen

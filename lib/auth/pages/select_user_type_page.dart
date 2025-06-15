@@ -1,8 +1,8 @@
+// lib/auth/pages/select_user_type_page.dart
 import 'package:flutter/material.dart';
-import '../login_page_customer.dart';
-import '../login_page_artisan.dart';
-import '../login_page_admin.dart';
-import 'package:flutter_animate/flutter_animate.dart'; // لتأثيرات بصرية أجمل
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:meisterdirekt/auth/pages/auth_base_screen.dart'; // استيراد AuthBaseScreen
+import 'package:meisterdirekt/auth/pages/auth_screen.dart'; // هذا هو الاستيراد الصحيح الآن
 
 class SelectUserTypePage extends StatefulWidget {
   const SelectUserTypePage({super.key});
@@ -31,7 +31,13 @@ class _SelectUserTypePageState extends State<SelectUserTypePage> {
       // بعد 5 ضغطات سريعة
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const LoginPageAdmin()),
+        MaterialPageRoute(
+          builder: (_) => const AuthBaseScreen(
+            // تغليف شاشة تسجيل دخول المسؤول
+            child:
+                AuthScreen(isCraftsman: false, isAdmin: true), // تمرير isAdmin
+          ),
+        ),
       );
       _adminTapCount = 0; // إعادة العداد بعد التوجيه
     }
@@ -58,7 +64,7 @@ class _SelectUserTypePageState extends State<SelectUserTypePage> {
                 child: Column(
                   children: [
                     Image.asset(
-                      'assets/images/meister_direkt_logo.png', // تأكد من وجود هذا الشعار
+                      'assets/images/meisterdirekt_logo.png', // تأكد من وجود هذا الشعار
                       height: 150,
                     )
                         .animate()
@@ -91,7 +97,11 @@ class _SelectUserTypePageState extends State<SelectUserTypePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (_) => const LoginPageCustomer()),
+                        builder: (_) => const AuthBaseScreen(
+                          // تغليف AuthScreen
+                          child: AuthScreen(isCraftsman: false),
+                        ),
+                      ),
                     );
                   },
                   icon: const Icon(Icons.person, color: Color(0xFF2A5C82)),
@@ -120,7 +130,11 @@ class _SelectUserTypePageState extends State<SelectUserTypePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (_) => const LoginPageArtisan()),
+                        builder: (_) => const AuthBaseScreen(
+                          // تغليف AuthScreen
+                          child: AuthScreen(isCraftsman: true),
+                        ),
+                      ),
                     );
                   },
                   icon: const Icon(Icons.engineering, color: Color(0xFF2A5C82)),

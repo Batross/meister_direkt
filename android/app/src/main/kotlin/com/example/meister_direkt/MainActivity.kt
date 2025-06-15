@@ -1,4 +1,4 @@
-package com.example.meister_direkt
+package com.example.meisterdirekt
 
 import io.flutter.embedding.android.FlutterActivity
 

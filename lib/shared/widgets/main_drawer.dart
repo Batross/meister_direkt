@@ -1,153 +1,127 @@
+// lib/shared/widgets/main_drawer.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../shared/providers/user_provider.dart'; // لـ UserProvider
+import 'package:meisterdirekt/shared/providers/auth_provider.dart'; // استيراد AuthProvider
+import 'package:meisterdirekt/shared/providers/user_provider.dart'; // استيراد UserProvider (لا يزال مطلوبًا لبيانات المستخدم)
 
 class MainDrawer extends StatelessWidget {
   final String userName;
   final String userRole;
   final String? profilePicUrl;
-  final VoidCallback onSignOut;
+  final VoidCallback? onSignOut; // الآن اختياري حيث أن المنطق أصبح داخليًا
 
   const MainDrawer({
     super.key,
     required this.userName,
     required this.userRole,
     this.profilePicUrl,
-    required this.onSignOut,
+    this.onSignOut, // الآن اختياري
   });
 
   @override
   Widget build(BuildContext context) {
-    // يمكنك الوصول إلى UserProvider هنا إذا أردت تحديث حالة المستخدم أو معلوماته
-    // final userProvider = Provider.of<UserProvider>(context, listen: false);
+    String roleDisplay = '';
+    if (userRole == 'client') {
+      roleDisplay = 'عميل';
+    } else if (userRole == 'craftsman') {
+      roleDisplay = 'حرفي';
+    } else if (userRole == 'admin') {
+      roleDisplay = 'مسؤول';
+    }
 
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
         children: <Widget>[
           UserAccountsDrawerHeader(
             accountName: Text(
               userName,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.white,
+              ),
             ),
             accountEmail: Text(
-              userRole == 'client' ? 'عميل' : 'حرفي', // يمكن عرض الإيميل الفعلي
-              style: const TextStyle(fontSize: 16),
+              roleDisplay,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+              ),
             ),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
-              backgroundImage:
-                  profilePicUrl != null && profilePicUrl!.isNotEmpty
-                      ? NetworkImage(profilePicUrl!) as ImageProvider
-                      : const AssetImage('assets/images/default_profile.png'),
-              child: profilePicUrl == null || profilePicUrl!.isEmpty
-                  ? const Icon(Icons.person, size: 40, color: Colors.grey)
-                  : null,
+              child: ClipOval(
+                child: profilePicUrl != null && profilePicUrl!.isNotEmpty
+                    ? Image.network(
+                        profilePicUrl!,
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.asset(
+                          'assets/images/default_profile.png', // صورة احتياطية محلية
+                          width: 90,
+                          height: 90,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.person,
+                                  size: 40, color: Colors.blue),
+                        ),
+                      )
+                    : Image.asset(
+                        'assets/images/default_profile.png', // صورة افتراضية محلية
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.person,
+                                size: 40, color: Colors.blue),
+                      ),
+              ),
             ),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).primaryColor.withOpacity(0.7),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
           ),
           ListTile(
             leading: const Icon(Icons.home),
-            title: const Text('الرئيسية'),
+            title: const Text('الصفحة الرئيسية'),
             onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // يمكنك الانتقال إلى الشاشة الرئيسية إذا لم تكن عليها بالفعل
-              // Navigator.of(context).pushReplacementNamed('/home');
-            },
-          ),
-          if (userRole == 'client') ...[
-            ListTile(
-              leading: const Icon(Icons.build_circle),
-              title: const Text('طلباتي'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // TODO: Navigate to client's requests page
-                print('Navigate to Client Requests');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.favorite),
-              title: const Text('الحرفيون المفضلون'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // TODO: Navigate to favorite artisans page
-                print('Navigate to Favorite Artisans');
-              },
-            ),
-          ],
-          if (userRole == 'craftsman') ...[
-            ListTile(
-              leading: const Icon(Icons.work),
-              title: const Text('طلبات الخدمات'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // TODO: Navigate to artisan's available requests
-                print('Navigate to Artisan Available Requests');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.history),
-              title: const Text('سجل العمليات'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // TODO: Navigate to artisan's job history
-                print('Navigate to Artisan Job History');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.account_balance_wallet),
-              title: const Text('المدفوعات والأرباح'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // TODO: Navigate to artisan's earnings page
-                print('Navigate to Artisan Earnings');
-              },
-            ),
-          ],
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('ملفي الشخصي'),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // TODO: Navigate to profile page
-              print('Navigate to Profile');
+              Navigator.pop(context); // إغلاق الدرج
+              // الانتقال إلى الشاشة الرئيسية المناسبة بناءً على دور المستخدم
+              if (userRole == 'client') {
+                Navigator.pushReplacementNamed(context, '/customer-home');
+              } else if (userRole == 'craftsman') {
+                Navigator.pushReplacementNamed(context, '/artisan-home');
+              } else if (userRole == 'admin') {
+                Navigator.pushReplacementNamed(context, '/admin-home');
+              }
             },
           ),
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('الإعدادات'),
             onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // TODO: Navigate to settings page
-              print('Navigate to Settings');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.info),
-            title: const Text('عن التطبيق'),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // TODO: Navigate to about page
-              print('Navigate to About');
+              Navigator.pop(context); // إغلاق الدرج
+              print('تم الضغط على الإعدادات!');
             },
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text(
-              'تسجيل الخروج',
-              style: TextStyle(color: Colors.red),
-            ),
+            leading: const Icon(Icons.logout),
+            title: const Text('تسجيل الخروج'),
             onTap: () async {
-              Navigator.pop(context); // Close the drawer first
-              // قم بتسجيل الخروج من Firebase Auth ومسح بيانات المستخدم من Provider
-              await Provider.of<UserProvider>(context, listen: false).signOut();
-              // توجيه المستخدم إلى شاشة تسجيل الدخول أو اختيار النوع
-              Navigator.of(context)
-                  .pushReplacementNamed('/'); // أو إلى شاشة تسجيل الدخول
+              Navigator.pop(context); // إغلاق الدرج أولاً
+              await Provider.of<AuthProvider>(context, listen: false).signOut();
+              // بعد تسجيل الخروج، يجب أن ينتقل المستمع في AuthProvider (أو في الجذر)
+              // تلقائيًا إلى SplashScreen أو SelectUserTypePage
             },
           ),
         ],
