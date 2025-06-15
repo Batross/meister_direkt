@@ -17,119 +17,142 @@ class CustomerProfileScreen extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // احذف Scaffold هنا
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: Stack(
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          expandedHeight: 220,
+          pinned: true,
+          floating: false,
+          flexibleSpace: FlexibleSpaceBar(
+            centerTitle: true,
+            title: Text(
+              (user.firstName ?? '') + ' ' + (user.lastName ?? ''),
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  shadows: [Shadow(blurRadius: 2, color: Colors.black26)]),
+            ),
+            background: Stack(
+              alignment: Alignment.bottomCenter,
               children: [
-                CircleAvatar(
-                  radius: 70,
-                  backgroundColor:
-                      Theme.of(context).primaryColor.withOpacity(0.1),
-                  child: ClipOval(
-                    child: (user.profileImageUrl != null &&
-                            user.profileImageUrl!.isNotEmpty)
-                        ? Image.network(
-                            user.profileImageUrl!,
-                            width: 140,
-                            height: 140,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Image.asset(
-                              'assets/images/default_profile.png',
-                              width: 140,
-                              height: 140,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Icon(
-                                Icons.person,
-                                size: 70,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                          )
-                        : Image.asset(
-                            'assets/images/default_profile.png',
-                            width: 140,
-                            height: 140,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Icon(
-                              Icons.person,
-                              size: 70,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                  ),
+                Container(
+                  color: Theme.of(context).primaryColor,
                 ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: CircleAvatar(
-                    backgroundColor: Theme.of(context)
-                        .secondaryHeaderColor, // أو أي لون مميز
-                    radius: 20,
-                    child: IconButton(
-                      icon:
-                          const Icon(Icons.edit, color: Colors.white, size: 20),
-                      onPressed: () {
-                        // TODO: تنفيذ منطق تغيير الصورة
-                        print('Profilbild bearbeiten');
-                      },
-                    ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundColor:
+                            Theme.of(context).primaryColor.withOpacity(0.1),
+                        child: ClipOval(
+                          child: (user.profileImageUrl != null &&
+                                  user.profileImageUrl!.isNotEmpty)
+                              ? Image.network(
+                                  user.profileImageUrl!,
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Image.asset(
+                                    'assets/images/default_profile.png',
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) => Icon(
+                                      Icons.person,
+                                      size: 60,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                )
+                              : Image.asset(
+                                  'assets/images/default_profile.png',
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(
+                                    Icons.person,
+                                    size: 60,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: CircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).secondaryHeaderColor,
+                          radius: 18,
+                          child: IconButton(
+                            icon: const Icon(Icons.edit,
+                                color: Colors.white, size: 18),
+                            onPressed: () {
+                              // TODO: تنفيذ منطق تغيير الصورة
+                              print('Profilbild bearbeiten');
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          Text(
-            '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isEmpty
-                ? user.email
-                : '${user.firstName ?? ''} ${user.lastName ?? ''}',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            user.email,
-            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-          ),
-          const SizedBox(height: 30),
-          _buildProfileInfoRow(context, Icons.phone, 'Telefonnummer',
-              user.phoneNumber ?? 'Noch nicht hinzugefügt'),
-          _buildProfileInfoRow(context, Icons.location_on, 'Adresse',
-              user.address ?? 'Noch nicht hinzugefügt'),
-          _buildProfileInfoRow(
-              context,
-              Icons.work,
-              'Rolle',
-              user.role == 'client'
-                  ? 'Kunde'
-                  : user.role == 'craftsman'
-                      ? 'Handwerker'
-                      : 'Unbekannt'),
-          if (user.role == 'craftsman') ...[
-            _buildProfileInfoRow(context, Icons.handyman, 'Beruf',
-                user.profession ?? 'Noch nicht hinzugefügt'),
-            _buildProfileInfoRow(context, Icons.info_outline, 'Lebenslauf',
-                user.bio ?? 'Noch nicht hinzugefügt'),
-            _buildProfileInfoRow(context, Icons.verified_user, 'Verifiziert',
-                user.isVerified == true ? 'Ja' : 'Nein'),
-          ],
-          const SizedBox(height: 30),
-          ElevatedButton(
-            onPressed: () {
-              // TODO: الانتقال إلى شاشة تعديل الملف الشخصي
-              print('تم الضغط على زر تعديل الملف الشخصي');
-              // TODO: Zur Profilbearbeitung wechseln
-              print('Profil bearbeiten Button gedrückt');
-            },
-            child: const Text('Profil bearbeiten'),
-          ),
-        ],
-      ),
+        ),
+        SliverList(
+          delegate: SliverChildListDelegate([
+            const SizedBox(height: 16),
+            Center(
+              child: Text(
+                user.email,
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              ),
+            ),
+            const SizedBox(height: 30),
+            _buildProfileInfoRow(context, Icons.phone, 'Telefonnummer',
+                user.phoneNumber ?? 'Noch nicht hinzugefügt'),
+            _buildProfileInfoRow(context, Icons.location_on, 'Adresse',
+                user.address ?? 'Noch nicht hinzugefügt'),
+            _buildProfileInfoRow(
+                context,
+                Icons.work,
+                'Rolle',
+                user.role == 'client'
+                    ? 'Kunde'
+                    : user.role == 'craftsman'
+                        ? 'Handwerker'
+                        : 'Unbekannt'),
+            if (user.role == 'craftsman') ...[
+              _buildProfileInfoRow(context, Icons.handyman, 'Beruf',
+                  user.profession ?? 'Noch nicht hinzugefügt'),
+              _buildProfileInfoRow(context, Icons.info_outline, 'Lebenslauf',
+                  user.bio ?? 'Noch nicht hinzugefügt'),
+              _buildProfileInfoRow(context, Icons.verified_user, 'Verifiziert',
+                  user.isVerified == true ? 'Ja' : 'Nein'),
+            ],
+            const SizedBox(height: 30),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // TODO: الانتقال إلى شاشة تعديل الملف الشخصي
+                  print('تم الضغط على زر تعديل الملف الشخصي');
+                  print('Profil bearbeiten Button gedrückt');
+                },
+                child: const Text('Profil bearbeiten'),
+              ),
+            ),
+            const SizedBox(height: 30),
+          ]),
+        ),
+      ],
     );
   }
 
