@@ -6,6 +6,8 @@ import 'package:meisterdirekt/shared/widgets/main_drawer.dart';
 import 'package:meisterdirekt/customer/widgets/customer_bottom_navbar.dart';
 import 'package:meisterdirekt/data/models/user_model.dart';
 import 'package:meisterdirekt/shared/providers/auth_provider.dart'; // Import AuthProvider for sign-out
+import 'package:meisterdirekt/shared/utils/constants.dart';
+import 'package:flutter/services.dart';
 
 // استيراد صفحات العميل - تأكد من هذه المسارات
 import 'package:meisterdirekt/customer/pages/customer_create_order_screen.dart';
@@ -21,9 +23,8 @@ class CustomerBaseScreen extends StatefulWidget {
 
 class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _currentIndex = 1;
   final PageController _pageController = PageController();
-  int _currentIndex =
-      1; // Standard: 0: Meine Bestellungen, 1: Bestellung erstellen, 2: Mein Profil
 
   @override
   void initState() {
@@ -50,52 +51,67 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
       );
     }
 
+    // استخدم CustomScrollView مع SliverAppBar
     return Scaffold(
       key: _scaffoldKey,
-      body: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          // الهيدر مع البحث والفلاتر
-          Container(
-            color: Theme.of(context).primaryColor,
-            padding:
-                const EdgeInsets.only(top: 36, left: 12, right: 12, bottom: 8),
-            child: Column(
+      drawer: MainDrawer(
+        userName: user.firstName ?? 'Kunde',
+        userRole: user.role,
+        profilePicUrl: user.profileImageUrl,
+        onSignOut: () async {
+          await Provider.of<AuthProvider>(context, listen: false).signOut();
+        },
+      ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            floating: true,
+            snap: true,
+            pinned: false,
+            backgroundColor: Theme.of(context).primaryColor,
+            elevation: 2,
+            automaticallyImplyLeading: false,
+            expandedHeight: 60,
+            titleSpacing: 12,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // Left side: icons
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.menu,
-                              color: Colors.white, size: 24),
-                          onPressed: () {
-                            _scaffoldKey.currentState?.openDrawer();
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.notifications,
-                              color: Colors.white, size: 24),
-                          onPressed: () {
-                            // إشعار
-                          },
-                        ),
-                      ],
+                    IconButton(
+                      icon:
+                          const Icon(Icons.menu, color: Colors.white, size: 24),
+                      onPressed: () {
+                        _scaffoldKey.currentState?.openDrawer();
+                      },
                     ),
-                    Text(
-                      'MeisterDirekt',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        letterSpacing: 1.2,
-                      ),
+                    IconButton(
+                      icon: const Icon(Icons.notifications,
+                          color: Colors.white, size: 24),
+                      onPressed: () {
+                        // إشعار
+                      },
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                Row(
+                // Right side: app name
+                const Text(
+                  'MeisterDirekt',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ],
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(56),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                child: Row(
                   children: [
                     Expanded(
                       child: Container(
@@ -141,29 +157,22 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
                     ),
                   ],
                 ),
+              ),
+            ),
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+          ),
+          SliverFillRemaining(
+            child: PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: const [
+                CustomerMyOrdersScreen(),
+                CustomerCreateOrderScreen(),
+                CustomerProfileScreen(),
               ],
             ),
           ),
-          // محتوى الصفحة
-          PageView(
-            controller: _pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            children: const [
-              CustomerMyOrdersScreen(),
-              CustomerCreateOrderScreen(),
-              CustomerProfileScreen(),
-            ],
-          ),
         ],
-      ),
-      drawer: MainDrawer(
-        userName: user.firstName ?? 'Kunde',
-        userRole: user.role, // الحقل ليس null أبداً
-        profilePicUrl: user.profileImageUrl,
-        onSignOut: () async {
-          // منطق تسجيل الخروج يتم التعامل معه في AuthProvider
-          await Provider.of<AuthProvider>(context, listen: false).signOut();
-        },
       ),
       bottomNavigationBar: CustomerBottomNavBar(
         selectedIndex: _currentIndex,
