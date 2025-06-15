@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.meisterdirekt"
-        minSdk = flutter.minSdkVersion
+        minSdk = 23 // تم رفع الحد الأدنى إلى 23 بناءً على متطلبات Firebase
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

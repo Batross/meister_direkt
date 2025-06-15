@@ -1,0 +1,7 @@
+# Backup of pubspec.yaml before updating syncfusion_flutter_pdfviewer
+# Date: 2025-06-15
+
+name: meisterdirekt
+# ...existing code...
+syncfusion_flutter_pdfviewer: ^23.1.39
+# ...existing code...
