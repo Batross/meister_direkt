@@ -120,8 +120,14 @@ class MainDrawer extends StatelessWidget {
             onTap: () async {
               Navigator.pop(context); // إغلاق الدرج أولاً
               await Provider.of<AuthProvider>(context, listen: false).signOut();
-              // بعد تسجيل الخروج، يجب أن ينتقل المستمع في AuthProvider (أو في الجذر)
-              // تلقائيًا إلى SplashScreen أو SelectUserTypePage
+              // بعد تسجيل الخروج، انتقل مباشرة إلى صفحة اختيار الدور وامسح سجل التنقل
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/select-user-type',
+                  (route) => false,
+                );
+              }
             },
           ),
         ],

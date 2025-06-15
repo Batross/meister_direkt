@@ -5,6 +5,11 @@ import 'package:meisterdirekt/shared/providers/user_provider.dart';
 import 'package:meisterdirekt/shared/widgets/main_drawer.dart';
 import 'package:meisterdirekt/data/models/user_model.dart'; // Import UserModel
 import 'package:meisterdirekt/shared/providers/auth_provider.dart'; // Import AuthProvider for sign-out
+import 'package:meisterdirekt/shared/widgets/artisan_home_header.dart';
+import '../widgets/artisan_bottom_navbar.dart';
+import 'artisan_find_requests_screen.dart';
+import 'artisan_requests_screen.dart';
+import 'artisan_profile_screen.dart';
 
 class ArtisanBaseScreen extends StatefulWidget {
   const ArtisanBaseScreen({super.key});
@@ -15,6 +20,19 @@ class ArtisanBaseScreen extends StatefulWidget {
 
 class _ArtisanBaseScreenState extends State<ArtisanBaseScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = const [
+    ArtisanFindRequestsScreen(),
+    ArtisanMyOrdersScreen(),
+    ArtisanProfileScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,45 +47,22 @@ class _ArtisanBaseScreenState extends State<ArtisanBaseScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: const Text('لوحة تحكم الحرفي'),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
-          },
-        ),
+      appBar: ArtisanHomeHeader(
+        onNotificationsPressed: () {
+          print('Notifications pressed (Artisan)');
+        },
+        onSettingsPressed: () {
+          print('Settings pressed (Artisan)');
+        },
+        onDrawerPressed: () {
+          _scaffoldKey.currentState?.openDrawer();
+        },
+        onFilterPressed: null, // يمكنك تفعيل الفلترة لاحقاً
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('مرحباً بك، ${user.firstName ?? 'الحرفي'}!',
-                style: const TextStyle(fontSize: 24)),
-            if (user.profession != null && user.profession!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('مهنتك: ${user.profession}',
-                    style: const TextStyle(fontSize: 18, color: Colors.grey)),
-              ),
-            if (user.isVerified == true)
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('حسابك موثق!',
-                    style: TextStyle(fontSize: 16, color: Colors.green)),
-              )
-            else
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('حسابك غير موثق بعد.',
-                    style: TextStyle(fontSize: 16, color: Colors.orange)),
-              ),
-            const SizedBox(height: 20),
-            const Text('هذه صفحة الحرفي الرئيسية.',
-                style: TextStyle(fontSize: 18)),
-            // إضافة محتوى خاص بالحرفي هنا، مثل قائمة الطلبات، العروض، إلخ.
-          ],
-        ),
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: ArtisanBottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemSelected: _onItemTapped,
       ),
       drawer: MainDrawer(
         userName: user.firstName ?? 'Artisan',

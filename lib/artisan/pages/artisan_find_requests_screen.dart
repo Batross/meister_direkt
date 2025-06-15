@@ -7,6 +7,8 @@ import '../../data/models/user_model.dart';
 import '../../shared/providers/user_provider.dart';
 import '../../data/models/request_model.dart';
 import '../../shared/utils/constants.dart'; // لـ AppColors
+import '../../customer/widgets/video_preview_widget.dart';
+import '../../customer/widgets/file_preview_widget.dart';
 
 // Extension بسيطة لتحويل String إلى Title Case لأغراض العرض
 extension StringCasingExtension on String {
@@ -160,6 +162,99 @@ class _RequestPostCardState extends State<RequestPostCard> {
     return textPainter.didExceedMaxLines;
   }
 
+  // Widget لعرض المعاينة للصور، الفيديو، والملفات
+  Widget buildMediaPreview(BuildContext context, String url) {
+    final lower = url.toLowerCase();
+    if (lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.png') ||
+        lower.endsWith('.gif')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          url,
+          width: 250,
+          height: 180,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Container(
+            width: 250,
+            height: 180,
+            color: Colors.grey[200],
+            child: const Icon(Icons.broken_image, size: 50, color: Colors.grey),
+          ),
+        ),
+      );
+    } else if (lower.endsWith('.mp4') ||
+        lower.endsWith('.mov') ||
+        lower.endsWith('.webm')) {
+      return SizedBox(
+          width: 250, height: 180, child: VideoPreviewWidget(url: url));
+    } else if (lower.endsWith('.pdf') ||
+        lower.endsWith('.doc') ||
+        lower.endsWith('.docx') ||
+        lower.endsWith('.xls') ||
+        lower.endsWith('.xlsx')) {
+      return SizedBox(
+          width: 80,
+          height: 80,
+          child: FilePreviewWidget(url: url, fileName: url));
+    } else {
+      return SizedBox(
+          width: 80,
+          height: 80,
+          child: FilePreviewWidget(url: url, fileName: url));
+    }
+  }
+
+  Widget buildMediaPreviewSmart(BuildContext context, String url) {
+    final lower = url.toLowerCase();
+    // إذا كان الامتداد واضح أو الرابط يحتوي على كلمة image
+    if (lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.png') ||
+        lower.endsWith('.gif') ||
+        lower.contains('image')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          url,
+          width: 250,
+          height: 180,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              FilePreviewWidget(url: url, fileName: url),
+        ),
+      );
+    } else if (lower.endsWith('.mp4') ||
+        lower.endsWith('.mov') ||
+        lower.endsWith('.webm')) {
+      return SizedBox(
+          width: 250, height: 180, child: VideoPreviewWidget(url: url));
+    } else if (lower.endsWith('.pdf') ||
+        lower.endsWith('.doc') ||
+        lower.endsWith('.docx') ||
+        lower.endsWith('.xls') ||
+        lower.endsWith('.xlsx')) {
+      return SizedBox(
+          width: 80,
+          height: 80,
+          child: FilePreviewWidget(url: url, fileName: url));
+    } else {
+      // محاولة عرض كصورة أولاً، إذا فشل يعرض كملف
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          url,
+          width: 250,
+          height: 180,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              FilePreviewWidget(url: url, fileName: url),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String formattedDate =
@@ -279,49 +374,10 @@ class _RequestPostCardState extends State<RequestPostCard> {
                     scrollDirection: Axis.horizontal,
                     itemCount: widget.request.images!.length,
                     itemBuilder: (context, imgIndex) {
-                      final imageUrl = widget.request.images![imgIndex];
+                      final mediaUrl = widget.request.images![imgIndex];
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
-                        child: ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(10), // زوايا دائرية
-                          child: Image.network(
-                            imageUrl,
-                            width: 250, // عرض أكبر للصور
-                            height: 180,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Container(
-                                width: 250,
-                                height: 180,
-                                color: Colors.grey[200],
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
-                                  ),
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              print(
-                                  'Error loading image from URL: $imageUrl - Error: $error');
-                              return Container(
-                                width: 250,
-                                height: 180,
-                                color: Colors.grey[300],
-                                child: const Icon(Icons.broken_image,
-                                    color: Colors.grey, size: 50),
-                              );
-                            },
-                          ),
-                        ),
+                        child: buildMediaPreviewSmart(context, mediaUrl),
                       );
                     },
                   ),

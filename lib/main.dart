@@ -25,18 +25,16 @@ void main() async {
         options: DefaultFirebaseOptions.currentPlatform);
     print('Firebase initialized successfully!'); // طباعة للمتابعة
 
-    // إضافة هذه الأسطر لتسجيل الدخول كمستخدم مجهول إذا لم يكن هناك مستخدم بالفعل
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    if (auth.currentUser == null) {
-      await auth.signInAnonymously();
-      print('Signed in anonymously!'); // طباعة للمتابعة
-    } else {
-      print(
-          'User already signed in: ${auth.currentUser!.uid}'); // طباعة للمتابعة
-    }
+    // تم حذف تسجيل الدخول المجهول هنا
+    // final FirebaseAuth auth = FirebaseAuth.instance;
+    // if (auth.currentUser == null) {
+    //   await auth.signInAnonymously();
+    //   print('Signed in anonymously!');
+    // } else {
+    //   print('User already signed in: {auth.currentUser!.uid}');
+    // }
   } catch (e) {
-    print(
-        'Error during Firebase initialization or anonymous sign-in: $e'); // طباعة للأخطاء
+    print('Error during Firebase initialization: $e'); // طباعة للأخطاء
     // يمكنك إضافة SnackBar أو عرض رسالة خطأ هنا للمستخدم
   }
 

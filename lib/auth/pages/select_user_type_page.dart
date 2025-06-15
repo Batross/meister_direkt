@@ -1,8 +1,10 @@
 // lib/auth/pages/select_user_type_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:meisterdirekt/auth/pages/auth_base_screen.dart'; // استيراد AuthBaseScreen
-import 'package:meisterdirekt/auth/pages/auth_screen.dart'; // هذا هو الاستيراد الصحيح الآن
+import 'package:google_fonts/google_fonts.dart';
+import 'login_page_customer.dart';
+import 'login_page_artisan.dart';
+import 'login_page_admin.dart';
 
 class SelectUserTypePage extends StatefulWidget {
   const SelectUserTypePage({super.key});
@@ -15,31 +17,23 @@ class _SelectUserTypePageState extends State<SelectUserTypePage> {
   int _adminTapCount = 0;
   DateTime? _lastTapTime;
 
-  // دالة لمعالجة الضغطات على الشعار للدخول كمسؤول
   void _handleAdminTap() {
     final now = DateTime.now();
     if (_lastTapTime == null ||
         now.difference(_lastTapTime!) > const Duration(seconds: 2)) {
-      // إعادة تعيين العداد إذا كانت الفترة بين الضغطات طويلة
       _adminTapCount = 1;
     } else {
       _adminTapCount++;
     }
     _lastTapTime = now;
-
     if (_adminTapCount >= 5) {
-      // بعد 5 ضغطات سريعة
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const AuthBaseScreen(
-            // تغليف شاشة تسجيل دخول المسؤول
-            child:
-                AuthScreen(isCraftsman: false, isAdmin: true), // تمرير isAdmin
-          ),
+          builder: (_) => const LoginPageAdmin(),
         ),
       );
-      _adminTapCount = 0; // إعادة العداد بعد التوجيه
+      _adminTapCount = 0;
     }
   }
 
@@ -47,115 +41,152 @@ class _SelectUserTypePageState extends State<SelectUserTypePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF2A5C82), Color(0xFF4A90E2)], // تدرج أزرق جذاب
+            colors: [Color(0xFF2A5C82), Color(0xFF4A90E2)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
-        child: Center(
+        child: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // الشعار مع GestureDetector ومنطق الضغطات للمشرف
               GestureDetector(
                 onTap: _handleAdminTap,
                 child: Column(
                   children: [
                     Image.asset(
-                      'assets/images/meisterdirekt_logo.png', // تأكد من وجود هذا الشعار
-                      height: 150,
-                    )
-                        .animate()
-                        .fade(duration: 800.ms)
-                        .slideY(begin: -0.5, end: 0),
+                      'assets/images/meisterdirekt_logo.png',
+                      width: 120,
+                      height: 120,
+                    ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.2),
                     const SizedBox(height: 10),
-                    const Text(
-                      'Meister Direkt',
-                      style: TextStyle(
+                    Text(
+                      'MeisterDirekt',
+                      style: GoogleFonts.cairo(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         letterSpacing: 1.5,
                       ),
-                    ).animate().fade(delay: 500.ms, duration: 800.ms),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'اضغط على الشعار 5 مرات للدخول كمسؤول',
-                      style: TextStyle(fontSize: 12, color: Colors.white70),
-                    ),
+                    ).animate().fadeIn(duration: 800.ms, delay: 200.ms),
                   ],
                 ),
               ),
+              const SizedBox(height: 40),
+              Text(
+                'اختر نوع الحساب',
+                style: GoogleFonts.cairo(
+                  fontSize: 22,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ).animate().fadeIn(duration: 700.ms, delay: 300.ms),
+              const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _RoleCard(
+                    title: 'عميل',
+                    icon: Icons.person_outline,
+                    color: Colors.white,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LoginPageCustomer(),
+                        ),
+                      );
+                    },
+                  )
+                      .animate()
+                      .fadeIn(duration: 700.ms, delay: 400.ms)
+                      .slideX(begin: -0.2),
+                  const SizedBox(width: 24),
+                  _RoleCard(
+                    title: 'حرفي',
+                    icon: Icons.handyman_outlined,
+                    color: Colors.white,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LoginPageArtisan(),
+                        ),
+                      );
+                    },
+                  )
+                      .animate()
+                      .fadeIn(duration: 700.ms, delay: 500.ms)
+                      .slideX(begin: 0.2),
+                ],
+              ),
               const SizedBox(height: 60),
-              // زر "أنا زبون"
-              SizedBox(
-                width: 250,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const AuthBaseScreen(
-                          // تغليف AuthScreen
-                          child: AuthScreen(isCraftsman: false),
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.person, color: Color(0xFF2A5C82)),
-                  label: const Text(
-                    'أنا زبون',
-                    style: TextStyle(fontSize: 18, color: Color(0xFF2A5C82)),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
-                    elevation: 5,
-                  ),
-                )
-                    .animate()
-                    .fade(delay: 1000.ms, duration: 600.ms)
-                    .slideX(begin: -1.0, end: 0),
-              ),
-              const SizedBox(height: 20),
-              // زر "أنا حرفي"
-              SizedBox(
-                width: 250,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const AuthBaseScreen(
-                          // تغليف AuthScreen
-                          child: AuthScreen(isCraftsman: true),
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.engineering, color: Color(0xFF2A5C82)),
-                  label: const Text(
-                    'أنا حرفي',
-                    style: TextStyle(fontSize: 18, color: Color(0xFF2A5C82)),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
-                    elevation: 5,
-                  ),
-                )
-                    .animate()
-                    .fade(delay: 1200.ms, duration: 600.ms)
-                    .slideX(begin: 1.0, end: 0),
-              ),
+              Text(
+                'جودة. سرعة. أمان.',
+                style: GoogleFonts.cairo(
+                  fontSize: 16,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w400,
+                ),
+              ).animate().fadeIn(duration: 800.ms, delay: 600.ms),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RoleCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _RoleCard({
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 130,
+        height: 160,
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 54, color: Colors.white),
+            const SizedBox(height: 18),
+            Text(
+              title,
+              style: GoogleFonts.cairo(
+                fontSize: 20,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
