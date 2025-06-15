@@ -21,41 +21,44 @@ class ArtisanHomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      floating: true,
-      snap: true,
-      pinned: false,
+      floating: false, // اجعلها غير عائمة
+      snap: false, // لا تجعلها تظهر تلقائياً عند السحب
+      pinned: false, // لا تجعلها مثبتة عند التمرير
       backgroundColor: Theme.of(context).primaryColor,
       elevation: 2,
       automaticallyImplyLeading: false,
       expandedHeight: 60,
       titleSpacing: 12,
-      title: Align(
-        alignment: Alignment.centerRight,
-        child: Text(
-          appName,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            letterSpacing: 1.2,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Left side: icons
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white, size: 24),
+                onPressed: onDrawerPressed,
+              ),
+              IconButton(
+                icon: const Icon(Icons.notifications,
+                    color: Colors.white, size: 24),
+                onPressed: onNotificationsPressed,
+              ),
+            ],
           ),
-        ),
+          // Right side: app name
+          Text(
+            appName,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ],
       ),
-      actions: [
-        Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white, size: 24),
-              onPressed: onDrawerPressed,
-            ),
-            IconButton(
-              icon: const Icon(Icons.notifications,
-                  color: Colors.white, size: 24),
-              onPressed: onNotificationsPressed,
-            ),
-          ],
-        ),
-      ],
+      actions: [],
       leading: null,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(56),
