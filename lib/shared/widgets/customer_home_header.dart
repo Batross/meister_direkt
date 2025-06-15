@@ -30,25 +30,34 @@ class CustomerHomeHeader extends StatelessWidget {
       automaticallyImplyLeading: false,
       expandedHeight: 60,
       titleSpacing: 12,
-      title: Text(
-        appName,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-          letterSpacing: 1.2,
+      title: Align(
+        alignment: Alignment.centerRight,
+        child: Text(
+          appName,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            letterSpacing: 1.2,
+          ),
         ),
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white, size: 24),
-          onPressed: onDrawerPressed,
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white, size: 24),
+              onPressed: onDrawerPressed,
+            ),
+            IconButton(
+              icon: const Icon(Icons.notifications,
+                  color: Colors.white, size: 24),
+              onPressed: onNotificationsPressed,
+            ),
+          ],
         ),
       ],
-      leading: IconButton(
-        icon: const Icon(Icons.notifications, color: Colors.white, size: 24),
-        onPressed: onNotificationsPressed,
-      ),
+      leading: null,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(56),
         child: Padding(
