@@ -1,0 +1,7 @@
+```groovy
+android {
+    namespace 'com.syncfusion.syncfusion_flutter_pdfviewer'
+    // ...existing code...
+}
+// ...existing code...
+```
