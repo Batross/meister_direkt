@@ -51,7 +51,7 @@ class _LoginPageCustomerState extends State<LoginPageCustomer> {
       } else {
         setState(() {
           _errorMessage =
-              'هذا الحساب ليس حساب عميل.\nبيانات Firestore: ${userDoc.data()}';
+              'Dieses Konto ist kein Kundenkonto.\nFirestore-Daten: [32m${userDoc.data()}[0m';
         });
         await _auth.signOut();
       }
@@ -61,7 +61,7 @@ class _LoginPageCustomerState extends State<LoginPageCustomer> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'حدث خطأ غير متوقع.';
+        _errorMessage = 'Ein unerwarteter Fehler ist aufgetreten.';
       });
     } finally {
       setState(() {
@@ -80,7 +80,7 @@ class _LoginPageCustomerState extends State<LoginPageCustomer> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'تسجيل دخول العميل',
+                'Kunden-Login',
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 32),
@@ -88,7 +88,7 @@ class _LoginPageCustomerState extends State<LoginPageCustomer> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
-                  labelText: 'البريد الإلكتروني',
+                  labelText: 'E-Mail',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -97,7 +97,7 @@ class _LoginPageCustomerState extends State<LoginPageCustomer> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  labelText: 'كلمة المرور',
+                  labelText: 'Passwort',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -117,7 +117,7 @@ class _LoginPageCustomerState extends State<LoginPageCustomer> {
                           height: 24,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('تسجيل الدخول'),
+                      : const Text('Anmelden'),
                 ),
               ),
               const SizedBox(height: 16),
@@ -130,7 +130,7 @@ class _LoginPageCustomerState extends State<LoginPageCustomer> {
                     ),
                   );
                 },
-                child: const Text('إنشاء حساب جديد'),
+                child: const Text('Neues Konto erstellen'),
               ),
             ],
           ),

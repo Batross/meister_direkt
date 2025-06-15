@@ -35,7 +35,7 @@ class _SignUpPageCustomerState extends State<SignUpPageCustomer> {
     });
     if (_passwordController.text != _confirmPasswordController.text) {
       setState(() {
-        _errorMessage = 'كلمتا المرور غير متطابقتين';
+        _errorMessage = 'Die Passwörter stimmen nicht überein';
         _isLoading = false;
       });
       return;
@@ -60,7 +60,7 @@ class _SignUpPageCustomerState extends State<SignUpPageCustomer> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'حدث خطأ غير متوقع.';
+        _errorMessage = 'Ein unerwarteter Fehler ist aufgetreten.';
       });
     } finally {
       setState(() {
@@ -79,14 +79,14 @@ class _SignUpPageCustomerState extends State<SignUpPageCustomer> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'إنشاء حساب عميل',
+                'Kundenkonto erstellen',
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 32),
               TextField(
                 controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: 'الاسم الكامل',
+                  labelText: 'Vollständiger Name',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -95,7 +95,7 @@ class _SignUpPageCustomerState extends State<SignUpPageCustomer> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
-                  labelText: 'البريد الإلكتروني',
+                  labelText: 'E-Mail',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -104,7 +104,7 @@ class _SignUpPageCustomerState extends State<SignUpPageCustomer> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  labelText: 'كلمة المرور',
+                  labelText: 'Passwort',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -113,7 +113,7 @@ class _SignUpPageCustomerState extends State<SignUpPageCustomer> {
                 controller: _confirmPasswordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  labelText: 'تأكيد كلمة المرور',
+                  labelText: 'Passwort bestätigen',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -133,7 +133,7 @@ class _SignUpPageCustomerState extends State<SignUpPageCustomer> {
                           height: 24,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('إنشاء حساب'),
+                      : const Text('Konto erstellen'),
                 ),
               ),
             ],

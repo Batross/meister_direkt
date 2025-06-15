@@ -50,7 +50,7 @@ class _LoginPageArtisanState extends State<LoginPageArtisan> {
       } else {
         setState(() {
           _errorMessage =
-              'هذا الحساب ليس حساب حرفي.\nبيانات Firestore: ${userDoc.data()}';
+              'Dieses Konto ist kein Handwerkerkonto.\nFirestore-Daten: [32m${userDoc.data()}[0m';
         });
         await _auth.signOut();
       }
@@ -60,7 +60,7 @@ class _LoginPageArtisanState extends State<LoginPageArtisan> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'حدث خطأ غير متوقع.';
+        _errorMessage = 'Ein unerwarteter Fehler ist aufgetreten.';
       });
     } finally {
       setState(() {
@@ -79,7 +79,7 @@ class _LoginPageArtisanState extends State<LoginPageArtisan> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'تسجيل دخول الحرفي',
+                'Handwerker-Login',
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 32),
@@ -87,7 +87,7 @@ class _LoginPageArtisanState extends State<LoginPageArtisan> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
-                  labelText: 'البريد الإلكتروني',
+                  labelText: 'E-Mail',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -96,7 +96,7 @@ class _LoginPageArtisanState extends State<LoginPageArtisan> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  labelText: 'كلمة المرور',
+                  labelText: 'Passwort',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -116,7 +116,7 @@ class _LoginPageArtisanState extends State<LoginPageArtisan> {
                           height: 24,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('تسجيل الدخول'),
+                      : const Text('Anmelden'),
                 ),
               ),
               const SizedBox(height: 16),
@@ -129,7 +129,7 @@ class _LoginPageArtisanState extends State<LoginPageArtisan> {
                     ),
                   );
                 },
-                child: const Text('إنشاء حساب جديد'),
+                child: const Text('Neues Konto erstellen'),
               ),
             ],
           ),
