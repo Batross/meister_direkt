@@ -71,7 +71,8 @@ class ArtisanHomeHeader extends StatelessWidget {
                   child: TextField(
                     readOnly: true,
                     decoration: const InputDecoration(
-                      hintText: 'Suche nach Aufträgen oder Kunden...',
+                      hintText:
+                          'Suche nach Aufträgen, Kunden oder Angeboten...',
                       hintStyle: TextStyle(fontSize: 13),
                       border: InputBorder.none,
                       prefixIcon: Icon(Icons.search, color: Color(0xFF2A5C82)),
@@ -88,8 +89,7 @@ class ArtisanHomeHeader extends StatelessWidget {
                   color: Colors.white,
                   shape: const CircleBorder(),
                   child: IconButton(
-                    icon:
-                        const Icon(Icons.filter_list, color: Color(0xFF2A5C82)),
+                    icon: const Icon(Icons.tune, color: Color(0xFF2A5C82)),
                     onPressed: onFilterPressed,
                     tooltip: 'Filter',
                   ),
