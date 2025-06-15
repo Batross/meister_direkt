@@ -39,7 +39,7 @@ class _SignUpPageArtisanState extends State<SignUpPageArtisan> {
     });
     if (_passwordController.text != _confirmPasswordController.text) {
       setState(() {
-        _errorMessage = 'كلمتا المرور غير متطابقتين';
+        _errorMessage = 'Die Passwörter stimmen nicht überein';
         _isLoading = false;
       });
       return;
@@ -67,7 +67,7 @@ class _SignUpPageArtisanState extends State<SignUpPageArtisan> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'حدث خطأ غير متوقع.';
+        _errorMessage = 'Ein unerwarteter Fehler ist aufgetreten.';
       });
     } finally {
       setState(() {
@@ -86,14 +86,14 @@ class _SignUpPageArtisanState extends State<SignUpPageArtisan> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'إنشاء حساب حرفي',
+                'Handwerkerkonto erstellen',
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 32),
               TextField(
                 controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: 'الاسم الكامل',
+                  labelText: 'Vollständiger Name',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -102,7 +102,7 @@ class _SignUpPageArtisanState extends State<SignUpPageArtisan> {
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
-                  labelText: 'رقم الهاتف',
+                  labelText: 'Telefonnummer',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -110,7 +110,7 @@ class _SignUpPageArtisanState extends State<SignUpPageArtisan> {
               TextField(
                 controller: _professionController,
                 decoration: const InputDecoration(
-                  labelText: 'المهنة/التخصص',
+                  labelText: 'Beruf/Fachgebiet',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -119,7 +119,7 @@ class _SignUpPageArtisanState extends State<SignUpPageArtisan> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
-                  labelText: 'البريد الإلكتروني',
+                  labelText: 'E-Mail',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -128,7 +128,7 @@ class _SignUpPageArtisanState extends State<SignUpPageArtisan> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  labelText: 'كلمة المرور',
+                  labelText: 'Passwort',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -137,7 +137,7 @@ class _SignUpPageArtisanState extends State<SignUpPageArtisan> {
                 controller: _confirmPasswordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  labelText: 'تأكيد كلمة المرور',
+                  labelText: 'Passwort bestätigen',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -157,7 +157,7 @@ class _SignUpPageArtisanState extends State<SignUpPageArtisan> {
                           height: 24,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('إنشاء حساب'),
+                      : const Text('Konto erstellen'),
                 ),
               ),
             ],
