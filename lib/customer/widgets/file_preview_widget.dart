@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:meisterdirekt/shared/widgets/pdf_viewer_screen.dart';
+
 class FilePreviewWidget extends StatelessWidget {
   final String url;
   final String fileName;
@@ -20,6 +22,15 @@ class FilePreviewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
+        if (fileName.endsWith('.pdf')) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) =>
+                  PdfViewerScreen(url: url, title: fileName.split('/').last),
+            ),
+          );
+          return;
+        }
         final uri = Uri.parse(url);
         if (await canLaunchUrl(uri)) {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
