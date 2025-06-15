@@ -21,18 +21,6 @@ class _ArtisanBaseScreenState extends State<ArtisanBaseScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
-    ArtisanFindRequestsScreen(),
-    ArtisanMyOrdersScreen(),
-    ArtisanProfileScreen(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -44,52 +32,55 @@ class _ArtisanBaseScreenState extends State<ArtisanBaseScreen> {
       );
     }
 
-    return Scaffold(
-      key: _scaffoldKey,
-      body: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          // الهيدر مع البحث والفلاتر
-          Container(
-            color: Theme.of(context).primaryColor,
-            padding:
-                const EdgeInsets.only(top: 36, left: 12, right: 12, bottom: 8),
-            child: Column(
+    Widget mainContent;
+    if (_selectedIndex == 0) {
+      // الصفحة الرئيسية: البحث عن الطلبات مع رأسية متقدمة
+      mainContent = CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            floating: true,
+            snap: true,
+            pinned: false,
+            backgroundColor: Theme.of(context).primaryColor,
+            elevation: 2,
+            automaticallyImplyLeading: false,
+            expandedHeight: 60,
+            titleSpacing: 12,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.menu,
-                              color: Colors.white, size: 24),
-                          onPressed: () {
-                            _scaffoldKey.currentState?.openDrawer();
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.notifications,
-                              color: Colors.white, size: 24),
-                          onPressed: () {
-                            // إشعار
-                          },
-                        ),
-                      ],
+                    IconButton(
+                      icon:
+                          const Icon(Icons.menu, color: Colors.white, size: 24),
+                      onPressed: () {
+                        _scaffoldKey.currentState?.openDrawer();
+                      },
                     ),
-                    Text(
-                      'MeisterDirekt',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        letterSpacing: 1.2,
-                      ),
+                    IconButton(
+                      icon: const Icon(Icons.notifications,
+                          color: Colors.white, size: 24),
+                      onPressed: () {},
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                Row(
+                const Text(
+                  'MeisterDirekt',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ],
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(56),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                child: Row(
                   children: [
                     Expanded(
                       child: Container(
@@ -127,33 +118,40 @@ class _ArtisanBaseScreenState extends State<ArtisanBaseScreen> {
                       shape: const CircleBorder(),
                       child: IconButton(
                         icon: const Icon(Icons.tune, color: Color(0xFF2A5C82)),
-                        onPressed: () {
-                          // فلتر
-                        },
+                        onPressed: () {},
                         tooltip: 'Filter',
                       ),
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-          // محتوى الصفحة
-          _pages[_selectedIndex],
+          SliverFillRemaining(child: ArtisanFindRequestsScreen()),
         ],
-      ),
+      );
+    } else if (_selectedIndex == 1) {
+      mainContent = const ArtisanMyOrdersScreen();
+    } else {
+      mainContent = const ArtisanProfileScreen();
+    }
+
+    return Scaffold(
+      key: _scaffoldKey,
+      body: mainContent,
       drawer: MainDrawer(
         userName: user.firstName ?? 'Handwerker',
-        userRole: user.role, // الحقل ليس null أبداً
+        userRole: user.role,
         profilePicUrl: user.profileImageUrl,
         onSignOut: () async {
-          // منطق تسجيل الخروج يتم التعامل معه في AuthProvider
           await Provider.of<AuthProvider>(context, listen: false).signOut();
         },
       ),
       bottomNavigationBar: ArtisanBottomNavBar(
         selectedIndex: _selectedIndex,
-        onItemSelected: _onItemTapped,
+        onItemSelected: (index) {
+          setState(() => _selectedIndex = index);
+        },
       ),
     );
   }

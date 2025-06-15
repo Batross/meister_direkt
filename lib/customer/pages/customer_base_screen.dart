@@ -26,20 +26,6 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
   int _currentIndex = 1;
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // _pageController.jumpToPage(_currentIndex);
-    });
-  }
-
-  @override
-  void dispose() {
-    // _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final user = userProvider.currentUser;
@@ -50,18 +36,10 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
       );
     }
 
-    // استخدم CustomScrollView مع SliverAppBar، وبدون PageView
-    return Scaffold(
-      key: _scaffoldKey,
-      drawer: MainDrawer(
-        userName: user.firstName ?? 'Kunde',
-        userRole: user.role,
-        profilePicUrl: user.profileImageUrl,
-        onSignOut: () async {
-          await Provider.of<AuthProvider>(context, listen: false).signOut();
-        },
-      ),
-      body: CustomScrollView(
+    Widget mainContent;
+    if (_currentIndex == 1) {
+      // الصفحة الرئيسية: إضافة طلب مع رأسية متقدمة
+      mainContent = CustomScrollView(
         slivers: [
           SliverAppBar(
             floating: true,
@@ -75,7 +53,6 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Left side: icons
                 Row(
                   children: [
                     IconButton(
@@ -88,13 +65,10 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
                     IconButton(
                       icon: const Icon(Icons.notifications,
                           color: Colors.white, size: 24),
-                      onPressed: () {
-                        // إشعار
-                      },
+                      onPressed: () {},
                     ),
                   ],
                 ),
-                // Right side: app name
                 const Text(
                   'MeisterDirekt',
                   style: TextStyle(
@@ -148,9 +122,7 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
                       shape: const CircleBorder(),
                       child: IconButton(
                         icon: const Icon(Icons.tune, color: Color(0xFF2A5C82)),
-                        onPressed: () {
-                          // فلتر
-                        },
+                        onPressed: () {},
                         tooltip: 'Filter',
                       ),
                     ),
@@ -158,24 +130,27 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
                 ),
               ),
             ),
-            systemOverlayStyle: SystemUiOverlayStyle.light,
           ),
-          SliverFillRemaining(
-            child: Builder(
-              builder: (context) {
-                // عرض الصفحة حسب الـ index
-                if (_currentIndex == 0) {
-                  return const CustomerMyOrdersScreen();
-                } else if (_currentIndex == 1) {
-                  return const CustomerCreateOrderScreen();
-                } else {
-                  return const CustomerProfileScreen();
-                }
-              },
-            ),
-          ),
+          SliverFillRemaining(child: CustomerCreateOrderScreen()),
         ],
+      );
+    } else if (_currentIndex == 0) {
+      mainContent = const CustomerMyOrdersScreen();
+    } else {
+      mainContent = const CustomerProfileScreen();
+    }
+
+    return Scaffold(
+      key: _scaffoldKey,
+      drawer: MainDrawer(
+        userName: user.firstName ?? 'Kunde',
+        userRole: user.role,
+        profilePicUrl: user.profileImageUrl,
+        onSignOut: () async {
+          await Provider.of<AuthProvider>(context, listen: false).signOut();
+        },
       ),
+      body: mainContent,
       bottomNavigationBar: CustomerBottomNavBar(
         selectedIndex: _currentIndex,
         onItemSelected: (index) {
