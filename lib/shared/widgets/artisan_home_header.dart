@@ -23,7 +23,7 @@ class ArtisanHomeHeader extends StatelessWidget implements PreferredSizeWidget {
 
     if (currentUser == null) {
       return Container(
-        height: 200,
+        height: 120,
         color: AppColors.primaryColor,
         alignment: Alignment.center,
         child: const CircularProgressIndicator(
@@ -32,7 +32,7 @@ class ArtisanHomeHeader extends StatelessWidget implements PreferredSizeWidget {
       );
     }
 
-    String displayName = 'الحرفي';
+    String displayName = 'الحرفي';
     if (currentUser.firstName != null && currentUser.firstName!.isNotEmpty) {
       displayName = currentUser.firstName!;
       if (currentUser.lastName != null && currentUser.lastName!.isNotEmpty) {
@@ -44,114 +44,97 @@ class ArtisanHomeHeader extends StatelessWidget implements PreferredSizeWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16.0, 40.0, 16.0, 16.0),
+      padding: const EdgeInsets.fromLTRB(12.0, 32.0, 12.0, 8.0),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 7,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.12),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                icon: const Icon(Icons.menu, color: Colors.white, size: 26),
                 onPressed: onDrawerPressed,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 25,
-                        backgroundColor: Colors.white.withOpacity(0.8),
-                        child: ClipOval(
-                          child: (currentUser.profileImageUrl != null &&
-                                  currentUser.profileImageUrl!.isNotEmpty)
-                              ? Image.network(
-                                  currentUser.profileImageUrl!,
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Image.asset(
-                                    'assets/images/default_profile.png',
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) => Icon(
-                                            Icons.person,
-                                            size: 25,
-                                            color:
-                                                Theme.of(context).primaryColor),
-                                  ),
-                                )
-                              : Image.asset(
-                                  'assets/images/default_profile.png',
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Icon(Icons.person,
-                                          size: 25,
-                                          color:
-                                              Theme.of(context).primaryColor),
-                                ),
+              const SizedBox(width: 8),
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.white.withOpacity(0.8),
+                child: ClipOval(
+                  child: (currentUser.profileImageUrl != null &&
+                          currentUser.profileImageUrl!.isNotEmpty)
+                      ? Image.network(
+                          currentUser.profileImageUrl!,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Image.asset(
+                            'assets/images/default_profile.png',
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Image.asset(
+                          'assets/images/default_profile.png',
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'مرحباً،',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
-                          ),
-                          Text(
-                            displayName,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
                 ),
               ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.notifications,
-                        color: Colors.white, size: 28),
-                    onPressed: onNotificationsPressed,
-                  ),
-                ],
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'مرحباً،',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      displayName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.notifications,
+                    color: Colors.white, size: 26),
+                onPressed: onNotificationsPressed,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
@@ -164,39 +147,31 @@ class ArtisanHomeHeader extends StatelessWidget implements PreferredSizeWidget {
                         const Icon(Icons.search, color: Color(0xFF2A5C82)),
                     filled: true,
                     fillColor: Colors.white,
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide:
-                          const BorderSide(color: Color(0xFF2A5C82), width: 2),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide:
-                          BorderSide(color: Colors.grey[300]!, width: 1),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 15),
                   ),
                   onTap: () {
-                    print(
-                        'Search field tapped - Navigate to search page (Artisan)');
+                    // يمكنك إضافة منطق البحث هنا
                   },
-                  style: const TextStyle(color: Colors.black87, fontSize: 14),
                 ),
               ),
-              if (onFilterPressed != null)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+              if (onFilterPressed != null) ...[
+                const SizedBox(width: 8),
+                Material(
+                  color: Colors.white,
+                  shape: const CircleBorder(),
                   child: IconButton(
-                    icon: const Icon(Icons.tune, color: Colors.white, size: 28),
+                    icon:
+                        const Icon(Icons.filter_list, color: Color(0xFF2A5C82)),
                     onPressed: onFilterPressed,
                     tooltip: 'فلترة',
                   ),
                 ),
+              ],
             ],
           ),
         ],
@@ -205,5 +180,9 @@ class ArtisanHomeHeader extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(200);
+  Size get preferredSize {
+    // احسب الارتفاع بناءً على عدد العناصر والمسافات
+    // 56 (صف المعلومات) + 8 (مسافة) + 44 (شريط البحث) + 12 (padding سفلي)
+    return const Size.fromHeight(56 + 8 + 44 + 12);
+  }
 }
