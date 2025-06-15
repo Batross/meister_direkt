@@ -24,19 +24,18 @@ class CustomerBaseScreen extends StatefulWidget {
 class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 1;
-  final PageController _pageController = PageController();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _pageController.jumpToPage(_currentIndex);
+      // _pageController.jumpToPage(_currentIndex);
     });
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
+    // _pageController.dispose();
     super.dispose();
   }
 
@@ -51,7 +50,7 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
       );
     }
 
-    // استخدم CustomScrollView مع SliverAppBar
+    // استخدم CustomScrollView مع SliverAppBar، وبدون PageView
     return Scaffold(
       key: _scaffoldKey,
       drawer: MainDrawer(
@@ -162,14 +161,17 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
             systemOverlayStyle: SystemUiOverlayStyle.light,
           ),
           SliverFillRemaining(
-            child: PageView(
-              controller: _pageController,
-              physics: const NeverScrollableScrollPhysics(),
-              children: const [
-                CustomerMyOrdersScreen(),
-                CustomerCreateOrderScreen(),
-                CustomerProfileScreen(),
-              ],
+            child: Builder(
+              builder: (context) {
+                // عرض الصفحة حسب الـ index
+                if (_currentIndex == 0) {
+                  return const CustomerMyOrdersScreen();
+                } else if (_currentIndex == 1) {
+                  return const CustomerCreateOrderScreen();
+                } else {
+                  return const CustomerProfileScreen();
+                }
+              },
             ),
           ),
         ],
@@ -178,7 +180,6 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
         selectedIndex: _currentIndex,
         onItemSelected: (index) {
           setState(() => _currentIndex = index);
-          _pageController.jumpToPage(index);
         },
       ),
     );
