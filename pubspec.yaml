@@ -20,7 +20,7 @@ dependencies:
   firebase_auth: ^4.20.0
   cloud_firestore: ^4.17.1
   firebase_storage: ^11.7.7
-  uuid: ^4.4.0
+  uuid: ^3.0.7
 
   # File picking for images, videos, and PDFs
   file_picker: ^8.0.7
@@ -34,7 +34,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   google_fonts: ^6.2.1
   url_launcher: ^6.3.1
-  syncfusion_flutter_pdfviewer: any
+  syncfusion_flutter_pdfviewer: 22.2.12
 
 dev_dependencies:
   flutter_test:
