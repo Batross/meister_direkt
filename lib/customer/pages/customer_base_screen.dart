@@ -56,44 +56,47 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomerHomeHeader(
-        onNotificationsPressed: () {
-          print('Notifications pressed (Customer)');
-        },
-        onSettingsPressed: () {
-          print('Settings pressed (Customer)');
-        },
-        onDrawerPressed: () {
-          _scaffoldKey.currentState?.openDrawer();
-        },
-        onFilterPressed: _handleFilterPressed,
-      ),
-      body: PageView(
-        controller: _pageController,
-        physics:
-            const NeverScrollableScrollPhysics(), // لمنع التمرير اليدوي بين الصفحات
-        children: const [
-          // ملاحظة: هذه الفئات يجب أن تكون معرفة في ملفاتها الخاصة
-          // ومستوردة بشكل صحيح في أعلى هذا الملف.
-          CustomerMyOrdersScreen(), // طلباتي (فهرس 0)
-          CustomerCreateOrderScreen(), // إنشاء طلب جديد (الصفحة الرئيسية) (فهرس 1)
-          CustomerProfileScreen(), // ملفي الشخصي (فهرس 2)
+      body: CustomScrollView(
+        slivers: [
+          CustomerHomeHeader(
+            onNotificationsPressed: () {
+              print('Notifications pressed (Customer)');
+            },
+            onDrawerPressed: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
+            onFilterPressed: _handleFilterPressed,
+          ),
+          SliverFillRemaining(
+            child: PageView(
+              controller: _pageController,
+              physics:
+                  const NeverScrollableScrollPhysics(), // لمنع التمرير اليدوي بين الصفحات
+              children: const [
+                // ملاحظة: هذه الفئات يجب أن تكون معرفة في ملفاتها الخاصة
+                // ومستوردة بشكل صحيح في أعلى هذا الملف.
+                CustomerMyOrdersScreen(), // طلباتي (فهرس 0)
+                CustomerCreateOrderScreen(), // إنشاء طلب جديد (الصفحة الرئيسية) (فهرس 1)
+                CustomerProfileScreen(), // ملفي الشخصي (فهرس 2)
+              ],
+            ),
+          ),
         ],
+      ),
+      drawer: MainDrawer(
+        userName: user.firstName ?? 'العميل',
+        userRole: user.role ?? 'customer',
+        profilePicUrl: user.profileImageUrl,
+        onSignOut: () async {
+          // منطق تسجيل الخروج يتم التعامل معه في AuthProvider
+          await Provider.of<AuthProvider>(context, listen: false).signOut();
+        },
       ),
       bottomNavigationBar: CustomerBottomNavBar(
         selectedIndex: _currentIndex,
         onItemSelected: (index) {
           setState(() => _currentIndex = index);
           _pageController.jumpToPage(index);
-        },
-      ),
-      drawer: MainDrawer(
-        userName: user.firstName ?? 'العميل',
-        userRole: user.role ?? 'client',
-        profilePicUrl: user.profileImageUrl,
-        onSignOut: () async {
-          // منطق تسجيل الخروج يتم التعامل معه في AuthProvider
-          await Provider.of<AuthProvider>(context, listen: false).signOut();
         },
       ),
     );

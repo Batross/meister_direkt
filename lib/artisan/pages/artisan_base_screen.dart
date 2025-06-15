@@ -47,30 +47,36 @@ class _ArtisanBaseScreenState extends State<ArtisanBaseScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: ArtisanHomeHeader(
-        onNotificationsPressed: () {
-          print('Notifications pressed (Artisan)');
-        },
-        onDrawerPressed: () {
-          _scaffoldKey.currentState?.openDrawer();
-        },
-        onFilterPressed: () {
-          print('Filter pressed (Artisan)');
-        },
-      ),
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: ArtisanBottomNavBar(
-        selectedIndex: _selectedIndex,
-        onItemSelected: _onItemTapped,
+      body: CustomScrollView(
+        slivers: [
+          ArtisanHomeHeader(
+            onNotificationsPressed: () {
+              print('Notifications pressed (Artisan)');
+            },
+            onDrawerPressed: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
+            onFilterPressed: () {
+              print('Filter pressed (Artisan)');
+            },
+          ),
+          SliverFillRemaining(
+            child: _pages[_selectedIndex],
+          ),
+        ],
       ),
       drawer: MainDrawer(
-        userName: user.firstName ?? 'Artisan',
+        userName: user.firstName ?? 'الحرفي',
         userRole: user.role ?? 'craftsman',
         profilePicUrl: user.profileImageUrl,
         onSignOut: () async {
           // منطق تسجيل الخروج يتم التعامل معه في AuthProvider
           await Provider.of<AuthProvider>(context, listen: false).signOut();
         },
+      ),
+      bottomNavigationBar: ArtisanBottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemSelected: _onItemTapped,
       ),
     );
   }
