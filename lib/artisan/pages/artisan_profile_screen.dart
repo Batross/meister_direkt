@@ -21,93 +21,87 @@ class ArtisanProfileScreen extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 70,
-                    backgroundColor: Colors.grey[200],
-                    backgroundImage: user.profileImageUrl != null &&
-                            user.profileImageUrl!.isNotEmpty
-                        ? NetworkImage(user.profileImageUrl!)
-                        : const AssetImage('assets/images/default_profile.png')
-                            as ImageProvider,
-                    child: user.profileImageUrl == null ||
-                            user.profileImageUrl!.isEmpty
-                        ? Icon(Icons.person, size: 70, color: Colors.grey[600])
-                        : null,
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: IconButton(
-                      icon: Icon(Icons.camera_alt,
-                          color: Theme.of(context).primaryColor, size: 30),
-                      onPressed: () {
-                        // TODO: Implement image picking logic
+    return ListView(
+      padding: const EdgeInsets.all(16.0),
+      children: [
+        Center(
+          child: Stack(
+            children: [
+              CircleAvatar(
+                radius: 70,
+                backgroundColor: Colors.grey[200],
+                backgroundImage: user.profileImageUrl != null &&
+                        user.profileImageUrl!.isNotEmpty
+                    ? NetworkImage(user.profileImageUrl!)
+                    : const AssetImage('assets/images/default_profile.png')
+                        as ImageProvider,
+                child: user.profileImageUrl == null ||
+                        user.profileImageUrl!.isEmpty
+                    ? Icon(Icons.person, size: 70, color: Colors.grey[600])
+                    : null,
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: IconButton(
+                  icon: Icon(Icons.camera_alt,
+                      color: Theme.of(context).primaryColor, size: 30),
+                  onPressed: () {
+                    // TODO: Implement image picking logic
 
-                        print('Profilbild bearbeiten'); // Change image pressed
-                      },
-                    ),
-                  ),
-                ],
+                    print('Profilbild bearbeiten'); // Change image pressed
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Center(
-              child: Text(
-                '${user.firstName ?? ''} ${user.lastName ?? ''}',
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
-            Center(
-              child: Text(
-                user.email,
-                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-              ),
-            ),
-            const SizedBox(height: 30),
-            _buildProfileInfoRow(context, Icons.phone, 'Telefonnummer',
-                user.phoneNumber ?? 'Noch nicht hinzugefügt'),
-            _buildProfileInfoRow(context, Icons.location_on, 'Adresse',
-                user.address ?? 'Noch nicht hinzugefügt'),
-            _buildProfileInfoRow(
-                context,
-                Icons.work,
-                'Rolle',
-                user.role == 'client'
-                    ? 'Kunde'
-                    : user.role == 'craftsman'
-                        ? 'Handwerker'
-                        : 'Unbekannt'),
-            _buildProfileInfoRow(context, Icons.handyman, 'Beruf',
-                user.profession ?? 'Noch nicht hinzugefügt'),
-            _buildProfileInfoRow(context, Icons.info_outline, 'Lebenslauf',
-                user.bio ?? 'Noch nicht hinzugefügt'),
-            _buildProfileInfoRow(context, Icons.verified_user, 'Verifiziert',
-                user.isVerified == true ? 'Ja' : 'Nein'),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                // TODO: Zur Profilbearbeitung wechseln
-
-                print(
-                    'Profil bearbeiten Button gedrückt'); // Edit profile pressed
-              },
-              child: const Text('Profil bearbeiten'),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+        const SizedBox(height: 20),
+        Center(
+          child: Text(
+            '${user.firstName ?? ''} ${user.lastName ?? ''}',
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Center(
+          child: Text(
+            user.email,
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+          ),
+        ),
+        const SizedBox(height: 30),
+        _buildProfileInfoRow(context, Icons.phone, 'Telefonnummer',
+            user.phoneNumber ?? 'Noch nicht hinzugefügt'),
+        _buildProfileInfoRow(context, Icons.location_on, 'Adresse',
+            user.address ?? 'Noch nicht hinzugefügt'),
+        _buildProfileInfoRow(
+            context,
+            Icons.work,
+            'Rolle',
+            user.role == 'client'
+                ? 'Kunde'
+                : user.role == 'craftsman'
+                    ? 'Handwerker'
+                    : 'Unbekannt'),
+        _buildProfileInfoRow(context, Icons.handyman, 'Beruf',
+            user.profession ?? 'Noch nicht hinzugefügt'),
+        _buildProfileInfoRow(context, Icons.info_outline, 'Lebenslauf',
+            user.bio ?? 'Noch nicht hinzugefügt'),
+        _buildProfileInfoRow(context, Icons.verified_user, 'Verifiziert',
+            user.isVerified == true ? 'Ja' : 'Nein'),
+        const SizedBox(height: 30),
+        ElevatedButton(
+          onPressed: () {
+            // TODO: Zur Profilbearbeitung wechseln
+
+            print('Profil bearbeiten Button gedrückt'); // Edit profile pressed
+          },
+          child: const Text('Profil bearbeiten'),
+        ),
+      ],
     );
   }
 

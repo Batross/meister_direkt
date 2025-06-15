@@ -17,111 +17,70 @@ class CustomerProfileScreen extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          expandedHeight: 220,
-          pinned: true,
-          floating: false,
-          flexibleSpace: FlexibleSpaceBar(
-            centerTitle: true,
-            title: Text(
-              (user.firstName ?? '') + ' ' + (user.lastName ?? ''),
-              style: const TextStyle(
-                  fontSize: 20,
+    return ListView(
+      children: [
+        // Header Section
+        Container(
+          color: Theme.of(context).primaryColor,
+          padding: const EdgeInsets.symmetric(vertical: 40),
+          child: Column(
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundColor: Colors.white,
+                backgroundImage: NetworkImage(
+                  user.profileImageUrl ??
+                      'https://via.placeholder.com/150', // Default image
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '${user.firstName} ${user.lastName}',
+                style: const TextStyle(
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
-                  shadows: [Shadow(blurRadius: 2, color: Colors.black26)]),
-            ),
-            background: Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                Container(
-                  color: Theme.of(context).primaryColor,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 60,
-                        backgroundColor:
-                            Theme.of(context).primaryColor.withOpacity(0.1),
-                        child: ClipOval(
-                          child: (user.profileImageUrl != null &&
-                                  user.profileImageUrl!.isNotEmpty)
-                              ? Image.network(
-                                  user.profileImageUrl!,
-                                  width: 120,
-                                  height: 120,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Image.asset(
-                                    'assets/images/default_profile.png',
-                                    width: 120,
-                                    height: 120,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) => Icon(
-                                      Icons.person,
-                                      size: 60,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
-                                )
-                              : Image.asset(
-                                  'assets/images/default_profile.png',
-                                  width: 120,
-                                  height: 120,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Icon(
-                                    Icons.person,
-                                    size: 60,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).secondaryHeaderColor,
-                          radius: 18,
-                          child: IconButton(
-                            icon: const Icon(Icons.edit,
-                                color: Colors.white, size: 18),
-                            onPressed: () {
-                              // TODO: تنفيذ منطق تغيير الصورة
-                              print('Profilbild bearbeiten');
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                user.email,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[200],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-        SliverList(
-          delegate: SliverChildListDelegate([
-            const SizedBox(height: 16),
-            Center(
-              child: Text(
-                user.email,
-                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+
+        // Profile Info Section
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Profilinformationen',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 30),
-            _buildProfileInfoRow(context, Icons.phone, 'Telefonnummer',
-                user.phoneNumber ?? 'Noch nicht hinzugefügt'),
-            _buildProfileInfoRow(context, Icons.location_on, 'Adresse',
-                user.address ?? 'Noch nicht hinzugefügt'),
-            _buildProfileInfoRow(
+              const SizedBox(height: 10),
+              _buildInfoTile(
+                context,
+                Icons.phone,
+                'Telefonnummer',
+                user.phoneNumber ?? 'Nicht angegeben',
+              ),
+              _buildInfoTile(
+                context,
+                Icons.location_on,
+                'Adresse',
+                user.address ?? 'Nicht angegeben',
+              ),
+              _buildInfoTile(
                 context,
                 Icons.work,
                 'Rolle',
@@ -129,40 +88,58 @@ class CustomerProfileScreen extends StatelessWidget {
                     ? 'Kunde'
                     : user.role == 'craftsman'
                         ? 'Handwerker'
-                        : 'Unbekannt'),
-            if (user.role == 'craftsman') ...[
-              _buildProfileInfoRow(context, Icons.handyman, 'Beruf',
-                  user.profession ?? 'Noch nicht hinzugefügt'),
-              _buildProfileInfoRow(context, Icons.info_outline, 'Lebenslauf',
-                  user.bio ?? 'Noch nicht hinzugefügt'),
-              _buildProfileInfoRow(context, Icons.verified_user, 'Verifiziert',
-                  user.isVerified == true ? 'Ja' : 'Nein'),
-            ],
-            const SizedBox(height: 30),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // TODO: الانتقال إلى شاشة تعديل الملف الشخصي
-                  print('تم الضغط على زر تعديل الملف الشخصي');
-                  print('Profil bearbeiten Button gedrückt');
-                },
-                child: const Text('Profil bearbeiten'),
+                        : 'Unbekannt',
               ),
+              if (user.role == 'craftsman') ...[
+                _buildInfoTile(
+                  context,
+                  Icons.handyman,
+                  'Beruf',
+                  user.profession ?? 'Nicht angegeben',
+                ),
+                _buildInfoTile(
+                  context,
+                  Icons.info_outline,
+                  'Über mich',
+                  user.bio ?? 'Nicht angegeben',
+                ),
+                _buildInfoTile(
+                  context,
+                  Icons.verified_user,
+                  'Verifiziert',
+                  user.isVerified == true ? 'Ja' : 'Nein',
+                ),
+              ],
+            ],
+          ),
+        ),
+
+        // Edit Profile Button
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: ElevatedButton(
+            onPressed: () {
+              // TODO: Navigate to edit profile screen
+              print('Navigating to edit profile screen');
+            },
+            child: const Text('Profil bearbeiten'),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              textStyle: const TextStyle(fontSize: 16),
             ),
-            const SizedBox(height: 30),
-          ]),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildProfileInfoRow(
-      BuildContext context, IconData icon, String title, String value) {
+  Widget _buildInfoTile(
+      BuildContext context, IconData icon, String title, String subtitle) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Icon(icon, color: Theme.of(context).primaryColor, size: 28),
+          Icon(icon, color: Theme.of(context).primaryColor),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -171,11 +148,16 @@ class CustomerProfileScreen extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
-                  value,
-                  style: TextStyle(fontSize: 15, color: Colors.grey[700]),
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
                 ),
               ],
             ),
