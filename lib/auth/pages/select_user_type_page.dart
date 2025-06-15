@@ -78,7 +78,7 @@ class _SelectUserTypePageState extends State<SelectUserTypePage> {
               ),
               const SizedBox(height: 40),
               Text(
-                'اختر نوع الحساب',
+                'Wählen Sie den Kontotyp',
                 style: GoogleFonts.cairo(
                   fontSize: 22,
                   color: Colors.white,
@@ -90,7 +90,7 @@ class _SelectUserTypePageState extends State<SelectUserTypePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _RoleCard(
-                    title: 'عميل',
+                    title: 'Kunde',
                     icon: Icons.person_outline,
                     color: Colors.white,
                     onTap: () {
@@ -107,7 +107,7 @@ class _SelectUserTypePageState extends State<SelectUserTypePage> {
                       .slideX(begin: -0.2),
                   const SizedBox(width: 24),
                   _RoleCard(
-                    title: 'حرفي',
+                    title: 'Handwerker',
                     icon: Icons.handyman_outlined,
                     color: Colors.white,
                     onTap: () {
@@ -126,7 +126,7 @@ class _SelectUserTypePageState extends State<SelectUserTypePage> {
               ),
               const SizedBox(height: 60),
               Text(
-                'جودة. سرعة. أمان.',
+                'Qualität. Schnelligkeit. Sicherheit.',
                 style: GoogleFonts.cairo(
                   fontSize: 16,
                   color: Colors.white70,

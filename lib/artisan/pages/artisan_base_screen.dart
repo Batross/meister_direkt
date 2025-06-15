@@ -66,7 +66,7 @@ class _ArtisanBaseScreenState extends State<ArtisanBaseScreen> {
         ],
       ),
       drawer: MainDrawer(
-        userName: user.firstName ?? 'الحرفي',
+        userName: user.firstName ?? 'Handwerker',
         userRole: user.role ?? 'craftsman',
         profilePicUrl: user.profileImageUrl,
         onSignOut: () async {

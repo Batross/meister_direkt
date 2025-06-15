@@ -47,7 +47,7 @@ class _CustomerEditOrderScreenState extends State<CustomerEditOrderScreen> {
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل حفظ التعديلات: $e')),
+        SnackBar(content: Text('Fehler beim Speichern der Änderungen: $e')),
       );
     } finally {
       setState(() => _loading = false);

@@ -3,8 +3,8 @@
 plugins {
     id("com.android.application") apply false
     id("org.jetbrains.kotlin.android") apply false
-    id("com.google.gms.google-services") apply false // أو الإصدار "4.3.15" إذا فضلت ذلك
-    id("dev.flutter.flutter-gradle-plugin") apply false // تم إزالة تحديد الإصدار
+    id("com.google.gms.google-services") apply false // Oder Version "4.3.15", falls bevorzugt
+    id("dev.flutter.flutter-gradle-plugin") apply false // Versionsangabe entfernt
 }
 
 allprojects {

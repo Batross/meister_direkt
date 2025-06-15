@@ -126,8 +126,7 @@ class _LoginPageCustomerState extends State<LoginPageCustomer> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const SignUpPageCustomer(),
-                    ),
+                        builder: (context) => const SignupPageCustomer()),
                   );
                 },
                 child: const Text('Neues Konto erstellen'),

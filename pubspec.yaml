@@ -49,7 +49,7 @@ flutter:
     - assets/images/default_profile.png
     - assets/data/initial_services.json
     - assets/icons/carpentry.png
-    - assets/icons/electrical.png # تأكد من أن هذا الاسم صحيح (وليس electrical.png)
+    - assets/icons/electrical.png # Stellen Sie sicher, dass dieser Name korrekt ist (und nicht electrical.png)
     - assets/icons/plumbing.png
     - assets/icons/painting.png
     - assets/icons/cleaning.png
@@ -57,4 +57,4 @@ flutter:
     - assets/images/meisterdirekt_logo.png
     - assets/images/customer_login_icon.png
     - assets/images/artisan_login_icon.png
-    - assets/images/logo.png # تأكد من وجود هذا إذا كان يستخدم في SplashScreen
+    - assets/images/logo.png # Stellen Sie sicher, dass dies vorhanden ist, falls es im SplashScreen verwendet wird

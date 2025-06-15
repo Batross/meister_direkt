@@ -36,7 +36,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     } catch (e) {
       setState(() => loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل تحميل ملف PDF')),
+        SnackBar(content: Text('PDF-Datei konnte nicht geladen werden')),
       );
     }
   }
@@ -44,11 +44,11 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title ?? 'عرض ملف PDF')),
+      appBar: AppBar(title: Text(widget.title ?? 'PDF anzeigen')),
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : localPath == null
-              ? const Center(child: Text('تعذر تحميل الملف'))
+              ? const Center(child: Text('Datei konnte nicht geladen werden'))
               : PDFView(
                   filePath: localPath!,
                 ),

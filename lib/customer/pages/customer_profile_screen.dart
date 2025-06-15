@@ -84,7 +84,7 @@ class CustomerProfileScreen extends StatelessWidget {
                             color: Colors.white, size: 20),
                         onPressed: () {
                           // TODO: تنفيذ منطق تغيير الصورة
-                          print('تعديل صورة الملف الشخصي');
+                          print('Profilbild bearbeiten');
                         },
                       ),
                     ),
@@ -130,6 +130,8 @@ class CustomerProfileScreen extends StatelessWidget {
               onPressed: () {
                 // TODO: الانتقال إلى شاشة تعديل الملف الشخصي
                 print('تم الضغط على زر تعديل الملف الشخصي');
+                // TODO: Zur Profilbearbeitung wechseln
+                print('Profil bearbeiten Button gedrückt');
               },
               child: const Text('Profil bearbeiten'),
             ),

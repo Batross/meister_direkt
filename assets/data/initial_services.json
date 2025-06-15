@@ -1,37 +1,37 @@
 [
   {
-    "name_ar": "نجارة",
+    "name_de": "Schreinerei",
     "name_en": "Carpentry",
-    "description_ar": "خدمات النجارة والصيانة الخشبية",
+    "description_de": "Schreiner- und Holzreparaturdienste",
     "description_en": "Carpentry and wood maintenance services",
     "iconUrl": "assets/icons/carpentry.png",
     "subCategories": [
       {
         "subCategoryId": "wood_repair",
-        "name_ar": "إصلاح الأخشاب",
+        "name_de": "Holzreparatur",
         "name_en": "Wood Repair",
         "fields": [
           {
             "fieldId": "wood_type",
             "type": "dropdown",
-            "label_ar": "نوع الخشب",
+            "label_de": "Holzart",
             "label_en": "Type of wood",
-            "options": ["بلوط", "زان", "صنوبر", "أخرى"],
+            "options": ["Eiche", "Buche", "Kiefer", "Andere"],
             "required": true
           },
           {
             "fieldId": "damage_description",
             "type": "text",
-            "label_ar": "وصف الضرر",
+            "label_de": "Schadensbeschreibung",
             "label_en": "Damage description",
             "required": true,
-            "placeholder_ar": "وصف مفصل للضرر",
+            "placeholder_de": "Detaillierte Beschreibung des Schadens",
             "placeholder_en": "Detailed description of the damage"
           },
           {
             "fieldId": "damage_photos",
             "type": "image_upload",
-            "label_ar": "صور/فيديوهات/ملفات PDF للضرر (اختياري)",
+            "label_de": "Fotos/Videos/PDFs des Schadens (optional)",
             "label_en": "Photos/Videos/PDFs of damage (optional)",
             "required": false
           }
@@ -39,39 +39,39 @@
       },
       {
         "subCategoryId": "custom_furniture",
-        "name_ar": "تفصيل أثاث",
+        "name_de": "Maßgefertigte Möbel",
         "name_en": "Custom Furniture",
         "fields": [
           {
             "fieldId": "furniture_type",
             "type": "text",
-            "label_ar": "نوع الأثاث المطلوب",
+            "label_de": "Art des gewünschten Möbels",
             "label_en": "Type of furniture required",
             "required": true,
-            "placeholder_ar": "مثل: طاولة، كرسي، خزانة",
+            "placeholder_de": "z.B.: Tisch, Stuhl, Schrank",
             "placeholder_en": "e.g., table, chair, cabinet"
           },
           {
             "fieldId": "dimensions",
             "type": "text",
-            "label_ar": "الأبعاد التقريبية (الطول x العرض x الارتفاع)",
+            "label_de": "Ungefähre Maße (L x B x H)",
             "label_en": "Approximate dimensions (L x W x H)",
             "required": false,
-            "placeholder_ar": "مثال: 120x80x75 سم",
+            "placeholder_de": "z.B.: 120x80x75 cm",
             "placeholder_en": "e.g., 120x80x75 cm"
           },
           {
             "fieldId": "material_preference",
             "type": "dropdown",
-            "label_ar": "تفضيل نوع المادة",
+            "label_de": "Materialpräferenz",
             "label_en": "Material preference",
-            "options": ["خشب صلب", "خشب مضغوط", "MDF", "أخرى"],
+            "options": ["Massivholz", "Pressholz", "MDF", "Andere"],
             "required": false
           },
           {
             "fieldId": "design_images",
             "type": "image_upload",
-            "label_ar": "صور/رسومات التصميم (اختياري)",
+            "label_de": "Designbilder/Skizzen (optional)",
             "label_en": "Design images/sketches (optional)",
             "required": false
           }
@@ -80,46 +80,46 @@
     ]
   },
   {
-    "name_ar": "كهرباء",
+    "name_de": "Elektrizität",
     "name_en": "Electricity",
-    "description_ar": "خدمات الكهرباء المنزلية والتجارية",
+    "description_de": "Haus- und Gewerbeelektrikdienste",
     "description_en": "Home and commercial electrical services",
     "iconUrl": "assets/icons/electricity.png",
     "subCategories": [
       {
         "subCategoryId": "electrical_fault",
-        "name_ar": "أعطال كهربائية",
+        "name_de": "Elektrische Fehler",
         "name_en": "Electrical Faults",
         "fields": [
           {
             "fieldId": "fault_type",
             "type": "text",
-            "label_ar": "نوع العطل",
+            "label_de": "Fehlertyp",
             "label_en": "Type of fault",
             "required": true,
-            "placeholder_ar": "مثل: ماس كهربائي، عطل في الإضاءة",
+            "placeholder_de": "z.B.: Kurzschluss, Beleuchtungsfehler",
             "placeholder_en": "e.g., short circuit, lighting fault"
           },
           {
             "fieldId": "location",
             "type": "text",
-            "label_ar": "موقع العطل",
+            "label_de": "Fehlerort",
             "label_en": "Location of fault",
             "required": true,
-            "placeholder_ar": "مثال: المطبخ، غرفة النوم الرئيسية",
+            "placeholder_de": "z.B.: Küche, Schlafzimmer",
             "placeholder_en": "e.g., kitchen, master bedroom"
           },
           {
             "fieldId": "power_outage",
             "type": "checkbox",
-            "label_ar": "هل هناك انقطاع في الكهرباء؟",
+            "label_de": "Gibt es einen Stromausfall?",
             "label_en": "Is there a power outage?",
             "required": false
           },
           {
             "fieldId": "fault_media",
             "type": "image_upload",
-            "label_ar": "صور/فيديوهات للعطل (اختياري)",
+            "label_de": "Fotos/Videos des Fehlers (optional)",
             "label_en": "Fault photos/videos (optional)",
             "required": false
           }
@@ -127,31 +127,31 @@
       },
       {
         "subCategoryId": "new_installation",
-        "name_ar": "تركيبات جديدة",
+        "name_de": "Neue Installationen",
         "name_en": "New Installations",
         "fields": [
           {
             "fieldId": "installation_item",
             "type": "text",
-            "label_ar": "ماذا تريد أن تركب؟",
+            "label_de": "Was möchten Sie installieren?",
             "label_en": "What do you want to install?",
             "required": true,
-            "placeholder_ar": "مثال: مكيف، سخان مياه، مقبس جديد",
+            "placeholder_de": "z.B.: Klimaanlage, Wassererhitzer, neue Steckdose",
             "placeholder_en": "e.g., AC, water heater, new socket"
           },
           {
             "fieldId": "number_of_items",
             "type": "number",
-            "label_ar": "العدد",
+            "label_de": "Anzahl",
             "label_en": "Quantity",
             "required": false,
-            "unitAr": "قطعة",
+            "unitAr": "Stück",
             "unitEn": "unit"
           },
           {
             "fieldId": "installation_diagrams",
             "type": "image_upload",
-            "label_ar": "رسومات/مخططات التركيب (اختياري)",
+            "label_de": "Installationsdiagramme/-skizzen (optional)",
             "label_en": "Installation diagrams/sketches (optional)",
             "required": false
           }
@@ -160,38 +160,38 @@
     ]
   },
   {
-    "name_ar": "سباكة",
+    "name_de": "Sanitär",
     "name_en": "Plumbing",
-    "description_ar": "خدمات السباكة والصيانة الصحية",
+    "description_de": "Sanitär- und Rohrreparaturdienste",
     "description_en": "Plumbing and sanitary maintenance services",
     "iconUrl": "assets/icons/plumbing.png",
     "subCategories": [
       {
         "subCategoryId": "leak_repair",
-        "name_ar": "إصلاح التسربات",
+        "name_de": "Leckreparatur",
         "name_en": "Leak Repair",
         "fields": [
           {
             "fieldId": "leak_location",
             "type": "text",
-            "label_ar": "موقع التسرب",
+            "label_de": "Leckort",
             "label_en": "Leak location",
             "required": true,
-            "placeholder_ar": "مثال: صنبور المطبخ، أنبوب الحمام",
+            "placeholder_de": "z.B.: Küchenarmatur, Badezimmerrohr",
             "placeholder_en": "e.g., kitchen faucet, bathroom pipe"
           },
           {
             "fieldId": "leak_severity",
             "type": "dropdown",
-            "label_ar": "شدة التسرب",
+            "label_de": "Leckschwere",
             "label_en": "Leak severity",
-            "options": ["خفيف", "متوسط", "شديد"],
+            "options": ["Leicht", "Mittel", "Schwer"],
             "required": true
           },
           {
             "fieldId": "leak_media",
             "type": "image_upload",
-            "label_ar": "صور/فيديوهات للتسرب (اختياري)",
+            "label_de": "Fotos/Videos des Lecks (optional)",
             "label_en": "Leak photos/videos (optional)",
             "required": false
           }
@@ -199,30 +199,30 @@
       },
       {
         "subCategoryId": "water_heater_install",
-        "name_ar": "تركيب سخان مياه",
+        "name_de": "Wassererhitzer Installation",
         "name_en": "Water Heater Installation",
         "fields": [
           {
             "fieldId": "heater_type",
             "type": "dropdown",
-            "label_ar": "نوع السخان",
+            "label_de": "Heizertyp",
             "label_en": "Heater type",
-            "options": ["كهربائي", "غاز", "شمسي"],
+            "options": ["Elektrisch", "Gas", "Solar"],
             "required": true
           },
           {
             "fieldId": "capacity",
             "type": "number",
-            "label_ar": "سعة السخان (لتر)",
+            "label_de": "Heizerkapazität (Liter)",
             "label_en": "Heater capacity (liters)",
             "required": false,
-            "unitAr": "لتر",
+            "unitAr": "Liter",
             "unitEn": "liter"
           },
           {
             "fieldId": "heater_location_media",
             "type": "image_upload",
-            "label_ar": "صور موقع التركيب (اختياري)",
+            "label_de": "Fotos des Installationsortes (optional)",
             "label_en": "Installation location photos (optional)",
             "required": false
           }
@@ -231,39 +231,39 @@
     ]
   },
   {
-    "name_ar": "دهان",
+    "name_de": "Malen",
     "name_en": "Painting",
-    "description_ar": "خدمات الدهان الداخلي والخارجي",
+    "description_de": "Innen- und Außenmalerei",
     "description_en": "Interior and exterior painting services",
     "iconUrl": "assets/icons/painting.png",
     "subCategories": [
       {
         "subCategoryId": "interior_painting",
-        "name_ar": "دهان داخلي",
+        "name_de": "Innenmalerei",
         "name_en": "Interior Painting",
         "fields": [
           {
             "fieldId": "num_rooms",
             "type": "number",
-            "label_ar": "عدد الغرف",
+            "label_de": "Anzahl der Räume",
             "label_en": "Number of rooms",
             "required": true,
-            "unitAr": "غرفة",
+            "unitAr": "Raum",
             "unitEn": "room"
           },
           {
             "fieldId": "paint_colors",
             "type": "text",
-            "label_ar": "الألوان المطلوبة",
+            "label_de": "Gewünschte Farben",
             "label_en": "Required colors",
             "required": false,
-            "placeholder_ar": "مثل: أبيض، بيج، أزرق فاتح",
+            "placeholder_de": "z.B.: Weiß, Beige, Hellblau",
             "placeholder_en": "e.g., white, beige, light blue"
           },
           {
             "fieldId": "room_photos",
             "type": "image_upload",
-            "label_ar": "صور الغرف (اختياري)",
+            "label_de": "Fotos der Räume (optional)",
             "label_en": "Room photos (optional)",
             "required": false
           }
@@ -272,38 +272,38 @@
     ]
   },
   {
-    "name_ar": "تنظيف",
+    "name_de": "Reinigung",
     "name_en": "Cleaning",
-    "description_ar": "خدمات التنظيف الشاملة للمنازل والمكاتب",
+    "description_de": "Umfassende Reinigungsdienste für Häuser und Büros",
     "description_en": "Comprehensive cleaning services for homes and offices",
     "iconUrl": "assets/icons/cleaning.png",
     "subCategories": [
       {
         "subCategoryId": "home_cleaning",
-        "name_ar": "تنظيف منزلي",
+        "name_de": "Hausreinigung",
         "name_en": "Home Cleaning",
         "fields": [
           {
             "fieldId": "house_size",
             "type": "number",
-            "label_ar": "حجم المنزل (عدد الغرف)",
+            "label_de": "Hausgröße (Anzahl der Räume)",
             "label_en": "House size (number of rooms)",
             "required": true,
-            "unitAr": "غرفة",
+            "unitAr": "Raum",
             "unitEn": "room"
           },
           {
             "fieldId": "cleaning_frequency",
             "type": "dropdown",
-            "label_ar": "عدد مرات التنظيف",
+            "label_de": "Reinigungsfrequenz",
             "label_en": "Cleaning frequency",
-            "options": ["مرة واحدة", "أسبوعي", "شهري"],
+            "options": ["Einmal", "Wöchentlich", "Monatlich"],
             "required": true
           },
           {
             "fieldId": "cleaning_area_photos",
             "type": "image_upload",
-            "label_ar": "صور المنطقة المراد تنظيفها (اختياري)",
+            "label_de": "Fotos des zu reinigenden Bereichs (optional)",
             "label_en": "Photos of area to be cleaned (optional)",
             "required": false
           }
@@ -312,38 +312,38 @@
     ]
   },
   {
-    "name_ar": "تكييف",
+    "name_de": "Klimaanlage",
     "name_en": "AC Services",
-    "description_ar": "صيانة وتركيب أجهزة التكييف",
+    "description_de": "Wartung und Installation von Klimaanlagen",
     "description_en": "AC maintenance and installation services",
     "iconUrl": "assets/icons/ac.png",
     "subCategories": [
       {
         "subCategoryId": "ac_maintenance",
-        "name_ar": "صيانة تكييف",
+        "name_de": "Klimaanlagenwartung",
         "name_en": "AC Maintenance",
         "fields": [
           {
             "fieldId": "ac_type",
             "type": "dropdown",
-            "label_ar": "نوع المكيف",
+            "label_de": "Klimaanlagentyp",
             "label_en": "AC type",
-            "options": ["شباك", "سبليت", "مركزي"],
+            "options": ["Fenster", "Split", "Zentral"],
             "required": true
           },
           {
             "fieldId": "problem_description",
             "type": "text",
-            "label_ar": "وصف المشكلة",
+            "label_de": "Problembeschreibung",
             "label_en": "Problem description",
             "required": false,
-            "placeholder_ar": "مثال: لا يبرد، صوت عالي",
+            "placeholder_de": "z.B.: Kühlt nicht, Lautes Geräusch",
             "placeholder_en": "e.g., not cooling, loud noise"
           },
           {
             "fieldId": "ac_media",
             "type": "image_upload",
-            "label_ar": "صور/فيديوهات للمكيف (اختياري)",
+            "label_de": "Fotos/Videos der Klimaanlage (optional)",
             "label_en": "AC photos/videos (optional)",
             "required": false
           }

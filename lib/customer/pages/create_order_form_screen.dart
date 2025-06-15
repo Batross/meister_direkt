@@ -74,7 +74,8 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
           if (!mounted) return false;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text('الرجاء ملء الحقل المطلوب: ${field.labelAr}')),
+                content: Text(
+                    'Bitte füllen Sie das erforderliche Feld aus: ${field.labelEn}')),
           );
           return false;
         }
@@ -85,7 +86,7 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
                 content: Text(
-                    'الرجاء تحميل ملف واحد على الأقل لـ: ${field.labelAr}')),
+                    'Bitte laden Sie mindestens eine Datei hoch für: ${field.labelEn}')),
           );
           return false;
         }
@@ -281,7 +282,7 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
           currentLocation; // تنفيذ جلب الموقع إذا لزم الأمر، وإلا تركه فارغًا
 
       RequestModel newRequest = RequestModel(
-        requestId: '', // سيتولى Firestore تعيين هذا
+        requestId: '', // Wird von Firestore zugewiesen
         clientId: user.uid,
         serviceId: widget.service.serviceId,
         serviceDetails: finalServiceDetails,
@@ -289,7 +290,7 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
             finalServiceDetails['issue_desc'] ??
             finalServiceDetails['installation_item'] ??
             finalServiceDetails['leak_location'] ??
-            'لم يتم تقديم وصف محدد لطلب الخدمة هذا.',
+            'Für diese Serviceanfrage wurde keine spezifische Beschreibung angegeben.',
         status: 'pending_offers',
         location: currentLocation,
         images: uploadedFileUrls.isNotEmpty ? uploadedFileUrls : null,
@@ -307,14 +308,17 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم إرسال طلبك بنجاح!')),
+        const SnackBar(
+            content: Text('Ihre Anfrage wurde erfolgreich gesendet!')),
       );
       Navigator.pop(context); // العودة بعد الإرسال الناجح
     } catch (e) {
       print('خطأ في إرسال الطلب: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ أثناء إرسال الطلب: $e')),
+        SnackBar(
+            content:
+                Text('Beim Senden der Anfrage ist ein Fehler aufgetreten: $e')),
       );
     } finally {
       setState(() {
@@ -327,9 +331,9 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
   Widget build(BuildContext context) {
     if (subCategories.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: Text('طلب خدمة ${widget.service.nameAr}')),
+        appBar: AppBar(title: Text('Serviceanfrage ${widget.service.nameEn}')),
         body: const Center(
-          child: Text('لا توجد فئات فرعية أو حقول لهذه الخدمة.'),
+          child: Text('Keine Unterkategorien oder Felder für diesen Service.'),
         ),
       );
     }
@@ -337,7 +341,7 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
     SubCategory currentSubCategory = subCategories[_currentStepIndex];
 
     return Scaffold(
-      appBar: AppBar(title: Text('طلب خدمة ${widget.service.nameAr}')),
+      appBar: AppBar(title: Text('Serviceanfrage ${widget.service.nameEn}')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -571,7 +575,7 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Text(
-                          'خطأ: نوع حقل غير معروف: ${field.labelAr}',
+                          'Fehler: Unbekannter Feldtyp: ${field.labelEn}',
                           style: const TextStyle(color: Colors.red),
                         ),
                       );
@@ -587,7 +591,7 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
                 if (_currentStepIndex > 0)
                   ElevatedButton(
                     onPressed: _previousStep,
-                    child: const Text('السابق'),
+                    child: const Text('Zurück'),
                   ),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _nextStep,
@@ -598,7 +602,7 @@ class _CreateOrderFormScreenState extends State<CreateOrderFormScreen> {
                         )
                       : Text(
                           _currentStepIndex == subCategories.length - 1
-                              ? 'إرسال الطلب'
+                              ? 'Anfrage senden'
                               : 'التالي',
                         ),
                 ),

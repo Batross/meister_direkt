@@ -37,7 +37,8 @@ class FilePreviewWidget extends StatelessWidget {
         } else {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('تعذر فتح الملف')),
+              const SnackBar(
+                  content: Text('Datei konnte nicht geöffnet werden')),
             );
           }
         }

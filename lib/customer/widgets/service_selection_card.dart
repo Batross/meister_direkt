@@ -13,7 +13,7 @@ class ServiceSelectionCard extends StatelessWidget {
     required this.onSelect,
   });
 
-  // دالة مساعدة لتعيين أيقونات مادية بناءً على serviceId
+  // Hilfsfunktion zur Auswahl von Icons basierend auf serviceId
   IconData _getServiceIcon(String serviceId) {
     switch (serviceId) {
       case 'carpentry':
@@ -36,10 +36,10 @@ class ServiceSelectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 7, // زيادة الظل
+      elevation: 7, // Mehr Schatten
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20)), // حواف أكثر استدارة
-      clipBehavior: Clip.antiAlias, // لضمان قص الصورة بشكل صحيح
+          borderRadius: BorderRadius.circular(20)), // Stärkere Rundungen
+      clipBehavior: Clip.antiAlias, // Für korrektes Zuschneiden des Bildes
       child: InkWell(
         onTap: () => onSelect(service),
         borderRadius: BorderRadius.circular(20),
@@ -51,19 +51,19 @@ class ServiceSelectionCard extends StatelessWidget {
               child: Container(
                 color: Theme.of(context)
                     .primaryColor
-                    .withOpacity(0.1), // لون خلفية خفيف للأيقونة
+                    .withOpacity(0.1), // Heller Hintergrund für das Icon
                 child: Center(
-                  // استخدام Image.asset لأن iconUrl في بياناتك التجريبية يشير إلى assets محلية
+                  // Image.asset wird verwendet, da iconUrl auf lokale Assets verweist
                   child: Image.asset(
                     service.iconUrl,
-                    width: 60, // تحكم في حجم الأيقونة إذا كانت صورة
+                    width: 60, // Größe des Icons
                     height: 60,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
                       // في حال عدم العثور على Asset، اعرض أيقونة مادية بديلة
                       return Icon(
                         _getServiceIcon(service.serviceId),
-                        size: 60, // أيقونة أكبر
+                        size: 60, // Größeres Icon
                         color: AppColors.primaryColor,
                       );
                     },
@@ -72,18 +72,18 @@ class ServiceSelectionCard extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 1, // النص يأخذ مساحة أقل نسبياً
+              flex: 1, // Weniger Platz für den Text
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   service.nameAr,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 17, // حجم خط مناسب
+                    fontSize: 17, // Passende Schriftgröße
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
-                  maxLines: 1, // سطر واحد للنص ليتناسب مع المساحة
+                  maxLines: 1, // Nur eine Zeile für den Text
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

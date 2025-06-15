@@ -52,7 +52,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                       onPressed: () {
                         // TODO: Implement image picking logic
 
-                        print('Bild ändern gedrückt'); // Change image pressed
+                        print('Profilbild bearbeiten'); // Change image pressed
                       },
                     ),
                   ),
@@ -98,9 +98,10 @@ class ArtisanProfileScreen extends StatelessWidget {
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
-                // TODO: Navigate to EditProfileScreen
+                // TODO: Zur Profilbearbeitung wechseln
 
-                print('Profil bearbeiten gedrückt'); // Edit profile pressed
+                print(
+                    'Profil bearbeiten Button gedrückt'); // Edit profile pressed
               },
               child: const Text('Profil bearbeiten'),
             ),

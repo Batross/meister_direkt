@@ -201,21 +201,20 @@ class CustomerMyOrdersScreen extends StatelessWidget {
                               if (request.budget != null)
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4.0),
-                                  child: Text(
-                                      'الميزانية: ${request.budget} د.ع',
+                                  child: Text('Budget: ${request.budget} €',
                                       style: const TextStyle(
                                           fontSize: 13, color: Colors.teal)),
                                 ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 4.0),
-                                child: Text('الحالة: ${request.status}',
+                                child: Text('Status: ${request.status}',
                                     style: const TextStyle(
                                         fontSize: 13, color: Colors.grey)),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 4.0),
                                 child: Text(
-                                    'تاريخ الإنشاء: ${request.createdAt.day}/${request.createdAt.month}/${request.createdAt.year}',
+                                    'Erstellt am: ${request.createdAt.day}.${request.createdAt.month}.${request.createdAt.year}',
                                     style: const TextStyle(
                                         fontSize: 12, color: Colors.grey)),
                               ),
@@ -238,8 +237,8 @@ class CustomerMyOrdersScreen extends StatelessWidget {
                                 if (result == true) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                          content:
-                                              Text('تم حفظ التعديلات بنجاح')));
+                                          content: Text(
+                                              'Änderungen erfolgreich gespeichert')));
                                 }
                               },
                             ),
@@ -270,7 +269,7 @@ class CustomerMyOrdersScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: 12.0),
                         child: Text(
-                            'تفاصيل إضافية: ${request.serviceDetails.toString()}',
+                            'Weitere Details: ${request.serviceDetails.toString()}',
                             style: const TextStyle(
                                 fontSize: 13, color: Colors.black54)),
                       ),

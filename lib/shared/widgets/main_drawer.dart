@@ -22,11 +22,11 @@ class MainDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     String roleDisplay = '';
     if (userRole == 'client') {
-      roleDisplay = 'عميل';
+      roleDisplay = 'Kunde';
     } else if (userRole == 'craftsman') {
-      roleDisplay = 'حرفي';
+      roleDisplay = 'Handwerker';
     } else if (userRole == 'admin') {
-      roleDisplay = 'مسؤول';
+      roleDisplay = 'Admin';
     }
 
     return Drawer(
@@ -92,7 +92,7 @@ class MainDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.home),
-            title: const Text('الصفحة الرئيسية'),
+            title: const Text('Startseite'),
             onTap: () {
               Navigator.pop(context); // إغلاق الدرج
               // الانتقال إلى الشاشة الرئيسية المناسبة بناءً على دور المستخدم
@@ -107,7 +107,7 @@ class MainDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.settings),
-            title: const Text('الإعدادات'),
+            title: const Text('Einstellungen'),
             onTap: () {
               Navigator.pop(context); // إغلاق الدرج
               print('تم الضغط على الإعدادات!');
@@ -116,7 +116,7 @@ class MainDrawer extends StatelessWidget {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout),
-            title: const Text('تسجيل الخروج'),
+            title: const Text('Abmelden'),
             onTap: () async {
               Navigator.pop(context); // إغلاق الدرج أولاً
               await Provider.of<AuthProvider>(context, listen: false).signOut();

@@ -23,7 +23,8 @@ class CustomerBaseScreen extends StatefulWidget {
 class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final PageController _pageController = PageController();
-  int _currentIndex = 1; // الافتراضي: 0: My Orders, 1: Create Order, 2: Profile
+  int _currentIndex =
+      1; // Standard: 0: Meine Bestellungen, 1: Bestellung erstellen, 2: Mein Profil
 
   @override
   void initState() {
@@ -75,16 +76,16 @@ class _CustomerBaseScreenState extends State<CustomerBaseScreen> {
               children: const [
                 // ملاحظة: هذه الفئات يجب أن تكون معرفة في ملفاتها الخاصة
                 // ومستوردة بشكل صحيح في أعلى هذا الملف.
-                CustomerMyOrdersScreen(), // طلباتي (فهرس 0)
-                CustomerCreateOrderScreen(), // إنشاء طلب جديد (الصفحة الرئيسية) (فهرس 1)
-                CustomerProfileScreen(), // ملفي الشخصي (فهرس 2)
+                CustomerMyOrdersScreen(), // Meine Bestellungen (Index 0)
+                CustomerCreateOrderScreen(), // Bestellung erstellen (Startseite) (Index 1)
+                CustomerProfileScreen(), // Mein Profil (Index 2)
               ],
             ),
           ),
         ],
       ),
       drawer: MainDrawer(
-        userName: user.firstName ?? 'العميل',
+        userName: user.firstName ?? 'Kunde',
         userRole: user.role ?? 'customer',
         profilePicUrl: user.profileImageUrl,
         onSignOut: () async {

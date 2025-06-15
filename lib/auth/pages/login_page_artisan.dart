@@ -125,8 +125,7 @@ class _LoginPageArtisanState extends State<LoginPageArtisan> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const SignUpPageArtisan(),
-                    ),
+                        builder: (context) => const SignupPageArtisan()),
                   );
                 },
                 child: const Text('Neues Konto erstellen'),

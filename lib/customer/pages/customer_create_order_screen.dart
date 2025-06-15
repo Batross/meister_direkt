@@ -35,11 +35,12 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text('خطأ في تحميل الخدمات: ${snapshot.error}'));
+          return Center(
+              child: Text('Fehler beim Laden der Services: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(
               child: Text(
-                  'لم يتم العثور على خدمات. يرجى التحقق من initial_services.json و Firestore.'));
+                  'Keine Services gefunden. Bitte prüfen Sie initial_services.json und Firestore.'));
         } else {
           final services = snapshot.data!;
           return SingleChildScrollView(

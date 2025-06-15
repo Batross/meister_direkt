@@ -48,15 +48,15 @@ class CustomerBottomNavBar extends StatelessWidget {
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.list_alt),
-              label: 'طلباتي',
+              label: 'Meine Bestellungen',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.add_circle_outline),
-              label: 'إنشاء طلب',
+              label: 'Bestellung erstellen',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
-              label: 'ملفي',
+              label: 'Mein Profil',
             ),
           ],
         ),

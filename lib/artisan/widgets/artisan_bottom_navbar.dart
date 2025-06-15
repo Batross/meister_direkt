@@ -47,15 +47,15 @@ class ArtisanBottomNavBar extends StatelessWidget {
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.list_alt),
-              label: 'الطلبات',
+              label: 'Anfragen',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.history),
-              label: 'منجز',
+              label: 'Erledigt',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
-              label: 'ملفي',
+              label: 'Mein Profil',
             ),
           ],
         ),

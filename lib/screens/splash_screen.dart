@@ -81,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 30),
             const CircularProgressIndicator(),
             const SizedBox(height: 20),
-            const Text('جاري التحميل...', style: TextStyle(color: Colors.grey)),
+            const Text('Wird geladen...', style: TextStyle(color: Colors.grey)),
           ],
         ),
       ),

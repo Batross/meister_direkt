@@ -317,7 +317,7 @@ class _RequestPostCardState extends State<RequestPostCard> {
               children: [
                 Icon(Icons.picture_as_pdf, size: 60, color: Colors.red[700]),
                 const SizedBox(height: 12),
-                Text('عرض ملف PDF',
+                Text('PDF anzeigen',
                     style: TextStyle(fontSize: 18, color: Colors.black87)),
                 const SizedBox(height: 8),
                 Text(url.split('/').last,
