@@ -40,14 +40,14 @@ class ArtisanHomeHeader extends StatelessWidget {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.notifications, color: Colors.white, size: 24),
-          onPressed: onNotificationsPressed,
-        ),
-        IconButton(
           icon: const Icon(Icons.menu, color: Colors.white, size: 24),
           onPressed: onDrawerPressed,
         ),
       ],
+      leading: IconButton(
+        icon: const Icon(Icons.notifications, color: Colors.white, size: 24),
+        onPressed: onNotificationsPressed,
+      ),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(56),
         child: Padding(
