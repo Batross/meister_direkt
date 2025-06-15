@@ -192,9 +192,5 @@ class CustomerHomeHeader extends StatelessWidget
   }
 
   @override
-  Size get preferredSize {
-    // احسب الارتفاع بناءً على عدد العناصر والمسافات
-    // 56 (صف المعلومات) + 8 (مسافة) + 44 (شريط البحث) + 12 (padding سفلي)
-    return const Size.fromHeight(56 + 8 + 44 + 12);
-  }
+  Size get preferredSize => const Size.fromHeight(130);
 }
