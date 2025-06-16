@@ -163,8 +163,6 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 10),
-
                       // قسم الإعلان الكبير
                       Container(
                         margin: const EdgeInsets.symmetric(
@@ -258,19 +256,20 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                         ),
                       ),
                       const SizedBox(
-                          height: 5), // Adjust spacing below the advertisement
-                      // Change the main title
+                          height:
+                              8), // تقليل المساحة تحت الإعلان                      // العنوان الرئيسي
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
-                          'Aufträge suchen',
+                          'Handwerker oder Dienstleistung suchen',
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(
+                          height: 12), // مساحة صغيرة للفصل بين العنوان والمحتوى
                       // عرض كروت الخدمات
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
