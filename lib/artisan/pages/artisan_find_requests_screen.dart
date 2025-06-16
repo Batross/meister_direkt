@@ -6,8 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../shared/providers/user_provider.dart';
 import '../../data/models/request_model.dart';
 import '../../customer/widgets/video_preview_widget.dart';
-import '../../customer/widgets/file_preview_widget.dart';
-import 'package:meisterdirekt/shared/widgets/pdf_viewer_screen.dart'; // شاشة عرض PDF
 
 // Extension بسيطة لتحويل String إلى Title Case لأغراض العرض
 extension StringCasingExtension on String {
@@ -188,13 +186,11 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                       children: [
                         // إضافة المساحة الإعلانية هنا
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 16.0),
                           child: Container(
                             width: double.infinity,
-                            constraints: const BoxConstraints(
-                              minHeight: 160,
-                              maxHeight: 200,
-                            ),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 colors: [Color(0xFF4A90E2), Color(0xFF2A5C82)],
@@ -219,66 +215,73 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                                     child: Image.network(
                                       'https://placehold.co/600x180/4A90E2/FFFFFF?text=Ad+Space',
                                       fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) =>
-                                          Container(
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Container(
                                         color: Colors.grey[300],
                                         child: Center(
                                           child: Text(
                                             'Werbefläche',
-                                            style: TextStyle(color: Colors.grey[600]),
+                                            style: TextStyle(
+                                                color: Colors.grey[600]),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Finden Sie die besten Aufträge!',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Finden Sie die besten Aufträge!',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      const SizedBox(height: 8),
-                                      const Text(
-                                        'اكتشف فرص عمل جديدة وعملاء محتملين في منطقتك.',
-                                        style: TextStyle(
-                                          color: Colors.white70,
-                                          fontSize: 13,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    const Text(
+                                      'اكتشف فرص عمل جديدة وعملاء محتملين في منطقتك.',
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 12,
                                       ),
-                                      const SizedBox(height: 12),
-                                      ElevatedButton(
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    SizedBox(
+                                      height: 36,
+                                      child: ElevatedButton(
                                         onPressed: () {
                                           print('Mehr Aufträge button pressed');
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.white,
-                                          foregroundColor: const Color(0xFF2A5C82),
+                                          foregroundColor:
+                                              const Color(0xFF2A5C82),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
                                           ),
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 8),
+                                              horizontal: 14, vertical: 0),
+                                          minimumSize: const Size(0, 36),
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
                                         ),
                                         child: const Text(
                                           'Mehr Aufträge',
                                           style: TextStyle(fontSize: 13),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -337,11 +340,8 @@ class RequestPostCard extends StatefulWidget {
 }
 
 class _RequestPostCardState extends State<RequestPostCard> {
-  bool _showFullDescription =
-      false; // لتحديد ما إذا كان الوصف كاملاً أم مختصراً
-  static const int _maxDescriptionLines =
-      3; // الحد الأقصى لعدد الأسطر قبل "إظهار المزيد"
-
+  bool _showFullDescription = false;
+  static const int _maxDescriptionLines = 3;
   late final PageController _mediaController;
   int _currentPage = 0;
 
@@ -372,174 +372,17 @@ class _RequestPostCardState extends State<RequestPostCard> {
     }
   }
 
-  // دالة مساعدة لتحديد ما إذا كانت التفاصيل طويلة وتحتاج لـ "إظهار المزيد"  bool _isDescriptionLong(String description, BuildContext context) {
-    final textSpan =
-        TextSpan(text: description, style: const TextStyle(fontSize: 16));
-    final textPainter = TextPainter(
-      text: textSpan,
-      maxLines: _maxDescriptionLines,
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout(maxWidth: MediaQuery.of(context).size.width - 32);
-    return textPainter.didExceedMaxLines;
-  }
-
-  // Widget لعرض المعاينة للصور، الفيديو، والملفات
-  Widget buildMediaPreview(BuildContext context, String url) {
-    final lower = url.toLowerCase();
-    if (lower.endsWith('.jpg') ||
-        lower.endsWith('.jpeg') ||
-        lower.endsWith('.png') ||
-        lower.endsWith('.gif')) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          url,
-          width: 250,
-          height: 180,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            width: 250,
-            height: 180,
-            color: Colors.grey[200],
-            child: const Icon(Icons.broken_image, size: 50, color: Colors.grey),
-          ),
-        );
-    } else if (lower.endsWith('.mp4') ||
-        lower.endsWith('.mov') ||
-        lower.endsWith('.webm')) {
-      return SizedBox(
-          width: 250, height: 180, child: VideoPreviewWidget(url: url));
-    } else if (lower.endsWith('.pdf') ||
-        lower.endsWith('.doc') ||
-        lower.endsWith('.docx') ||
-        lower.endsWith('.xls') ||
-        lower.endsWith('.xlsx')) {
-      return SizedBox(
-          width: 80,
-          height: 80,
-          child: FilePreviewWidget(url: url, fileName: url));
+  Widget _buildMediaPreview(BuildContext context, String url) {
+    if (url.toLowerCase().endsWith('.mp4')) {
+      return VideoPreviewWidget(url: url);
     } else {
-      return SizedBox(
-          width: 80,
-          height: 80,
-          child: FilePreviewWidget(url: url, fileName: url));
-    }
-  }
-
-  Widget buildMediaPreviewSmart(BuildContext context, String url) {
-    final lower = url.toLowerCase();
-    // إذا كان الامتداد واضح أو الرابط يحتوي على كلمة image
-    if (lower.endsWith('.jpg') ||
-        lower.endsWith('.jpeg') ||
-        lower.endsWith('.png') ||
-        lower.endsWith('.gif') ||
-        lower.contains('image')) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          url,
-          width: 250,
-          height: 180,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) =>
-              FilePreviewWidget(url: url, fileName: url),
+      return Image.network(
+        url,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Icon(
+          Icons.image_not_supported,
+          color: Colors.grey,
         ),
-      );
-    } else if (lower.endsWith('.mp4') ||
-        lower.endsWith('.mov') ||
-        lower.endsWith('.webm')) {
-      return SizedBox(
-          width: 250, height: 180, child: VideoPreviewWidget(url: url));
-    } else if (lower.endsWith('.pdf') ||
-        lower.endsWith('.doc') ||
-        lower.endsWith('.docx') ||
-        lower.endsWith('.xls') ||
-        lower.endsWith('.xlsx')) {
-      return SizedBox(
-          width: 80,
-          height: 80,
-          child: FilePreviewWidget(url: url, fileName: url));
-    } else {
-      // محاولة عرض كصورة أولاً، إذا فشل يعرض كملف
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          url,
-          width: 250,
-          height: 180,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) =>
-              FilePreviewWidget(url: url, fileName: url),
-        ),
-      );
-    }
-  }
-
-  Widget buildMediaFull(String url) {
-    final lower = url.toLowerCase();
-    if (lower.endsWith('.jpg') ||
-        lower.endsWith('.jpeg') ||
-        lower.endsWith('.png') ||
-        lower.endsWith('.gif') ||
-        lower.contains('image')) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Image.network(
-          url,
-          width: double.infinity,
-          height: 320,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) =>
-              FilePreviewWidget(url: url, fileName: url),
-        ),
-      );
-    } else if (lower.endsWith('.mp4') ||
-        lower.endsWith('.mov') ||
-        lower.endsWith('.webm') ||
-        lower.contains('video')) {
-      return SizedBox(
-        width: double.infinity,
-        height: 320,
-        child: VideoPreviewWidget(url: url),
-      );
-    } else if (lower.endsWith('.pdf')) {
-      // عرض صفحة أولى من PDF أو زر فتح
-      return GestureDetector(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) =>
-                  PdfViewerScreen(url: url, title: url.split('/').last),
-            ),
-          );
-        },
-        child: Container(
-          width: double.infinity,
-          height: 320,
-          color: Colors.grey[200],
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.picture_as_pdf, size: 60, color: Colors.red[700]),
-                const SizedBox(height: 12),
-                Text('PDF anzeigen',
-                    style: TextStyle(fontSize: 18, color: Colors.black87)),
-                const SizedBox(height: 8),
-                Text(url.split('/').last,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              ],
-            ),
-          ),
-        ),
-      );
-    } else {
-      // أي نوع ملف آخر
-      return SizedBox(
-        width: double.infinity,
-        height: 120,
-        child: FilePreviewWidget(url: url, fileName: url),
       );
     }
   }
@@ -547,235 +390,177 @@ class _RequestPostCardState extends State<RequestPostCard> {
   @override
   Widget build(BuildContext context) {
     final mediaList = widget.request.images ?? [];
-    String formattedDate =
+    final formattedDate =
         '${widget.request.createdAt.toLocal().day}/${widget.request.createdAt.toLocal().month}/${widget.request.createdAt.toLocal().year}';
-    String formattedTime =
+    final formattedTime =
         '${widget.request.createdAt.toLocal().hour}:${widget.request.createdAt.toLocal().minute.toString().padLeft(2, '0')}';
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      margin: const EdgeInsets.only(bottom: 16.0),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.assignment,
-                        color: Theme.of(context).primaryColor, size: 24),
-                    const SizedBox(width: 8),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Serviceanfrage: ${_getServiceDisplayName(widget.request.serviceId)}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            '$formattedTime - $formattedDate',
-                            style: const TextStyle(
-                                color: Colors.grey, fontSize: 12),
-                          ),
-                        ],
+                      child: Text(
+                        'Serviceanfrage:  ${_getServiceDisplayName(widget.request.serviceId)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
+                    ),
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert),
+                      onSelected: (value) {
+                        // Handle menu item selection
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'report',
+                          child: Text('Problem melden'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 15),
-
-                // الوصف مع "إظهار المزيد"
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.request.description,
-                      style: const TextStyle(fontSize: 16),
-                      maxLines:
-                          _showFullDescription ? null : _maxDescriptionLines,
-                      overflow: TextOverflow.fade,
-                    ),
-                    // استخدام LayoutBuilder هنا للحصول على العرض الفعلي للـ Text widget
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final textPainter = TextPainter(
-                          text: TextSpan(
-                              text: widget.request.description,
-                              style: const TextStyle(fontSize: 16)),
-                          maxLines: _maxDescriptionLines,
-                          textDirection: TextDirection.ltr,
-                        )..layout(maxWidth: constraints.maxWidth);
-
-                        if (textPainter.didExceedMaxLines) {
-                          return TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _showFullDescription = !_showFullDescription;
-                              });
-                            },
-                            child: Text(_showFullDescription
-                                ? 'Weniger anzeigen'
-                                : 'Mehr anzeigen'),
-                          );
-                        }
-                        return const SizedBox
-                            .shrink(); // لا شيء إذا لم يتجاوز الحد الأقصى
-                      },
-                    ),
-                  ],
+                const SizedBox(height: 4),
+                Text(
+                  '$formattedDate um $formattedTime',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
                 ),
-                const SizedBox(height: 10),
-
-                // عرض تفاصيل الخدمة (serviceDetails)
-                if (widget.request.serviceDetails.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: widget.request.serviceDetails.entries
-                        .where((e) => e.key != 'uploadedImageUrls')
-                        .map((entry) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2.0),
-                        child: Text(
-                          '${entry.key.replaceAll('_', ' ').toTitleCase()}: ${entry.value.toString()}',
-                          style: const TextStyle(
-                              fontSize: 14, color: Colors.black87),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                const SizedBox(height: 15),
-
-                // عرض الصور (كألبوم/صف واحد)
-                if (widget.request.images != null &&
-                    widget.request.images!.isNotEmpty)
-                  SizedBox(
-                    height: 180, // ارتفاع مناسب لعرض الصور
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: widget.request.images!.length,
-                      itemBuilder: (context, imgIndex) {
-                        final mediaUrl = widget.request.images![imgIndex];
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: buildMediaPreviewSmart(context, mediaUrl),
-                        );
-                      },
-                    ),
-                  ),
-                const SizedBox(height: 15),
-
-                // عرض الميزانية التقديرية
-                if (widget.request.budget != null)
-                  Text(
-                    'Geschätztes Budget: ${widget.request.budget!.toStringAsFixed(2)} €', // ميزانية تقديرية
-                    style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green),
-                  ),
-                const Divider(height: 25),
-
-                // أزرار الإجراءات
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          print(
-                              'Angebot senden für ${widget.request.requestId}'); // تقديم عرض
-                          // TODO: Implement logic to make an offer
-                        },
-                        icon: const Icon(Icons.send),
-                        label: const Text('Angebot senden'), // تقديم عرض
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          textStyle: const TextStyle(
-                              fontSize: 14), // حجم خط أصغر للأزرار
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          print(
-                              'Zusätzliche Informationen anfordern für ${widget.request.requestId}'); // طلب معلومات إضافية
-                          // TODO: Open a chat or send a message
-                        },
-                        icon: const Icon(Icons.help_outline),
-                        label: const Text('طلب معلومات'), // طلب معلومات
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Theme.of(context).primaryColor,
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(
-                                color: Theme.of(context).primaryColor),
-                          ),
-                          textStyle: const TextStyle(
-                              fontSize: 14), // حجم خط أصغر للأزرار
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    IconButton(
-                      onPressed: () {
-                        print(
-                            'Als Favorit speichern ${widget.request.requestId}'); // حفظ في المفضلة
-                        // TODO: Implement save/bookmark logic
-                      },
-                      icon: const Icon(Icons.favorite_border),
-                      color: Colors.grey[600],
-                      tooltip: 'Als Favorit speichern',
-                    ),
-                  ],
+                const SizedBox(height: 8),
+                Text(
+                  widget.request.description,
+                  style: const TextStyle(fontSize: 14),
+                  maxLines: _showFullDescription ? null : _maxDescriptionLines,
+                  overflow: _showFullDescription ? null : TextOverflow.ellipsis,
                 ),
+                if (_maxDescriptionLines <
+                    widget.request.description.split('\n').length)
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _showFullDescription = !_showFullDescription;
+                      });
+                    },
+                    child: Text(
+                      _showFullDescription
+                          ? 'Weniger anzeigen'
+                          : 'Mehr anzeigen',
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    ),
+                  ),
               ],
             ),
           ),
           if (mediaList.isNotEmpty)
             SizedBox(
-              height: 320,
-              child: PageView.builder(
-                controller: _mediaController,
-                itemCount: mediaList.length,
-                onPageChanged: (i) => setState(() => _currentPage = i),
-                itemBuilder: (context, i) => buildMediaFull(mediaList[i]),
+              height: 200,
+              child: Stack(
+                children: [
+                  PageView.builder(
+                    controller: _mediaController,
+                    itemCount: mediaList.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentPage = index;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      return _buildMediaPreview(context, mediaList[index]);
+                    },
+                  ),
+                  if (mediaList.length > 1)
+                    Positioned(
+                      bottom: 8,
+                      left: 0,
+                      right: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          mediaList.length,
+                          (index) => Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _currentPage == index
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey.withOpacity(0.5),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            ),
-          if (mediaList.length > 1)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                mediaList.length,
-                (i) => Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 3, vertical: 8),
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: i == _currentPage ? Colors.blue : Colors.grey[400],
+            ), // معلومات الموقع وأزرار الإجراءات
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.request.location != null)
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on,
+                                size: 16, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                "${widget.request.location!.latitude.toStringAsFixed(2)}, ${widget.request.location!.longitude.toStringAsFixed(2)}",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
                   ),
                 ),
-              ),
+                ElevatedButton(
+                  onPressed: () {
+                    print('عرض السعر مضغوط');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  ),
+                  child: const Text('Angebot erstellen'),
+                ),
+              ],
             ),
+          ),
         ],
       ),
     );
