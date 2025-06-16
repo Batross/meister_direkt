@@ -2,16 +2,13 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:video_player/video_player.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../shared/providers/user_provider.dart';
 import '../../data/models/request_model.dart';
-import '../../customer/widgets/video_preview_widget.dart';
 
-// Extension بسيطة لتحويل String إلى Title Case لأغراض العرض
+// Einfache Extension zur Umwandlung von String in Title Case für Anzeigezwecke
 extension StringCasingExtension on String {
   String toCapitalized() =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
@@ -86,85 +83,6 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
     }
   }
 
-  Widget _buildMediaPreview(List<String> files, int index, String requestId) {
-    if (index >= files.length) return const SizedBox.shrink();
-
-    final file = files[index].toLowerCase();
-
-    if (file.endsWith('.mp4')) {
-      if (_videoController?.dataSource != files[index]) {
-        _videoController?.dispose();
-        _videoController = VideoPlayerController.network(files[index])
-          ..initialize().then((_) {
-            if (mounted) setState(() {});
-            _videoController?.play();
-            _videoController?.setVolume(0);
-          });
-      }
-
-      return AspectRatio(
-        aspectRatio: 16 / 9,
-        child: _videoController?.value.isInitialized ?? false
-            ? VideoPlayer(_videoController!)
-            : const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (file.endsWith('.jpg') ||
-        file.endsWith('.jpeg') ||
-        file.endsWith('.png') ||
-        file.endsWith('.gif')) {
-      return CachedNetworkImage(
-        imageUrl: files[index],
-        fit: BoxFit.cover,
-        placeholder: (context, url) => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        errorWidget: (context, url, error) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 32, color: Colors.red),
-              const SizedBox(height: 8),
-              Text('Fehler beim Laden des Bildes',
-                  style: TextStyle(color: Colors.grey[600])),
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (file.endsWith('.pdf')) {
-      return SfPdfViewer.network(
-        files[index],
-        canShowPaginationDialog: false,
-        enableDoubleTapZooming: false,
-        onDocumentLoaded: (details) {
-          // بعد 5 ثواني انتقل للملف التالي
-          Future.delayed(const Duration(seconds: 5), () {
-            if (index < files.length - 1 && mounted) {
-              _playNextFile(files, index + 1, requestId);
-            }
-          });
-        },
-      );
-    }
-
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.insert_drive_file, size: 48, color: Colors.grey),
-          SizedBox(height: 8),
-          Text(
-            'Dateiformat wird nicht unterstützt',
-            style: TextStyle(color: Colors.grey),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _fetchRequests({bool refresh = false}) async {
     if (_isLoading) return;
     setState(() => _isLoading = true);
@@ -231,16 +149,14 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
-            // رأسية مطابقة لرأسية الزبائن
+            // Header ähnlich dem Kunden-Header
             SliverAppBar(
               floating: true,
               snap: true,
               pinned: false,
               backgroundColor: Theme.of(context).primaryColor,
-              elevation: 2,
-              automaticallyImplyLeading: false,
-              expandedHeight:
-                  38, // تقليل الارتفاع أكثر لتقليل المسافة بين اسم التطبيق ومحرك البحث
+              elevation: 2, automaticallyImplyLeading: false,
+              expandedHeight: 0, // إزالة المساحة تماماً
               titleSpacing: 8,
               toolbarHeight: 48,
               title: Row(
@@ -281,9 +197,10 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                 ],
               ),
               bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(44),
+                preferredSize: const Size.fromHeight(36), // تقليل أكثر
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
+                  padding: const EdgeInsets.fromLTRB(
+                      8, 0, 8, 0), // إزالة الـ padding السفلي تماماً
                   child: Row(
                     children: [
                       Expanded(
@@ -338,9 +255,8 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                   ),
                 ),
               ),
-              flexibleSpace: const SizedBox(
-                  height: 4), // تقليل المسافة بين اسم التطبيق ومحرك البحث
-            ), // مساحة إعلانية أسفل الرأسية
+              // إزالة flexibleSpace تماماً
+            ), // Werbefläche unter dem Header
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,7 +322,7 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                             ),
                             const SizedBox(height: 8),
                             const Text(
-                              'اكتشف فرص العمل الجديدة وقدم عروضك مباشرة للعملاء.',
+                              'Entdecke neue Arbeitsmöglichkeiten und biete direkt den Kunden an.',
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 12,
@@ -436,7 +352,7 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                   ),
                   const SizedBox(
                       height:
-                          4), // تقليل المسافة بين الإعلان والعنوان                // العنوان الرئيسي
+                          4), // Abstand zwischen Werbung und Titel reduzieren                // Haupttitel
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
@@ -448,11 +364,12 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                     ),
                   ),
                   const SizedBox(
-                      height: 2), // تقليل المسافة بين العنوان والمحتوى
+                      height:
+                          2), // Abstand zwischen Titel und Inhalt reduzieren
                 ],
               ),
             ),
-            // بعد المساحة الإعلانية، نكمل عرض الطلبات كما هو:
+            // Nach der Werbefläche setzen wir die Anzeige der Anfragen fort:
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               sliver: SliverList(
@@ -483,7 +400,7 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
   }
 }
 
-// Widget لتمثيل كرت الطلب (مشابه لمنشور فيسبوك)
+// Widget zur Darstellung der Anfragekarte (ähnlich einem Facebook-Post)
 class RequestPostCard extends StatefulWidget {
   final RequestModel request;
   const RequestPostCard({super.key, required this.request});
@@ -569,15 +486,15 @@ class _RequestPostCardState extends State<RequestPostCard> {
       margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 50, 8),
                   child: Text(
                     'Serviceanfrage: ${widget.request.serviceId}',
                     style: const TextStyle(
@@ -586,176 +503,233 @@ class _RequestPostCardState extends State<RequestPostCard> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Positioned(
-                  top: 4,
-                  right: 4,
-                  child: PopupMenuButton(
-                    icon: const Icon(Icons.more_vert, color: Colors.grey),
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'settings',
-                        child: Text('Settings'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    widget.request.description,
+                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (hasFiles)
+                  SizedBox(
+                    height: height,
+                    width: width,
+                    child: PageView.builder(
+                      itemCount: files.length,
+                      physics: const BouncingScrollPhysics(),
+                      onPageChanged: (i) => _handlePageChanged(i, files),
+                      itemBuilder: (context, i) {
+                        final url = files[i];
+                        final lower = url.toLowerCase();
+                        if (lower.contains('.mp4') ||
+                            lower.contains('.mov') ||
+                            lower.contains('.avi')) {
+                          if (_currentVideoIndex == i &&
+                              _currentVideoController != null &&
+                              _currentVideoController!.value.isInitialized) {
+                            return AspectRatio(
+                              aspectRatio:
+                                  _currentVideoController!.value.aspectRatio,
+                              child: VideoPlayer(_currentVideoController!),
+                            );
+                          } else {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                        } else if (lower.contains('.pdf')) {
+                          return SfPdfViewer.network(url);
+                        } else if (lower.contains('.txt')) {
+                          return FutureBuilder<String>(
+                            future: _loadTextFile(url),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              }
+                              if (snapshot.hasError) {
+                                return const Center(
+                                    child: Text(
+                                        'Fehler beim Laden der Textdatei'));
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Text(snapshot.data ?? '',
+                                    style: const TextStyle(fontSize: 16)),
+                              );
+                            },
+                          );
+                        } else {
+                          return CachedNetworkImage(
+                            imageUrl: url,
+                            fit: BoxFit.cover,
+                            width: width,
+                            placeholder: (context, url) => const Center(
+                                child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) => const Center(
+                                child: Icon(Icons.broken_image,
+                                    size: 60, color: Colors.grey)),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                if (widget.request.location != null)
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.location_on,
+                            size: 16, color: Colors.grey),
+                        const SizedBox(width: 4),
+                        Text(
+                          "${widget.request.location!.latitude.toStringAsFixed(2)}, ${widget.request.location!.longitude.toStringAsFixed(2)}",
+                          style:
+                              const TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: const Text('Angebot abgeben',
+                              style: TextStyle(fontSize: 14)),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        flex: 2,
+                        child: OutlinedButton(
+                          onPressed: () {},
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Theme.of(context).primaryColor,
+                            side: BorderSide(
+                                color: Theme.of(context).primaryColor),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: const Text('Mehr Info fragen',
+                              style: TextStyle(fontSize: 14)),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.bookmark_border),
+                          tooltip: 'Speichern',
+                          color: Colors.grey[600],
+                          padding: const EdgeInsets.all(12),
+                        ),
                       ),
                     ],
-                    onSelected: (value) {
-                      // Handle menu actions
-                    },
                   ),
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                widget.request.description,
-                style: const TextStyle(fontSize: 15, color: Colors.black87),
-              ),
-            ),
-            const SizedBox(height: 12),
-            if (hasFiles)
-              SizedBox(
-                height: height,
-                width: width,
-                child: PageView.builder(
-                  itemCount: files.length,
-                  physics: const BouncingScrollPhysics(),
-                  onPageChanged: (i) => _handlePageChanged(i, files),
-                  itemBuilder: (context, i) {
-                    final url = files[i];
-                    final lower = url.toLowerCase();
-                    if (lower.contains('.mp4') ||
-                        lower.contains('.mov') ||
-                        lower.contains('.avi')) {
-                      if (_currentVideoIndex == i &&
-                          _currentVideoController != null &&
-                          _currentVideoController!.value.isInitialized) {
-                        return AspectRatio(
-                          aspectRatio:
-                              _currentVideoController!.value.aspectRatio,
-                          child: VideoPlayer(_currentVideoController!),
-                        );
-                      } else {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                    } else if (lower.contains('.pdf')) {
-                      return SfPdfViewer.network(url);
-                    } else if (lower.contains('.txt')) {
-                      return FutureBuilder<String>(
-                        future: _loadTextFile(url),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          if (snapshot.hasError) {
-                            return const Center(
-                                child: Text('خطأ في تحميل الملف النصي'));
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(snapshot.data ?? '',
-                                style: const TextStyle(fontSize: 16)),
-                          );
-                        },
-                      );
-                    } else {
-                      return CachedNetworkImage(
-                        imageUrl: url,
-                        fit: BoxFit.cover,
-                        width: width,
-                        placeholder: (context, url) =>
-                            const Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) => const Center(
-                            child: Icon(Icons.broken_image,
-                                size: 60, color: Colors.grey)),
-                      );
-                    }
-                  },
-                ),
-              ),
-            if (widget.request.location != null)
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  children: [
-                    const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(
-                      "${widget.request.location!.latitude.toStringAsFixed(2)}, ${widget.request.location!.longitude.toStringAsFixed(2)}",
-                      style: const TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text('تقديم عرض',
-                          style: TextStyle(fontSize: 14)),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    flex: 2,
-                    child: OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Theme.of(context).primaryColor,
-                        side: BorderSide(color: Theme.of(context).primaryColor),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text('طلب معلومات',
-                          style: TextStyle(fontSize: 14)),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.bookmark_border),
-                      tooltip: 'حفظ',
-                      color: Colors.grey[600],
-                      padding: const EdgeInsets.all(12),
-                    ),
+          ),
+          // زر الثلاث نقاط في الزاوية العلوية اليمنى للمنشور
+          Positioned(
+            top: 12,
+            right: 12,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
+              child: PopupMenuButton(
+                icon: const Icon(Icons.more_vert, color: Colors.grey, size: 20),
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'save',
+                    child: Row(
+                      children: [
+                        Icon(Icons.bookmark_border, size: 18),
+                        SizedBox(width: 8),
+                        Text('Speichern'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'share',
+                    child: Row(
+                      children: [
+                        Icon(Icons.share, size: 18),
+                        SizedBox(width: 8),
+                        Text('Teilen'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'report',
+                    child: Row(
+                      children: [
+                        Icon(Icons.report_outlined, size: 18),
+                        SizedBox(width: 8),
+                        Text('Melden'),
+                      ],
+                    ),
+                  ),
+                ],
+                onSelected: (value) {
+                  // Handle menu actions
+                  switch (value) {
+                    case 'save':
+                      // منطق الحفظ
+                      break;
+                    case 'share':
+                      // منطق المشاركة
+                      break;
+                    case 'report':
+                      // منطق الإبلاغ
+                      break;
+                  }
+                },
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Future<String> _loadTextFile(String url) async {
-    // يمكنك استخدام http.get أو أي طريقة لتحميل النص من url
-    // هنا مثال بسيط:
+    // Sie können http.get oder eine andere Methode verwenden, um Text von url zu laden
+    // Hier ist ein einfaches Beispiel:
     // final response = await http.get(Uri.parse(url));
     // return response.body;
-    return 'نص تجريبي من الملف النصي';
+    return 'Beispieltext aus der Textdatei';
   }
 }
