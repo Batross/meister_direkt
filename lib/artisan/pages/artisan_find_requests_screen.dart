@@ -574,15 +574,35 @@ class _RequestPostCardState extends State<RequestPostCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: Text(
-                'Serviceanfrage: ${widget.request.serviceId}',
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+            Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                  child: Text(
+                    'Serviceanfrage: ${widget.request.serviceId}',
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: PopupMenuButton(
+                    icon: const Icon(Icons.more_vert, color: Colors.grey),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'settings',
+                        child: Text('Settings'),
+                      ),
+                    ],
+                    onSelected: (value) {
+                      // Handle menu actions
+                    },
+                  ),
+                ),
+              ],
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -654,73 +674,76 @@ class _RequestPostCardState extends State<RequestPostCard> {
                   },
                 ),
               ),
+            if (widget.request.location != null)
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  children: [
+                    const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Text(
+                      "${widget.request.location!.latitude.toStringAsFixed(2)}, ${widget.request.location!.longitude.toStringAsFixed(2)}",
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  if (widget.request.location != null)
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on,
-                            size: 16, color: Colors.grey),
-                        const SizedBox(width: 4),
-                        Text(
-                          "${widget.request.location!.latitude.toStringAsFixed(2)}, ${widget.request.location!.longitude.toStringAsFixed(2)}",
-                          style:
-                              const TextStyle(fontSize: 14, color: Colors.grey),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                      ],
-                    ),
-                  const Spacer(),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
+                      child: const Text('تقديم عرض',
+                          style: TextStyle(fontSize: 14)),
                     ),
-                    child: const Text('Angebot erstellen'),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    flex: 2,
+                    child: OutlinedButton(
+                      onPressed: () {},
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Theme.of(context).primaryColor,
+                        side: BorderSide(color: Theme.of(context).primaryColor),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: const Text('طلب معلومات',
+                          style: TextStyle(fontSize: 14)),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.bookmark_border),
+                      tooltip: 'حفظ',
+                      color: Colors.grey[600],
+                      padding: const EdgeInsets.all(12),
+                    ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 8),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: PopupMenuButton(
-                icon: const Icon(Icons.more_vert, color: Colors.black),
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'settings',
-                    child: Text('Settings'),
-                  ),
-                ],
-                onSelected: (value) {
-                  // Handle menu actions
-                },
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Angebot abgeben'),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Mehr Info fragen'),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Speichern'),
-                ),
-              ],
             ),
           ],
         ),
