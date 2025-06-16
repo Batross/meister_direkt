@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:video_player/video_player.dart';
 import '../../shared/providers/user_provider.dart';
 import '../../data/models/request_model.dart';
 import '../../customer/widgets/video_preview_widget.dart';
@@ -207,17 +208,52 @@ class RequestPostCard extends StatefulWidget {
 class _RequestPostCardState extends State<RequestPostCard> {
   int _currentFile = 0;
   late final PageController _fileController;
+  List<VideoPlayerController?> _videoControllers = [];
 
   @override
   void initState() {
     super.initState();
     _fileController = PageController();
+    _initVideoControllers();
+  }
+
+  void _initVideoControllers() {
+    final files = widget.request.images ?? [];
+    _videoControllers = List.generate(files.length, (i) {
+      final url = files[i].toLowerCase();
+      if (url.contains('.mp4') ||
+          url.contains('.mov') ||
+          url.contains('.avi')) {
+        return VideoPlayerController.network(files[i])..setLooping(true);
+      }
+      return null;
+    });
+    for (var vc in _videoControllers) {
+      vc?.initialize();
+    }
   }
 
   @override
   void dispose() {
+    for (var vc in _videoControllers) {
+      vc?.dispose();
+    }
     _fileController.dispose();
     super.dispose();
+  }
+
+  void _handlePageChanged(int i) {
+    setState(() => _currentFile = i);
+    for (int idx = 0; idx < _videoControllers.length; idx++) {
+      final vc = _videoControllers[idx];
+      if (vc != null) {
+        if (idx == i) {
+          vc.play();
+        } else {
+          vc.pause();
+        }
+      }
+    }
   }
 
   @override
@@ -271,28 +307,29 @@ class _RequestPostCardState extends State<RequestPostCard> {
                 child: PageView.builder(
                   controller: _fileController,
                   itemCount: files.length,
-                  onPageChanged: (i) => setState(() => _currentFile = i),
+                  onPageChanged: _handlePageChanged,
                   itemBuilder: (context, i) {
                     final url = files[i];
                     final lower = url.toLowerCase();
-                    if (lower.endsWith('.mp4') ||
-                        lower.endsWith('.mov') ||
-                        lower.endsWith('.avi')) {
-                      // فيديو
-                      return VideoPreviewWidget(url: url);
-                    } else if (lower.endsWith('.pdf')) {
-                      // PDF
+                    if (lower.contains('.mp4') ||
+                        lower.contains('.mov') ||
+                        lower.contains('.avi')) {
+                      final vc = _videoControllers[i];
+                      if (vc != null && vc.value.isInitialized) {
+                        return AspectRatio(
+                          aspectRatio: vc.value.aspectRatio,
+                          child: VideoPlayer(vc),
+                        );
+                      } else {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                    } else if (lower.contains('.pdf')) {
+                      // PDF: عرض مباشرة باستخدام صورة مصغرة أو مكتبة PDF
                       return Center(
-                        child: ElevatedButton.icon(
-                          icon: const Icon(Icons.picture_as_pdf),
-                          label: const Text('عرض PDF'),
-                          onPressed: () {
-                            // TODO: فتح PDF في شاشة منفصلة
-                          },
-                        ),
+                        child:
+                            Text('PDF File (عرض مباشر يتطلب مكتبة PDFViewer)'),
                       );
-                    } else if (lower.endsWith('.txt')) {
-                      // نص
+                    } else if (lower.contains('.txt')) {
                       return FutureBuilder<String>(
                         future: _loadTextFile(url),
                         builder: (context, snapshot) {
@@ -312,12 +349,8 @@ class _RequestPostCardState extends State<RequestPostCard> {
                           );
                         },
                       );
-                    } else if (lower.endsWith('.jpg') ||
-                        lower.endsWith('.jpeg') ||
-                        lower.endsWith('.png') ||
-                        lower.endsWith('.gif') ||
-                        lower.endsWith('.webp')) {
-                      // صورة
+                    } else {
+                      // جرب كصورة
                       return Image.network(
                         url,
                         fit: BoxFit.cover,
@@ -327,9 +360,6 @@ class _RequestPostCardState extends State<RequestPostCard> {
                                 child: Icon(Icons.broken_image,
                                     size: 60, color: Colors.grey)),
                       );
-                    } else {
-                      // إذا كان الملف ليس من الأنواع المدعومة، تجاهله ولا تعرض شيء
-                      return const SizedBox.shrink();
                     }
                   },
                 ),
