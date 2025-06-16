@@ -1,0 +1,1 @@
+تم حذف artisan_home_header.dart بناءً على طلب المستخدم.

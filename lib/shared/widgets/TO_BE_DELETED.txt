@@ -1,0 +1,1 @@
+تم حذف ملفات الهيدر المخصصة: artisan_home_header.dart و customer_home_header.dart بناءً على طلبك.

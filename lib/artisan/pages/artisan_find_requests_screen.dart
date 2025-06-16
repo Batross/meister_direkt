@@ -34,79 +34,175 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
     final user = userProvider.currentUser;
 
     if (user == null) {
-      return const Center(child: CircularProgressIndicator()); // فقط محتوى
+      return const Center(child: CircularProgressIndicator());
     }
 
-    return StreamBuilder<QuerySnapshot>(
-      // جلب الطلبات التي حالتها 'pending_offers' ولم يتم تعيين حرفي لها بعد
-      stream: FirebaseFirestore.instance
-          .collection('requests')
-          .where('status', isEqualTo: 'pending_offers')
-          .where('acceptedArtisanId',
-              isNull: true) // هذا هو الحقل الصحيح في RequestModel
-          .orderBy('createdAt', descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          // رسالة خطأ أكثر وضوحاً
-          return Center(
-              child: Text(
-                  'خطأ في تحميل الطلبات: ${snapshot.error}\n\nتأكد من إنشاء الفهارس المطلوبة في Firestore Console.'));
-        }
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                'Derzeit keine neuen Anfragen verfügbar.', // لا توجد طلبات جديدة حاليًا.
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            ),
-          );
-        }
-
-        List<RequestModel> requests = snapshot.data!.docs
-            .map((doc) => RequestModel.fromSnapshot(doc))
-            .toList();
-
-        return SingleChildScrollView(
-          child: Column(
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          floating: true,
+          snap: true,
+          pinned: false,
+          backgroundColor: Theme.of(context).primaryColor,
+          elevation: 2,
+          automaticallyImplyLeading: false,
+          expandedHeight: 60,
+          titleSpacing: 12,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Neue Serviceanfragen', // طلبات الخدمات الجديدة
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: requests.length,
-                      itemBuilder: (context, index) {
-                        final request = requests[index];
-                        return RequestPostCard(request: request);
-                      },
-                    ),
-                  ],
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Colors.white, size: 24),
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.notifications, color: Colors.white, size: 24),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              const Text(
+                'MeisterDirekt',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  letterSpacing: 1.2,
                 ),
               ),
             ],
           ),
-        );
-      },
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(56),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          hintText: 'Suche nach Aufträgen, Kunden oder Angeboten...',
+                          hintStyle: TextStyle(fontSize: 13),
+                          border: InputBorder.none,
+                          prefixIcon: Icon(Icons.search, color: Color(0xFF2A5C82)),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                        ),
+                        onTap: () {},
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Material(
+                    color: Colors.white,
+                    shape: const CircleBorder(),
+                    child: IconButton(
+                      icon: const Icon(Icons.tune, color: Color(0xFF2A5C82)),
+                      onPressed: () {},
+                      tooltip: 'Filter',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return StreamBuilder<QuerySnapshot>(
+                // جلب الطلبات التي حالتها 'pending_offers' ولم يتم تعيين حرفي لها بعد
+                stream: FirebaseFirestore.instance
+                    .collection('requests')
+                    .where('status', isEqualTo: 'pending_offers')
+                    .where('acceptedArtisanId',
+                        isNull: true) // هذا هو الحقل الصحيح في RequestModel
+                    .orderBy('createdAt', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    // رسالة خطأ أكثر وضوحاً
+                    return Center(
+                        child: Text(
+                            'خطأ في تحميل الطلبات: ${snapshot.error}\n\nتأكد من إنشاء الفهارس المطلوبة في Firestore Console.'));
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Text(
+                          'Derzeit keine neuen Anfragen verfügbar.', // لا توجد طلبات جديدة حاليًا.
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                        ),
+                      ),
+                    );
+                  }
+
+                  List<RequestModel> requests = snapshot.data!.docs
+                      .map((doc) => RequestModel.fromSnapshot(doc))
+                      .toList();
+
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  'Neue Serviceanfragen', // طلبات الخدمات الجديدة
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: requests.length,
+                                itemBuilder: (context, index) {
+                                  final request = requests[index];
+                                  return RequestPostCard(request: request);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+            childCount: 1,
+          ),
+        ),
+      ],
     );
   }
 }

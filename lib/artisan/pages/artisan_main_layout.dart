@@ -17,31 +17,10 @@ class _ArtisanMainLayoutState extends State<ArtisanMainLayout> {
     ArtisanProfileScreen(),
   ];
 
-  final List<String> _titles = [
-    'بحث عن الطلبات',
-    'طلباتي',
-    'الملف الشخصي',
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            floating: true,
-            snap: true,
-            pinned: false,
-            expandedHeight: 80,
-            title: Text(_titles[_currentIndex]),
-            centerTitle: true,
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
-          SliverFillRemaining(
-            child: _pages[_currentIndex],
-          ),
-        ],
-      ),
+      body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (i) => setState(() => _currentIndex = i),

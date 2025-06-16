@@ -29,165 +29,261 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
   @override
   Widget build(BuildContext context) {
     // الاستماع إلى تدفق الخدمات من ServiceRepository
-    return StreamBuilder<List<Service>>(
-      stream: Provider.of<ServiceRepository>(context).getServices(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(
-              child: Text('Fehler beim Laden der Services: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(
-              child: Text(
-                  'Keine Services gefunden. Bitte prüfen Sie initial_services.json und Firestore.'));
-        } else {
-          final services = snapshot.data!;
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-
-                // قسم الإعلان الكبير
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  width: double.infinity,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF4A90E2), Color(0xFF2A5C82)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          floating: true,
+          snap: true,
+          pinned: false,
+          backgroundColor: Theme.of(context).primaryColor,
+          elevation: 2,
+          automaticallyImplyLeading: false,
+          expandedHeight: 60,
+          titleSpacing: 12,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Colors.white, size: 24),
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
                   ),
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.network(
-                            'https://placehold.co/600x180/4A90E2/FFFFFF?text=Ad+Space',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              color: Colors.grey[300],
-                              child: Center(
-                                child: Text(
-                                  'Werbefläche',
-                                  style: TextStyle(color: Colors.grey[600]),
-                                ),
-                              ),
-                            ),
+                  IconButton(
+                    icon: const Icon(Icons.notifications, color: Colors.white, size: 24),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              const Text(
+                'MeisterDirekt',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(56),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
                           ),
-                        ),
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      child: TextField(
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          hintText: 'Suche nach Dienstleistungen oder Handwerkern...',
+                          hintStyle: TextStyle(fontSize: 13),
+                          border: InputBorder.none,
+                          prefixIcon: Icon(Icons.search, color: Color(0xFF2A5C82)),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                        ),
+                        onTap: () {},
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Material(
+                    color: Colors.white,
+                    shape: const CircleBorder(),
+                    child: IconButton(
+                      icon: const Icon(Icons.tune, color: Color(0xFF2A5C82)),
+                      onPressed: () {},
+                      tooltip: 'Filter',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        StreamBuilder<List<Service>>(
+          stream: Provider.of<ServiceRepository>(context).getServices(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator()));
+            } else if (snapshot.hasError) {
+              return SliverToBoxAdapter(
+                  child: Center(
+                      child: Text(
+                          'Fehler beim Laden der Services: ${snapshot.error}')));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const SliverToBoxAdapter(
+                  child: Center(
+                      child: Text(
+                          'Keine Services gefunden. Bitte prüfen Sie initial_services.json und Firestore.')));
+            } else {
+              final services = snapshot.data!;
+              return SliverToBoxAdapter(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+
+                      // قسم الإعلان الكبير
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        width: double.infinity,
+                        height: 180,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF4A90E2), Color(0xFF2A5C82)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Stack(
                           children: [
-                            const Text(
-                              'Erhalten Sie jetzt die besten Dienstleistungen!',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'خبراء في متناول يدك لجميع احتياجات منزلك.',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 14,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 15),
-                            ElevatedButton(
-                              onPressed: () {
-                                print('Discover More button pressed');
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: AppColors.primaryColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
+                            Positioned.fill(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Image.network(
+                                  'https://placehold.co/600x180/4A90E2/FFFFFF?text=Ad+Space',
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Container(
+                                    color: Colors.grey[300],
+                                    child: Center(
+                                      child: Text(
+                                        'Werbefläche',
+                                        style:
+                                            TextStyle(color: Colors.grey[600]),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
                               ),
-                              child: const Text('Mehr entdecken'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Erhalten Sie jetzt die besten Dienstleistungen!',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'خبراء في متناول يدك لجميع احتياجات منزلك.',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 14,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 15),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      print('Discover More button pressed');
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: AppColors.primaryColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 10),
+                                    ),
+                                    child: const Text('Mehr entdecken'),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          'Wählen Sie die gewünschte Dienstleistung aus:',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      // عرض كروت الخدمات
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 15.0,
+                            mainAxisSpacing: 15.0,
+                            childAspectRatio: 1.0,
+                          ),
+                          itemCount: services.length,
+                          itemBuilder: (context, index) {
+                            final service = services[index];
+                            return ServiceSelectionCard(
+                              service: service,
+                              onSelect: (selectedService) {
+                                print(
+                                    'Dienstleistung ausgewählt: ${selectedService.nameEn}');
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CreateOrderFormScreen(
+                                        service: selectedService),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    'Wählen Sie die gewünschte Dienstleistung aus:',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(height: 15),
-                // عرض كروت الخدمات
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 15.0,
-                      mainAxisSpacing: 15.0,
-                      childAspectRatio: 1.0,
-                    ),
-                    itemCount: services.length,
-                    itemBuilder: (context, index) {
-                      final service = services[index];
-                      return ServiceSelectionCard(
-                        service: service,
-                        onSelect: (selectedService) {
-                          print(
-                              'Dienstleistung ausgewählt: ${selectedService.nameEn}');
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CreateOrderFormScreen(
-                                  service: selectedService),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-      },
+              );
+            }
+          },
+        ),
+      ],
     );
   }
 }
