@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:video_player/video_player.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../../shared/providers/user_provider.dart';
 import '../../data/models/request_model.dart';
 import '../../customer/widgets/video_preview_widget.dart';
@@ -209,12 +210,28 @@ class _RequestPostCardState extends State<RequestPostCard> {
   int _currentFile = 0;
   late final PageController _fileController;
   List<VideoPlayerController?> _videoControllers = [];
+  Timer? _autoPageTimer;
 
   @override
   void initState() {
     super.initState();
     _fileController = PageController();
     _initVideoControllers();
+    _startAutoPage();
+  }
+
+  void _startAutoPage() {
+    _autoPageTimer?.cancel();
+    _autoPageTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      final files = widget.request.images ?? [];
+      if (files.length <= 1) return;
+      int next = (_currentFile + 1) % files.length;
+      _fileController.animateToPage(
+        next,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
   }
 
   void _initVideoControllers() {
@@ -238,6 +255,7 @@ class _RequestPostCardState extends State<RequestPostCard> {
     for (var vc in _videoControllers) {
       vc?.dispose();
     }
+    _autoPageTimer?.cancel();
     _fileController.dispose();
     super.dispose();
   }
@@ -307,7 +325,11 @@ class _RequestPostCardState extends State<RequestPostCard> {
                 child: PageView.builder(
                   controller: _fileController,
                   itemCount: files.length,
-                  onPageChanged: _handlePageChanged,
+                  onPageChanged: (i) {
+                    _handlePageChanged(i);
+                    _autoPageTimer?.cancel();
+                    _startAutoPage();
+                  },
                   itemBuilder: (context, i) {
                     final url = files[i];
                     final lower = url.toLowerCase();
@@ -324,11 +346,8 @@ class _RequestPostCardState extends State<RequestPostCard> {
                         return const Center(child: CircularProgressIndicator());
                       }
                     } else if (lower.contains('.pdf')) {
-                      // PDF: عرض مباشرة باستخدام صورة مصغرة أو مكتبة PDF
-                      return Center(
-                        child:
-                            Text('PDF File (عرض مباشر يتطلب مكتبة PDFViewer)'),
-                      );
+                      // عرض PDF مباشرة
+                      return SfPdfViewer.network(url);
                     } else if (lower.contains('.txt')) {
                       return FutureBuilder<String>(
                         future: _loadTextFile(url),
