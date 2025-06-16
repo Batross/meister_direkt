@@ -167,12 +167,13 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
 
                       // قسم الإعلان الكبير
                       Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16),
-                        padding: const EdgeInsets.all(20),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 6),
+                        padding: const EdgeInsets.all(12),
                         width: double.infinity,
                         constraints: const BoxConstraints(
-                          minHeight: 160,
-                          maxHeight: 200,
+                          minHeight: 100,
+                          maxHeight: 140,
                         ),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
@@ -180,13 +181,13 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              spreadRadius: 1,
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
+                              color: Colors.black.withOpacity(0.05),
+                              spreadRadius: 0.5,
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
@@ -194,9 +195,9 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                           children: [
                             Positioned.fill(
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
+                                borderRadius: BorderRadius.circular(8),
                                 child: Image.network(
-                                  'https://placehold.co/600x180/4A90E2/FFFFFF?text=Ad+Space',
+                                  'https://placehold.co/600x140/4A90E2/FFFFFF?text=Ad+Space',
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) =>
                                       Container(
@@ -220,7 +221,7 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                                   'Erhalten Sie jetzt die besten Dienstleistungen!',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 18,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                   maxLines: 2,
@@ -231,40 +232,38 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                                   'خبراء في متناول يدك لجميع احتياجات منزلك.',
                                   style: TextStyle(
                                     color: Colors.white70,
-                                    fontSize: 13,
+                                    fontSize: 12,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 10),
                                 ElevatedButton(
-                                  onPressed: () {
-                                    print('Discover More button pressed');
-                                  },
+                                  onPressed: () {},
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
-                                    foregroundColor: AppColors.primaryColor,
+                                    foregroundColor: Color(0xFF2A5C82),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 16, vertical: 8),
                                   ),
-                                  child: const Text(
-                                    'Mehr entdecken',
-                                    style: TextStyle(fontSize: 13),
-                                  ),
+                                  child: const Text('Mehr entdecken',
+                                      style: TextStyle(fontSize: 12)),
                                 ),
                               ],
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(
+                          height: 5), // Adjust spacing below the advertisement
+                      // Change the main title
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
-                          'Wählen Sie die gewünschte Dienstleistung aus:',
+                          'Aufträge suchen',
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall

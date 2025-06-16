@@ -339,23 +339,25 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
           // مساحة إعلانية أسفل الرأسية
           SliverToBoxAdapter(
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              padding: const EdgeInsets.all(20),
+              margin: const EdgeInsets.symmetric(
+                  horizontal: 4, vertical: 6), // تقليل الفراغ الجانبي والعلوي
+              padding: const EdgeInsets.all(12), // تقليل الحشو الداخلي
               width: double.infinity,
-              constraints: const BoxConstraints(minHeight: 120, maxHeight: 180),
+              constraints: const BoxConstraints(
+                  minHeight: 100, maxHeight: 150), // تقليل الارتفاع قليلاً
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Color(0xFF4A90E2), Color(0xFF2A5C82)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(10), // تقليل الحواف
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
+                    color: Colors.black.withOpacity(0.07),
+                    spreadRadius: 0.5,
+                    blurRadius: 3,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
@@ -363,7 +365,7 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                 children: [
                   Positioned.fill(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(10),
                       child: Image.network(
                         'https://placehold.co/600x180/4A90E2/FFFFFF?text=Ad+Space',
                         fit: BoxFit.cover,
