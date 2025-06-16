@@ -1,5 +1,6 @@
 // lib/artisan/pages/artisan_find_requests_screen.dart
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -211,27 +212,14 @@ class _RequestPostCardState extends State<RequestPostCard> {
   late final PageController _fileController;
   List<VideoPlayerController?> _videoControllers = [];
   Timer? _autoPageTimer;
+  List<VoidCallback?> _videoListeners = [];
 
   @override
   void initState() {
     super.initState();
     _fileController = PageController();
     _initVideoControllers();
-    _startAutoPage();
-  }
-
-  void _startAutoPage() {
-    _autoPageTimer?.cancel();
-    _autoPageTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      final files = widget.request.images ?? [];
-      if (files.length <= 1) return;
-      int next = (_currentFile + 1) % files.length;
-      _fileController.animateToPage(
-        next,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    });
+    _startAutoPageOrVideoListener(_currentFile);
   }
 
   void _initVideoControllers() {
@@ -241,13 +229,14 @@ class _RequestPostCardState extends State<RequestPostCard> {
       if (url.contains('.mp4') ||
           url.contains('.mov') ||
           url.contains('.avi')) {
-        return VideoPlayerController.network(files[i])..setLooping(true);
+        return VideoPlayerController.network(files[i])..setLooping(false);
       }
       return null;
     });
     for (var vc in _videoControllers) {
       vc?.initialize();
     }
+    _videoListeners = List.filled(files.length, null);
   }
 
   @override
@@ -255,23 +244,58 @@ class _RequestPostCardState extends State<RequestPostCard> {
     for (var vc in _videoControllers) {
       vc?.dispose();
     }
+    for (var listener in _videoListeners) {
+      if (listener != null) {
+        final idx = _videoListeners.indexOf(listener);
+        _videoControllers[idx]?.removeListener(listener);
+      }
+    }
     _autoPageTimer?.cancel();
     _fileController.dispose();
     super.dispose();
   }
 
+  void _startAutoPageOrVideoListener(int i) {
+    _autoPageTimer?.cancel();
+    // إذا كان فيديو، استمع لحدث الانتهاء
+    final vc = (i < _videoControllers.length) ? _videoControllers[i] : null;
+    if (vc != null) {
+      // إزالة أي مستمع سابق
+      if (_videoListeners[i] != null) {
+        vc.removeListener(_videoListeners[i]!);
+      }
+      // أضف مستمع جديد
+      _videoListeners[i] = () {
+        if (vc.value.position >= vc.value.duration &&
+            vc.value.isInitialized &&
+            !vc.value.isPlaying) {
+          // انتقل للملف التالي عند انتهاء الفيديو
+          _goToNextFile();
+        }
+      };
+      vc.addListener(_videoListeners[i]!);
+      vc.seekTo(Duration.zero);
+      vc.play();
+    } else {
+      // إذا لم يكن فيديو، استخدم مؤقت
+      _autoPageTimer = Timer(const Duration(seconds: 5), _goToNextFile);
+    }
+  }
+
+  void _goToNextFile() {
+    final files = widget.request.images ?? [];
+    if (files.length <= 1) return;
+    int next = (_currentFile + 1) % files.length;
+    _fileController.animateToPage(
+      next,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+  }
+
   void _handlePageChanged(int i) {
     setState(() => _currentFile = i);
-    for (int idx = 0; idx < _videoControllers.length; idx++) {
-      final vc = _videoControllers[idx];
-      if (vc != null) {
-        if (idx == i) {
-          vc.play();
-        } else {
-          vc.pause();
-        }
-      }
-    }
+    _startAutoPageOrVideoListener(i);
   }
 
   @override
@@ -328,7 +352,7 @@ class _RequestPostCardState extends State<RequestPostCard> {
                   onPageChanged: (i) {
                     _handlePageChanged(i);
                     _autoPageTimer?.cancel();
-                    _startAutoPage();
+                    _startAutoPageOrVideoListener(i);
                   },
                   itemBuilder: (context, i) {
                     final url = files[i];
