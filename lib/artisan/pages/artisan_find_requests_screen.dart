@@ -154,11 +154,11 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
               floating: true,
               snap: true,
               pinned: false,
-              backgroundColor: Theme.of(context).primaryColor,
-              elevation: 2, automaticallyImplyLeading: false,
+              backgroundColor: Theme.of(context).primaryColor, elevation: 2,
+              automaticallyImplyLeading: false,
               expandedHeight: 0, // إزالة المساحة تماماً
               titleSpacing: 8,
-              toolbarHeight: 48,
+              toolbarHeight: 36, // ضغط الارتفاع بدون تصغير العناصر
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -166,19 +166,21 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.menu,
-                            color: Colors.white, size: 22),
+                            color: Colors.white, size: 24), // تكبير الأيقونة
                         onPressed: () {
                           Scaffold.of(context).openDrawer();
                         },
                         padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
+                        constraints: const BoxConstraints(
+                            minWidth: 40, minHeight: 40), // تكبير المساحة
                       ),
                       IconButton(
                         icon: const Icon(Icons.notifications,
-                            color: Colors.white, size: 22),
+                            color: Colors.white, size: 24), // تكبير الأيقونة
                         onPressed: () {},
                         padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
+                        constraints: const BoxConstraints(
+                            minWidth: 40, minHeight: 40), // تكبير المساحة
                       ),
                     ],
                   ),
@@ -189,31 +191,30 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        letterSpacing: 1.1,
+                        fontSize: 18, // إرجاع الحجم الأصلي
+                        letterSpacing: 1.1, // إرجاع المسافة الأصلية
                       ),
                     ),
                   ),
                 ],
               ),
               bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(36), // تقليل أكثر
+                preferredSize: const Size.fromHeight(60),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                      8, 0, 8, 0), // إزالة الـ padding السفلي تماماً
+                  padding: const EdgeInsets.fromLTRB(8, 10, 8, 8),
                   child: Row(
                     children: [
                       Expanded(
                         child: Container(
-                          height: 36,
+                          height: 40, // جعل الارتفاع متناسق مع الأيقونات
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
-                                blurRadius: 2,
-                                offset: const Offset(0, 1),
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 3,
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
@@ -221,33 +222,38 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                             readOnly: true,
                             decoration: const InputDecoration(
                               hintText: 'Suche nach Aufträgen oder Kunden...',
-                              hintStyle: TextStyle(fontSize: 12),
+                              hintStyle: TextStyle(fontSize: 14),
                               border: InputBorder.none,
                               prefixIcon: Icon(Icons.search,
-                                  color: Color(0xFF2A5C82), size: 18),
+                                  color: Color(0xFF2A5C82), size: 20),
                               contentPadding: EdgeInsets.symmetric(
-                                  vertical: -4, horizontal: 6),
+                                  vertical: 8,
+                                  horizontal: 8), // تقليل المسافة الرأسية
                             ),
                             onTap: () {},
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 10),
                       Material(
                         color: Colors.white,
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
                         child: SizedBox(
-                          width: 36,
-                          height: 36,
+                          width: 40, // جعل الحجم متناسق مع الأيقونات الأخرى
+                          height: 40,
                           child: IconButton(
                             icon: const Icon(Icons.tune,
-                                color: Color(0xFF2A5C82), size: 20),
+                                color: Color(0xFF2A5C82),
+                                size: 20), // نفس حجم أيقونة القائمة
                             onPressed: () {},
                             tooltip: 'Filter',
                             padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
+                            constraints: const BoxConstraints(
+                              minWidth: 24,
+                              minHeight: 24,
+                            ),
                           ),
                         ),
                       ),
@@ -262,13 +268,14 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.fromLTRB(
+                        4, 4, 4, 0), // إضافة هامش علوي بسيط جداً
+                    padding: const EdgeInsets.fromLTRB(
+                        12, 14, 12, 12), // تقليل padding top قليلاً
                     width: double.infinity,
                     constraints: const BoxConstraints(
-                      minHeight: 100,
-                      maxHeight: 140,
+                      minHeight: 120,
+                      maxHeight: 160,
                     ),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
@@ -480,10 +487,12 @@ class _RequestPostCardState extends State<RequestPostCard> {
   Widget build(BuildContext context) {
     final files = widget.request.images ?? [];
     final hasFiles = files.isNotEmpty;
-    final height = MediaQuery.of(context).size.height * 0.45;
+    final height =
+        MediaQuery.of(context).size.height * 0.40; // تقليل ارتفاع الصورة قليلاً
     final width = MediaQuery.of(context).size.width;
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
+      margin: const EdgeInsets.symmetric(
+          vertical: 10, horizontal: 2), // تقليل الهوامش الجانبية
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Stack(
@@ -494,23 +503,27 @@ class _RequestPostCardState extends State<RequestPostCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 50, 8),
+                  padding: const EdgeInsets.fromLTRB(
+                      12, 10, 44, 6), // تقليل الهوامش العلوية والجانبية
                   child: Text(
-                    'Serviceanfrage: ${widget.request.serviceId}',
+                    'Serviceanfrage:  {widget.request.serviceId}',
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold), // تقليل حجم الخط
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12), // تقليل الهامش الجانبي
                   child: Text(
                     widget.request.description,
-                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                    style: const TextStyle(
+                        fontSize: 14, color: Colors.black87), // تقليل حجم الخط
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8), // تقليل المسافة
                 if (hasFiles)
                   SizedBox(
                     height: height,
@@ -554,9 +567,10 @@ class _RequestPostCardState extends State<RequestPostCard> {
                                         'Fehler beim Laden der Textdatei'));
                               }
                               return Padding(
-                                padding: const EdgeInsets.all(16.0),
+                                padding: const EdgeInsets.all(
+                                    12.0), // تقليل الهامش الداخلي
                                 child: Text(snapshot.data ?? '',
-                                    style: const TextStyle(fontSize: 16)),
+                                    style: const TextStyle(fontSize: 15)),
                               );
                             },
                           );
@@ -569,7 +583,8 @@ class _RequestPostCardState extends State<RequestPostCard> {
                                 child: CircularProgressIndicator()),
                             errorWidget: (context, url, error) => const Center(
                                 child: Icon(Icons.broken_image,
-                                    size: 60, color: Colors.grey)),
+                                    size: 50,
+                                    color: Colors.grey)), // تقليل حجم الأيقونة
                           );
                         }
                       },
@@ -577,25 +592,26 @@ class _RequestPostCardState extends State<RequestPostCard> {
                   ),
                 if (widget.request.location != null)
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6), // تقليل الهوامش
                     child: Row(
                       children: [
                         const Icon(Icons.location_on,
-                            size: 16, color: Colors.grey),
-                        const SizedBox(width: 4),
+                            size: 15, color: Colors.grey), // تقليل حجم الأيقونة
+                        const SizedBox(width: 3),
                         Text(
                           "${widget.request.location!.latitude.toStringAsFixed(2)}, ${widget.request.location!.longitude.toStringAsFixed(2)}",
-                          style:
-                              const TextStyle(fontSize: 14, color: Colors.grey),
+                          style: const TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey), // تقليل حجم الخط
                         ),
                       ],
                     ),
                   ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8), // تقليل المسافة
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 6), // تقليل الهوامش
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -609,13 +625,14 @@ class _RequestPostCardState extends State<RequestPostCard> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10), // تقليل ارتفاع الزر
                           ),
                           child: const Text('Angebot abgeben',
-                              style: TextStyle(fontSize: 14)),
+                              style: TextStyle(fontSize: 13)), // تقليل حجم الخط
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6), // تقليل المسافة
                       Expanded(
                         flex: 2,
                         child: OutlinedButton(
@@ -627,13 +644,14 @@ class _RequestPostCardState extends State<RequestPostCard> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10), // تقليل ارتفاع الزر
                           ),
                           child: const Text('Mehr Info fragen',
-                              style: TextStyle(fontSize: 14)),
+                              style: TextStyle(fontSize: 13)), // تقليل حجم الخط
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6), // تقليل المسافة
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
@@ -644,7 +662,9 @@ class _RequestPostCardState extends State<RequestPostCard> {
                           icon: const Icon(Icons.bookmark_border),
                           tooltip: 'Speichern',
                           color: Colors.grey[600],
-                          padding: const EdgeInsets.all(12),
+                          padding:
+                              const EdgeInsets.all(10), // تقليل الهامش الداخلي
+                          iconSize: 20, // تقليل حجم الأيقونة
                         ),
                       ),
                     ],
@@ -655,8 +675,8 @@ class _RequestPostCardState extends State<RequestPostCard> {
           ),
           // زر الثلاث نقاط في الزاوية العلوية اليمنى للمنشور
           Positioned(
-            top: 12,
-            right: 12,
+            top: 10, // تقليل المسافة من الأعلى
+            right: 10, // تقليل المسافة من اليمين
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -664,21 +684,24 @@ class _RequestPostCardState extends State<RequestPostCard> {
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+                    blurRadius: 3, // تقليل الظل
+                    offset: const Offset(0, 1),
                   ),
                 ],
               ),
               child: PopupMenuButton(
-                icon: const Icon(Icons.more_vert, color: Colors.grey, size: 20),
+                icon: const Icon(Icons.more_vert,
+                    color: Colors.grey, size: 18), // تقليل حجم الأيقونة
                 itemBuilder: (context) => [
                   const PopupMenuItem(
                     value: 'save',
                     child: Row(
                       children: [
-                        Icon(Icons.bookmark_border, size: 18),
-                        SizedBox(width: 8),
-                        Text('Speichern'),
+                        Icon(Icons.bookmark_border,
+                            size: 16), // تقليل حجم الأيقونة
+                        SizedBox(width: 6),
+                        Text('Speichern',
+                            style: TextStyle(fontSize: 13)), // تقليل حجم الخط
                       ],
                     ),
                   ),
@@ -686,9 +709,9 @@ class _RequestPostCardState extends State<RequestPostCard> {
                     value: 'share',
                     child: Row(
                       children: [
-                        Icon(Icons.share, size: 18),
-                        SizedBox(width: 8),
-                        Text('Teilen'),
+                        Icon(Icons.share, size: 16),
+                        SizedBox(width: 6),
+                        Text('Teilen', style: TextStyle(fontSize: 13)),
                       ],
                     ),
                   ),
@@ -696,9 +719,9 @@ class _RequestPostCardState extends State<RequestPostCard> {
                     value: 'report',
                     child: Row(
                       children: [
-                        Icon(Icons.report_outlined, size: 18),
-                        SizedBox(width: 8),
-                        Text('Melden'),
+                        Icon(Icons.report_outlined, size: 16),
+                        SizedBox(width: 6),
+                        Text('Melden', style: TextStyle(fontSize: 13)),
                       ],
                     ),
                   ),
