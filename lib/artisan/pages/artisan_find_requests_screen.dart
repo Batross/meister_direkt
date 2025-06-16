@@ -688,6 +688,40 @@ class _RequestPostCardState extends State<RequestPostCard> {
                 ],
               ),
             ),
+            const SizedBox(height: 8),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: PopupMenuButton(
+                icon: const Icon(Icons.more_vert, color: Colors.black),
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'settings',
+                    child: Text('Settings'),
+                  ),
+                ],
+                onSelected: (value) {
+                  // Handle menu actions
+                },
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text('Angebot abgeben'),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text('Mehr Info fragen'),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text('Speichern'),
+                ),
+              ],
+            ),
           ],
         ),
       ),
