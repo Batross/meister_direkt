@@ -152,12 +152,10 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
           delegate: SliverChildBuilderDelegate(
             (context, index) {
               return StreamBuilder<QuerySnapshot>(
-                // جلب الطلبات التي حالتها 'pending_offers' ولم يتم تعيين حرفي لها بعد
                 stream: FirebaseFirestore.instance
                     .collection('requests')
                     .where('status', isEqualTo: 'pending_offers')
-                    .where('acceptedArtisanId',
-                        isNull: true) // هذا هو الحقل الصحيح في RequestModel
+                    .where('acceptedArtisanId', isNull: true)
                     .orderBy('createdAt', descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -165,7 +163,6 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
-                    // رسالة خطأ أكثر وضوحاً
                     return Center(
                         child: Text(
                             'خطأ في تحميل الطلبات: ${snapshot.error}\n\nتأكد من إنشاء الفهارس المطلوبة في Firestore Console.'));
@@ -175,7 +172,7 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                       child: Padding(
                         padding: EdgeInsets.all(20.0),
                         child: Text(
-                          'Derzeit keine neuen Anfragen verfügbar.', // لا توجد طلبات جديدة حاليًا.
+                          'Derzeit keine neuen Anfragen verfügbar.',
                           style: TextStyle(fontSize: 18, color: Colors.grey),
                         ),
                       ),
@@ -189,15 +186,113 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                   return SingleChildScrollView(
                     child: Column(
                       children: [
+                        // إضافة المساحة الإعلانية هنا
                         Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                          child: Container(
+                            width: double.infinity,
+                            constraints: const BoxConstraints(
+                              minHeight: 160,
+                              maxHeight: 200,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF4A90E2), Color(0xFF2A5C82)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Stack(
+                              children: [
+                                Positioned.fill(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: Image.network(
+                                      'https://placehold.co/600x180/4A90E2/FFFFFF?text=Ad+Space',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) =>
+                                          Container(
+                                        color: Colors.grey[300],
+                                        child: Center(
+                                          child: Text(
+                                            'Werbefläche',
+                                            style: TextStyle(color: Colors.grey[600]),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Finden Sie die besten Aufträge!',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      const Text(
+                                        'اكتشف فرص عمل جديدة وعملاء محتملين في منطقتك.',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 13,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          print('Mehr Aufträge button pressed');
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          foregroundColor: const Color(0xFF2A5C82),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 8),
+                                        ),
+                                        child: const Text(
+                                          'Mehr Aufträge',
+                                          style: TextStyle(fontSize: 13),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  'Neue Serviceanfragen', // طلبات الخدمات الجديدة
+                                  'Neue Serviceanfragen',
                                   style: Theme.of(context)
                                       .textTheme
                                       .headlineSmall
@@ -277,22 +372,15 @@ class _RequestPostCardState extends State<RequestPostCard> {
     }
   }
 
-  // دالة مساعدة لتحديد ما إذا كانت التفاصيل طويلة وتحتاج لـ "إظهار المزيد"
-  bool _isDescriptionLong(String description) {
-    // استخدم LayoutBuilder للحصول على العرض المتاح قبل حساب النص
+  // دالة مساعدة لتحديد ما إذا كانت التفاصيل طويلة وتحتاج لـ "إظهار المزيد"  bool _isDescriptionLong(String description, BuildContext context) {
     final textSpan =
         TextSpan(text: description, style: const TextStyle(fontSize: 16));
     final textPainter = TextPainter(
       text: textSpan,
       maxLines: _maxDescriptionLines,
-      textDirection: TextDirection.ltr, // أو TextDirection.rtl حسب اللغة
+      textDirection: TextDirection.ltr,
     );
-
-    // Calculate layout for the text with a reasonable max width
-    // We can't use MediaQuery.of(context).size.width directly here without LayoutBuilder
-    // but a fixed large width or a width close to expected card width can be used for estimation
-    textPainter.layout(maxWidth: 300); // Estimating max width for calculation
-
+    textPainter.layout(maxWidth: MediaQuery.of(context).size.width - 32);
     return textPainter.didExceedMaxLines;
   }
 
@@ -316,8 +404,7 @@ class _RequestPostCardState extends State<RequestPostCard> {
             color: Colors.grey[200],
             child: const Icon(Icons.broken_image, size: 50, color: Colors.grey),
           ),
-        ),
-      );
+        );
     } else if (lower.endsWith('.mp4') ||
         lower.endsWith('.mov') ||
         lower.endsWith('.webm')) {
