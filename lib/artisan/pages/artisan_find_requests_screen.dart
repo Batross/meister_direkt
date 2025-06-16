@@ -275,15 +275,14 @@ class _RequestPostCardState extends State<RequestPostCard> {
                   itemBuilder: (context, i) {
                     final url = files[i];
                     if (url.toLowerCase().endsWith('.mp4')) {
-                      return VideoPreviewWidget(
-                          url: url, autoPlay: _currentFile == i);
+                      return VideoPreviewWidget(url: url);
                     } else if (url.toLowerCase().endsWith('.pdf')) {
                       return Center(
                         child: ElevatedButton.icon(
                           icon: const Icon(Icons.picture_as_pdf),
                           label: const Text('PDF anzeigen'),
                           onPressed: () {
-                            // فتح PDF في شاشة منفصلة
+                            // TODO: فتح PDF في شاشة منفصلة
                           },
                         ),
                       );
@@ -308,9 +307,23 @@ class _RequestPostCardState extends State<RequestPostCard> {
                           );
                         },
                       );
+                    } else if (url.toLowerCase().endsWith('.jpg') ||
+                        url.toLowerCase().endsWith('.jpeg') ||
+                        url.toLowerCase().endsWith('.png') ||
+                        url.toLowerCase().endsWith('.gif') ||
+                        url.toLowerCase().endsWith('.webp')) {
+                      return Image.network(
+                        url,
+                        fit: BoxFit.cover,
+                        width: width,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(
+                                child: Icon(Icons.broken_image,
+                                    size: 60, color: Colors.grey)),
+                      );
                     } else {
-                      return Image.network(url,
-                          fit: BoxFit.cover, width: width);
+                      // ملف غير مدعوم
+                      return const Center(child: Text('نوع ملف غير مدعوم'));
                     }
                   },
                 ),
