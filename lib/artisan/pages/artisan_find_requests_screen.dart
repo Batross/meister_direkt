@@ -274,20 +274,25 @@ class _RequestPostCardState extends State<RequestPostCard> {
                   onPageChanged: (i) => setState(() => _currentFile = i),
                   itemBuilder: (context, i) {
                     final url = files[i];
-                    if (url.toLowerCase().endsWith('.mp4')) {
+                    final lower = url.toLowerCase();
+                    if (lower.endsWith('.mp4') ||
+                        lower.endsWith('.mov') ||
+                        lower.endsWith('.avi')) {
+                      // فيديو
                       return VideoPreviewWidget(url: url);
-                    } else if (url.toLowerCase().endsWith('.pdf')) {
+                    } else if (lower.endsWith('.pdf')) {
+                      // PDF
                       return Center(
                         child: ElevatedButton.icon(
                           icon: const Icon(Icons.picture_as_pdf),
-                          label: const Text('PDF anzeigen'),
+                          label: const Text('عرض PDF'),
                           onPressed: () {
                             // TODO: فتح PDF في شاشة منفصلة
                           },
                         ),
                       );
-                    } else if (url.toLowerCase().endsWith('.txt')) {
-                      // عرض النص مباشرة
+                    } else if (lower.endsWith('.txt')) {
+                      // نص
                       return FutureBuilder<String>(
                         future: _loadTextFile(url),
                         builder: (context, snapshot) {
@@ -307,11 +312,12 @@ class _RequestPostCardState extends State<RequestPostCard> {
                           );
                         },
                       );
-                    } else if (url.toLowerCase().endsWith('.jpg') ||
-                        url.toLowerCase().endsWith('.jpeg') ||
-                        url.toLowerCase().endsWith('.png') ||
-                        url.toLowerCase().endsWith('.gif') ||
-                        url.toLowerCase().endsWith('.webp')) {
+                    } else if (lower.endsWith('.jpg') ||
+                        lower.endsWith('.jpeg') ||
+                        lower.endsWith('.png') ||
+                        lower.endsWith('.gif') ||
+                        lower.endsWith('.webp')) {
+                      // صورة
                       return Image.network(
                         url,
                         fit: BoxFit.cover,
@@ -322,8 +328,8 @@ class _RequestPostCardState extends State<RequestPostCard> {
                                     size: 60, color: Colors.grey)),
                       );
                     } else {
-                      // ملف غير مدعوم
-                      return const Center(child: Text('نوع ملف غير مدعوم'));
+                      // إذا كان الملف ليس من الأنواع المدعومة، تجاهله ولا تعرض شيء
+                      return const SizedBox.shrink();
                     }
                   },
                 ),
