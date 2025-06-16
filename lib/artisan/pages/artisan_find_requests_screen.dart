@@ -239,7 +239,8 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
               backgroundColor: Theme.of(context).primaryColor,
               elevation: 2,
               automaticallyImplyLeading: false,
-              expandedHeight: 48, // تقليل الارتفاع قليلاً
+              expandedHeight:
+                  38, // تقليل الارتفاع أكثر لتقليل المسافة بين اسم التطبيق ومحرك البحث
               titleSpacing: 8,
               toolbarHeight: 48,
               title: Row(
