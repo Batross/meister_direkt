@@ -44,7 +44,7 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
               backgroundColor: Theme.of(context).primaryColor,
               elevation: 2,
               automaticallyImplyLeading: false,
-              expandedHeight: 56, // تكبير الارتفاع قليلاً
+              expandedHeight: 48, // تقليل الارتفاع قليلاً
               titleSpacing: 8, // زيادة الهامش الجانبي
               toolbarHeight: 48, // تكبير ارتفاع التولبار قليلاً
               title: Row(
@@ -85,6 +85,8 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                   ),
                 ],
               ),
+              flexibleSpace: const SizedBox(
+                  height: 4), // تقليل المسافة بين اسم التطبيق ومحرك البحث
               bottom: PreferredSize(
                 preferredSize:
                     const Size.fromHeight(44), // تكبير ارتفاع البحث قليلاً
@@ -117,7 +119,7 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                               prefixIcon: Icon(Icons.search,
                                   color: Color(0xFF2A5C82), size: 18),
                               contentPadding: EdgeInsets.symmetric(
-                                  vertical: 0, horizontal: 6),
+                                  vertical: -4, horizontal: 6),
                             ),
                             onTap: () {},
                           ),

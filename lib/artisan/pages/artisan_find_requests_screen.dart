@@ -239,7 +239,7 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
               backgroundColor: Theme.of(context).primaryColor,
               elevation: 2,
               automaticallyImplyLeading: false,
-              expandedHeight: 56,
+              expandedHeight: 48, // تقليل الارتفاع قليلاً
               titleSpacing: 8,
               toolbarHeight: 48,
               title: Row(
@@ -308,7 +308,7 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                               prefixIcon: Icon(Icons.search,
                                   color: Color(0xFF2A5C82), size: 18),
                               contentPadding: EdgeInsets.symmetric(
-                                  vertical: 0, horizontal: 6),
+                                  vertical: -4, horizontal: 6),
                             ),
                             onTap: () {},
                           ),
@@ -337,6 +337,8 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                   ),
                 ),
               ),
+              flexibleSpace: const SizedBox(
+                  height: 4), // تقليل المسافة بين اسم التطبيق ومحرك البحث
             ), // مساحة إعلانية أسفل الرأسية
             SliverToBoxAdapter(
               child: Column(
