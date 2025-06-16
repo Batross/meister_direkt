@@ -226,251 +226,255 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          // رأسية مطابقة لرأسية الزبائن
-          SliverAppBar(
-            floating: true,
-            snap: true,
-            pinned: false,
-            backgroundColor: Theme.of(context).primaryColor,
-            elevation: 2,
-            automaticallyImplyLeading: false,
-            expandedHeight: 56,
-            titleSpacing: 8,
-            toolbarHeight: 48,
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon:
-                          const Icon(Icons.menu, color: Colors.white, size: 22),
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.notifications,
-                          color: Colors.white, size: 22),
-                      onPressed: () {},
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(right: 8.0),
-                  child: Text(
-                    'MeisterDirekt',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      letterSpacing: 1.1,
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            // رأسية مطابقة لرأسية الزبائن
+            SliverAppBar(
+              floating: true,
+              snap: true,
+              pinned: false,
+              backgroundColor: Theme.of(context).primaryColor,
+              elevation: 2,
+              automaticallyImplyLeading: false,
+              expandedHeight: 56,
+              titleSpacing: 8,
+              toolbarHeight: 48,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.menu,
+                            color: Colors.white, size: 22),
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.notifications,
+                            color: Colors.white, size: 22),
+                        onPressed: () {},
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(right: 8.0),
+                    child: Text(
+                      'MeisterDirekt',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        letterSpacing: 1.1,
+                      ),
                     ),
                   ),
+                ],
+              ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(44),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 2,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            readOnly: true,
+                            decoration: const InputDecoration(
+                              hintText: 'Suche nach Aufträgen oder Kunden...',
+                              hintStyle: TextStyle(fontSize: 12),
+                              border: InputBorder.none,
+                              prefixIcon: Icon(Icons.search,
+                                  color: Color(0xFF2A5C82), size: 18),
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 6),
+                            ),
+                            onTap: () {},
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Material(
+                        color: Colors.white,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
+                        child: SizedBox(
+                          width: 36,
+                          height: 36,
+                          child: IconButton(
+                            icon: const Icon(Icons.tune,
+                                color: Color(0xFF2A5C82), size: 20),
+                            onPressed: () {},
+                            tooltip: 'Filter',
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(44),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
+              ),
+            ), // مساحة إعلانية أسفل الرأسية
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                    padding: const EdgeInsets.all(12),
+                    width: double.infinity,
+                    constraints: const BoxConstraints(
+                      minHeight: 100,
+                      maxHeight: 140,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF4A90E2), Color(0xFF2A5C82)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          spreadRadius: 0.5,
+                          blurRadius: 2,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              'https://placehold.co/600x140/4A90E2/FFFFFF?text=Ad+Space',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                color: Colors.grey[300],
+                                child: Center(
+                                  child: Text('Werbefläche',
+                                      style:
+                                          TextStyle(color: Colors.grey[600])),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Finde passende Aufträge für dich!',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'اكتشف فرص العمل الجديدة وقدم عروضك مباشرة للعملاء.',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Color(0xFF2A5C82),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                              ),
+                              child: const Text('Jetzt entdecken',
+                                  style: TextStyle(fontSize: 12)),
                             ),
                           ],
                         ),
-                        child: TextField(
-                          readOnly: true,
-                          decoration: const InputDecoration(
-                            hintText: 'Suche nach Aufträgen oder Kunden...',
-                            hintStyle: TextStyle(fontSize: 12),
-                            border: InputBorder.none,
-                            prefixIcon: Icon(Icons.search,
-                                color: Color(0xFF2A5C82), size: 18),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 6),
-                          ),
-                          onTap: () {},
-                        ),
-                      ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Material(
-                      color: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      child: SizedBox(
-                        width: 36,
-                        height: 36,
-                        child: IconButton(
-                          icon: const Icon(Icons.tune,
-                              color: Color(0xFF2A5C82), size: 20),
-                          onPressed: () {},
-                          tooltip: 'Filter',
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                      ),
+                  ),
+                  const SizedBox(
+                      height:
+                          4), // تقليل المسافة بين الإعلان والعنوان                // العنوان الرئيسي
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      'Aufträge suchen',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                      height: 2), // تقليل المسافة بين العنوان والمحتوى
+                ],
               ),
             ),
-          ), // مساحة إعلانية أسفل الرأسية
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                  padding: const EdgeInsets.all(12),
-                  width: double.infinity,
-                  constraints: const BoxConstraints(
-                    minHeight: 100,
-                    maxHeight: 140,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF4A90E2), Color(0xFF2A5C82)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        spreadRadius: 0.5,
-                        blurRadius: 2,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            'https://placehold.co/600x140/4A90E2/FFFFFF?text=Ad+Space',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              color: Colors.grey[300],
-                              child: Center(
-                                child: Text('Werbefläche',
-                                    style: TextStyle(color: Colors.grey[600])),
-                              ),
-                            ),
+            // بعد المساحة الإعلانية، نكمل عرض الطلبات كما هو:
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index >= _requests.length) {
+                      if (_hasMore) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: CircularProgressIndicator(),
                           ),
-                        ),
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Finde passende Aufträge für dich!',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'اكتشف فرص العمل الجديدة وقدم عروضك مباشرة للعملاء.',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 10),
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Color(0xFF2A5C82),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                            ),
-                            child: const Text('Jetzt entdecken',
-                                style: TextStyle(fontSize: 12)),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                    height:
-                        8), // تقليل المساحة تحت الإعلان                // العنوان الرئيسي
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    'Aufträge suchen',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(
-                    height: 12), // مساحة صغيرة للفصل بين العنوان والمحتوى
-              ],
-            ),
-          ),
-          // بعد المساحة الإعلانية، نكمل عرض الطلبات كما هو:
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  if (index >= _requests.length) {
-                    if (_hasMore) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
+                        );
+                      }
+                      return null;
                     }
-                    return null;
-                  }
-                  final request = _requests[index];
-                  return RequestPostCard(request: request);
-                },
-                childCount: _requests.length + (_hasMore ? 1 : 0),
+                    final request = _requests[index];
+                    return RequestPostCard(request: request);
+                  },
+                  childCount: _requests.length + (_hasMore ? 1 : 0),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
