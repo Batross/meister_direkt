@@ -46,9 +46,9 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
           backgroundColor: Theme.of(context).primaryColor,
           elevation: 2,
           automaticallyImplyLeading: false,
-          expandedHeight: 44, // تقليل الارتفاع
-          titleSpacing: 4, // تقليل المسافة الجانبية
-          toolbarHeight: 44, // تقليل ارتفاع التولبار
+          expandedHeight: 56, // تكبير الارتفاع قليلاً
+          titleSpacing: 8, // زيادة الهامش الجانبي
+          toolbarHeight: 48, // تكبير ارتفاع التولبار قليلاً
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -71,26 +71,31 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                   ),
                 ],
               ),
-              const Text(
-                'MeisterDirekt',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  letterSpacing: 1.1,
+              Padding(
+                padding: const EdgeInsets.only(
+                    right: 8.0), // إضافة هامش لاسم التطبيق
+                child: const Text(
+                  'MeisterDirekt',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    letterSpacing: 1.1,
+                  ),
                 ),
               ),
             ],
           ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(40), // تقليل ارتفاع البحث
+            preferredSize:
+                const Size.fromHeight(44), // تكبير ارتفاع البحث قليلاً
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 4), // تقليل الحواف
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 6), // هامش سفلي بسيط
               child: Row(
                 children: [
                   Expanded(
                     child: Container(
-                      height: 32, // تقليل ارتفاع مربع البحث
+                      height: 36, // تكبير مربع البحث قليلاً
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
@@ -118,17 +123,24 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 8), // زيادة المسافة قليلاً
                   Material(
                     color: Colors.white,
-                    shape: const CircleBorder(),
-                    child: IconButton(
-                      icon: const Icon(Icons.tune,
-                          color: Color(0xFF2A5C82), size: 18),
-                      onPressed: () {},
-                      tooltip: 'Filter',
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.all(Radius.circular(8)), // مربع
+                    ),
+                    child: SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: IconButton(
+                        icon: const Icon(Icons.tune,
+                            color: Color(0xFF2A5C82), size: 20),
+                        onPressed: () {},
+                        tooltip: 'Filter',
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
                     ),
                   ),
                 ],

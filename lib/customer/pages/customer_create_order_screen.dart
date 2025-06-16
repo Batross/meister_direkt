@@ -38,53 +38,61 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
           backgroundColor: Theme.of(context).primaryColor,
           elevation: 2,
           automaticallyImplyLeading: false,
-          expandedHeight: 60,
-          titleSpacing: 12,
+          expandedHeight: 56, // تكبير الارتفاع قليلاً
+          titleSpacing: 8, // زيادة الهامش الجانبي
+          toolbarHeight: 48, // تكبير ارتفاع التولبار قليلاً
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.menu, color: Colors.white, size: 24),
+                    icon: const Icon(Icons.menu, color: Colors.white, size: 22),
                     onPressed: () {
                       Scaffold.of(context).openDrawer();
                     },
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.notifications, color: Colors.white, size: 24),
+                    icon: const Icon(Icons.notifications, color: Colors.white, size: 22),
                     onPressed: () {},
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
                 ],
               ),
-              const Text(
-                'MeisterDirekt',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  letterSpacing: 1.2,
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0), // إضافة هامش لاسم التطبيق
+                child: const Text(
+                  'MeisterDirekt',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    letterSpacing: 1.1,
+                  ),
                 ),
               ),
             ],
           ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(56),
+            preferredSize: const Size.fromHeight(44), // تكبير ارتفاع البحث قليلاً
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 6), // هامش سفلي بسيط
               child: Row(
                 children: [
                   Expanded(
                     child: Container(
-                      height: 38,
+                      height: 36, // تكبير مربع البحث قليلاً
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 2,
+                            offset: const Offset(0, 1),
                           ),
                         ],
                       ),
@@ -92,23 +100,31 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                         readOnly: true,
                         decoration: const InputDecoration(
                           hintText: 'Suche nach Dienstleistungen oder Handwerkern...',
-                          hintStyle: TextStyle(fontSize: 13),
+                          hintStyle: TextStyle(fontSize: 12),
                           border: InputBorder.none,
-                          prefixIcon: Icon(Icons.search, color: Color(0xFF2A5C82)),
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                          prefixIcon: Icon(Icons.search, color: Color(0xFF2A5C82), size: 18),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 6),
                         ),
                         onTap: () {},
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 8), // زيادة المسافة قليلاً
                   Material(
                     color: Colors.white,
-                    shape: const CircleBorder(),
-                    child: IconButton(
-                      icon: const Icon(Icons.tune, color: Color(0xFF2A5C82)),
-                      onPressed: () {},
-                      tooltip: 'Filter',
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)), // مربع
+                    ),
+                    child: SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: IconButton(
+                        icon: const Icon(Icons.tune, color: Color(0xFF2A5C82), size: 20),
+                        onPressed: () {},
+                        tooltip: 'Filter',
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
                     ),
                   ),
                 ],
