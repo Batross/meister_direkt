@@ -35,6 +35,8 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
   bool _isLoading = false;
   bool _hasMore = true;
   DocumentSnapshot? _lastDoc;
+  VideoPlayerController? _videoController;
+  Timer? _autoPlayTimer;
 
   @override
   void initState() {
@@ -46,35 +48,166 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _videoController?.dispose();
+    _autoPlayTimer?.cancel();
     super.dispose();
+  }
+
+  void _playNextFile(List<String> files, int currentIndex, String requestId) {
+    if (currentIndex >= files.length) {
+      currentIndex = 0;
+    }
+
+    final file = files[currentIndex].toLowerCase();
+    if (file.endsWith('.mp4')) {
+      _videoController?.dispose();
+      _videoController = VideoPlayerController.network(files[currentIndex])
+        ..initialize().then((_) {
+          if (mounted) {
+            setState(() {});
+            _videoController?.play();
+            _videoController?.setVolume(0);
+            _videoController?.addListener(() {
+              final isEndOfVideo = _videoController?.value.position ==
+                  _videoController?.value.duration;
+              if (isEndOfVideo) {
+                _playNextFile(files, currentIndex + 1, requestId);
+              }
+            });
+          }
+        });
+    } else {
+      _autoPlayTimer?.cancel();
+      _autoPlayTimer = Timer(const Duration(seconds: 5), () {
+        if (mounted) {
+          _playNextFile(files, currentIndex + 1, requestId);
+        }
+      });
+    }
+  }
+
+  Widget _buildMediaPreview(List<String> files, int index, String requestId) {
+    if (index >= files.length) return const SizedBox.shrink();
+
+    final file = files[index].toLowerCase();
+
+    if (file.endsWith('.mp4')) {
+      if (_videoController?.dataSource != files[index]) {
+        _videoController?.dispose();
+        _videoController = VideoPlayerController.network(files[index])
+          ..initialize().then((_) {
+            if (mounted) setState(() {});
+            _videoController?.play();
+            _videoController?.setVolume(0);
+          });
+      }
+
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: _videoController?.value.isInitialized ?? false
+            ? VideoPlayer(_videoController!)
+            : const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (file.endsWith('.jpg') ||
+        file.endsWith('.jpeg') ||
+        file.endsWith('.png') ||
+        file.endsWith('.gif')) {
+      return CachedNetworkImage(
+        imageUrl: files[index],
+        fit: BoxFit.cover,
+        placeholder: (context, url) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        errorWidget: (context, url, error) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 32, color: Colors.red),
+              const SizedBox(height: 8),
+              Text('Fehler beim Laden des Bildes',
+                  style: TextStyle(color: Colors.grey[600])),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (file.endsWith('.pdf')) {
+      return SfPdfViewer.network(
+        files[index],
+        canShowPaginationDialog: false,
+        enableDoubleTapZooming: false,
+        onDocumentLoaded: (details) {
+          // بعد 5 ثواني انتقل للملف التالي
+          Future.delayed(const Duration(seconds: 5), () {
+            if (index < files.length - 1 && mounted) {
+              _playNextFile(files, index + 1, requestId);
+            }
+          });
+        },
+      );
+    }
+
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.insert_drive_file, size: 48, color: Colors.grey),
+          SizedBox(height: 8),
+          Text(
+            'Dateiformat wird nicht unterstützt',
+            style: TextStyle(color: Colors.grey),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _fetchRequests({bool refresh = false}) async {
     if (_isLoading) return;
     setState(() => _isLoading = true);
-    Query query = FirebaseFirestore.instance
-        .collection('requests')
-        .where('status', isEqualTo: 'pending_offers')
-        .where('acceptedArtisanId', isNull: true)
-        .orderBy('createdAt', descending: true)
-        .limit(10);
-    if (_lastDoc != null && !refresh) {
-      query = query.startAfterDocument(_lastDoc!);
+
+    try {
+      Query query = FirebaseFirestore.instance
+          .collection('requests')
+          .where('status', isEqualTo: 'pending_offers')
+          .where('acceptedArtisanId', isNull: true)
+          .orderBy('createdAt', descending: true)
+          .limit(10);
+
+      if (_lastDoc != null && !refresh) {
+        query = query.startAfterDocument(_lastDoc!);
+      }
+
+      final snapshot = await query.get();
+
+      if (refresh) {
+        _requests = [];
+        _lastDoc = null;
+        _hasMore = true;
+      }
+
+      if (snapshot.docs.isNotEmpty) {
+        _lastDoc = snapshot.docs.last;
+        final newRequests =
+            snapshot.docs.map((doc) => RequestModel.fromSnapshot(doc)).toList();
+        _requests.addAll(newRequests);
+      } else {
+        _hasMore = false;
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Fehler beim Laden: $e')),
+        );
+      }
     }
-    final snapshot = await query.get();
-    if (refresh) {
-      _requests.clear();
-      _lastDoc = null;
-      _hasMore = true;
+
+    if (mounted) {
+      setState(() => _isLoading = false);
     }
-    if (snapshot.docs.isNotEmpty) {
-      _lastDoc = snapshot.docs.last;
-      _requests
-          .addAll(snapshot.docs.map((doc) => RequestModel.fromSnapshot(doc)));
-    } else {
-      _hasMore = false;
-    }
-    setState(() => _isLoading = false);
   }
 
   void _onScroll() {
@@ -92,21 +225,228 @@ class _ArtisanFindRequestsScreenState extends State<ArtisanFindRequestsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: _onRefresh,
-      child: ListView.builder(
+    return Scaffold(
+      body: CustomScrollView(
         controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        itemCount: _requests.length + (_hasMore ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index >= _requests.length) {
-            return const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
-          return RequestPostCard(request: _requests[index]);
-        },
+        slivers: [
+          // رأسية مطابقة لرأسية الزبائن
+          SliverAppBar(
+            floating: true,
+            snap: true,
+            pinned: false,
+            backgroundColor: Theme.of(context).primaryColor,
+            elevation: 2,
+            automaticallyImplyLeading: false,
+            expandedHeight: 56,
+            titleSpacing: 8,
+            toolbarHeight: 48,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      icon:
+                          const Icon(Icons.menu, color: Colors.white, size: 22),
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.notifications,
+                          color: Colors.white, size: 22),
+                      onPressed: () {},
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 8.0),
+                  child: Text(
+                    'MeisterDirekt',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(44),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 6),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            hintText: 'Suche nach Aufträgen oder Kunden...',
+                            hintStyle: TextStyle(fontSize: 12),
+                            border: InputBorder.none,
+                            prefixIcon: Icon(Icons.search,
+                                color: Color(0xFF2A5C82), size: 18),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 6),
+                          ),
+                          onTap: () {},
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Material(
+                      color: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                      child: SizedBox(
+                        width: 36,
+                        height: 36,
+                        child: IconButton(
+                          icon: const Icon(Icons.tune,
+                              color: Color(0xFF2A5C82), size: 20),
+                          onPressed: () {},
+                          tooltip: 'Filter',
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // مساحة إعلانية أسفل الرأسية
+          SliverToBoxAdapter(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.all(20),
+              width: double.infinity,
+              constraints: const BoxConstraints(minHeight: 120, maxHeight: 180),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF4A90E2), Color(0xFF2A5C82)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.network(
+                        'https://placehold.co/600x180/4A90E2/FFFFFF?text=Ad+Space',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.grey[300],
+                          child: Center(
+                            child: Text('Werbefläche',
+                                style: TextStyle(color: Colors.grey[600])),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Finde passende Aufträge für dich!',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'اكتشف فرص العمل الجديدة وقدم عروضك مباشرة للعملاء.',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 13,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Color(0xFF2A5C82),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                        ),
+                        child: const Text('Jetzt entdecken',
+                            style: TextStyle(fontSize: 13)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // بعد المساحة الإعلانية، نكمل عرض الطلبات كما هو:
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  if (index >= _requests.length) {
+                    if (_hasMore) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                    return null;
+                  }
+                  final request = _requests[index];
+                  return RequestPostCard(request: request);
+                },
+                childCount: _requests.length + (_hasMore ? 1 : 0),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
