@@ -55,7 +55,8 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                     constraints: const BoxConstraints(),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.notifications, color: Colors.white, size: 22),
+                    icon: const Icon(Icons.notifications,
+                        color: Colors.white, size: 22),
                     onPressed: () {},
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -63,7 +64,8 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 8.0), // إضافة هامش لاسم التطبيق
+                padding: const EdgeInsets.only(
+                    right: 8.0), // إضافة هامش لاسم التطبيق
                 child: const Text(
                   'MeisterDirekt',
                   style: TextStyle(
@@ -77,7 +79,8 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
             ],
           ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(44), // تكبير ارتفاع البحث قليلاً
+            preferredSize:
+                const Size.fromHeight(44), // تكبير ارتفاع البحث قليلاً
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 6), // هامش سفلي بسيط
               child: Row(
@@ -99,11 +102,14 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                       child: TextField(
                         readOnly: true,
                         decoration: const InputDecoration(
-                          hintText: 'Suche nach Dienstleistungen oder Handwerkern...',
+                          hintText:
+                              'Suche nach Dienstleistungen oder Handwerkern...',
                           hintStyle: TextStyle(fontSize: 12),
                           border: InputBorder.none,
-                          prefixIcon: Icon(Icons.search, color: Color(0xFF2A5C82), size: 18),
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 6),
+                          prefixIcon: Icon(Icons.search,
+                              color: Color(0xFF2A5C82), size: 18),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 6),
                         ),
                         onTap: () {},
                       ),
@@ -113,13 +119,15 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                   Material(
                     color: Colors.white,
                     shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)), // مربع
+                      borderRadius:
+                          BorderRadius.all(Radius.circular(8)), // مربع
                     ),
                     child: SizedBox(
                       width: 36,
                       height: 36,
                       child: IconButton(
-                        icon: const Icon(Icons.tune, color: Color(0xFF2A5C82), size: 20),
+                        icon: const Icon(Icons.tune,
+                            color: Color(0xFF2A5C82), size: 20),
                         onPressed: () {},
                         tooltip: 'Filter',
                         padding: EdgeInsets.zero,
@@ -159,10 +167,13 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
 
                       // قسم الإعلان الكبير
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.all(20),
                         width: double.infinity,
-                        height: 180,
+                        constraints: const BoxConstraints(
+                          minHeight: 160,
+                          maxHeight: 200,
+                        ),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [Color(0xFF4A90E2), Color(0xFF2A5C82)],
@@ -201,48 +212,50 @@ class _CustomerCreateOrderScreenState extends State<CustomerCreateOrderScreen> {
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Erhalten Sie jetzt die besten Dienstleistungen!',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Erhalten Sie jetzt die besten Dienstleistungen!',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'خبراء في متناول يدك لجميع احتياجات منزلك.',
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 14,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'خبراء في متناول يدك لجميع احتياجات منزلك.',
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 13,
                                   ),
-                                  const SizedBox(height: 15),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      print('Discover More button pressed');
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: AppColors.primaryColor,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(25),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 10),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 12),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    print('Discover More button pressed');
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: AppColors.primaryColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                    child: const Text('Mehr entdecken'),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 8),
                                   ),
-                                ],
-                              ),
+                                  child: const Text(
+                                    'Mehr entdecken',
+                                    style: TextStyle(fontSize: 13),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
