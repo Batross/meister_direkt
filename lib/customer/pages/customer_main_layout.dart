@@ -17,10 +17,31 @@ class _CustomerMainLayoutState extends State<CustomerMainLayout> {
     CustomerProfileScreen(),
   ];
 
+  final List<String> _titles = [
+    'إضافة طلب',
+    'طلباتي',
+    'الملف الشخصي',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_currentIndex],
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            floating: true,
+            snap: true,
+            pinned: false,
+            expandedHeight: 80,
+            title: Text(_titles[_currentIndex]),
+            centerTitle: true,
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
+          SliverFillRemaining(
+            child: _pages[_currentIndex],
+          ),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (i) => setState(() => _currentIndex = i),
