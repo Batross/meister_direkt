@@ -487,7 +487,7 @@ class _RequestPostCardState extends State<RequestPostCard> {
   void _showOfferDialog() async {
     final result = await showDialog(
       context: context,
-      builder: (context) => OfferDialog(requestId: widget.request.id),
+      builder: (context) => OfferDialog(requestId: widget.request.requestId),
     );
     if (result != null) {
       // يمكنك هنا تنفيذ منطق بعد إرسال العرض (مثلاً إظهار رسالة نجاح)

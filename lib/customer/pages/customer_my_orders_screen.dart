@@ -8,6 +8,7 @@ import 'customer_edit_order_screen.dart';
 import 'package:meisterdirekt/shared/providers/user_provider.dart';
 import '../widgets/video_preview_widget.dart';
 import '../widgets/file_preview_widget.dart';
+import '../widgets/customer_order_post_card.dart';
 
 class CustomerMyOrdersScreen extends StatelessWidget {
   const CustomerMyOrdersScreen({super.key});
@@ -159,124 +160,7 @@ class CustomerMyOrdersScreen extends StatelessWidget {
           itemCount: docs.length,
           itemBuilder: (context, index) {
             final request = RequestModel.fromSnapshot(docs[index]);
-            return Card(
-              margin: const EdgeInsets.only(bottom: 20),
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (request.images != null &&
-                            request.images!.isNotEmpty)
-                          buildMediaPreviewSmart(context, request.images!.first)
-                        else
-                          Container(
-                            width: 90,
-                            height: 90,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(Icons.image_not_supported,
-                                size: 40, color: Colors.grey),
-                          ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(request.serviceId,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18)),
-                              const SizedBox(height: 6),
-                              Text(request.description,
-                                  style: const TextStyle(fontSize: 15)),
-                              if (request.budget != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4.0),
-                                  child: Text('Budget: ${request.budget} €',
-                                      style: const TextStyle(
-                                          fontSize: 13, color: Colors.teal)),
-                                ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4.0),
-                                child: Text('Status: ${request.status}',
-                                    style: const TextStyle(
-                                        fontSize: 13, color: Colors.grey)),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4.0),
-                                child: Text(
-                                    'Erstellt am: ${request.createdAt.day}.${request.createdAt.month}.${request.createdAt.year}',
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.grey)),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Column(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit,
-                                  color: Colors.blueAccent),
-                              onPressed: () async {
-                                final result = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => CustomerEditOrderScreen(
-                                        request: request),
-                                  ),
-                                );
-                                if (result == true) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Änderungen erfolgreich gespeichert')));
-                                }
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () =>
-                                  _showDeleteDialog(context, request),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    if (request.images != null && request.images!.length > 1)
-                      SizedBox(
-                        height: 80,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: request.images!.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 8),
-                          itemBuilder: (context, imgIdx) {
-                            if (imgIdx == 0) return const SizedBox.shrink();
-                            return buildMediaPreviewSmart(
-                                context, request.images![imgIdx]);
-                          },
-                        ),
-                      ),
-                    if (request.serviceDetails.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
-                        child: Text(
-                            'Weitere Details: ${request.serviceDetails.toString()}',
-                            style: const TextStyle(
-                                fontSize: 13, color: Colors.black54)),
-                      ),
-                  ],
-                ),
-              ),
-            );
+            return CustomerOrderPostCard(request: request);
           },
         );
       },
