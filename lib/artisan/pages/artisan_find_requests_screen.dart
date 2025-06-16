@@ -7,6 +7,7 @@ import 'package:video_player/video_player.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/models/request_model.dart';
+import 'offer_dialog.dart';
 
 // Einfache Extension zur Umwandlung von String in Title Case für Anzeigezwecke
 extension StringCasingExtension on String {
@@ -483,6 +484,19 @@ class _RequestPostCardState extends State<RequestPostCard> {
     _startAutoPageOrVideoListener(i, files);
   }
 
+  void _showOfferDialog() async {
+    final result = await showDialog(
+      context: context,
+      builder: (context) => OfferDialog(requestId: widget.request.id),
+    );
+    if (result != null) {
+      // يمكنك هنا تنفيذ منطق بعد إرسال العرض (مثلاً إظهار رسالة نجاح)
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم إرسال العرض بنجاح!')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final files = widget.request.images ?? [];
@@ -618,7 +632,7 @@ class _RequestPostCardState extends State<RequestPostCard> {
                       Expanded(
                         flex: 2,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: _showOfferDialog,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).primaryColor,
                             foregroundColor: Colors.white,
