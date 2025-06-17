@@ -84,7 +84,7 @@
     "name_en": "Electricial",
     "description_de": "Haus- und Gewerbeelektrikdienste",
     "description_en": "Home and commercial electrical services",
-    "iconUrl": "assets/icons/electrical.png",
+    "iconUrl": "assets/icons/electricity.png",
     "subCategories": [
       {
         "subCategoryId": "electrical_fault",

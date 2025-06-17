@@ -7,11 +7,15 @@ class OfferWithArtisanInfo extends StatelessWidget {
   final String offerId;
   final String artisanId;
   final double price;
+  final String artisanName;
+  final String artisanProfession;
   const OfferWithArtisanInfo(
       {super.key,
       required this.offerId,
       required this.artisanId,
-      required this.price});
+      required this.price,
+      required this.artisanName,
+      required this.artisanProfession});
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +50,7 @@ class OfferWithArtisanInfo extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text('Profession: $artisanProfession'),
               Text('Preis: ${price.toStringAsFixed(2)} €'),
               // TODO: تقييمات الحرفي
               Row(

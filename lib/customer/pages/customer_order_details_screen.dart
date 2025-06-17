@@ -67,7 +67,6 @@ class CustomerOrderDetailsScreen extends StatelessWidget {
               stream: FirebaseFirestore.instance
                   .collection('offers')
                   .where('requestId', isEqualTo: request.requestId)
-                  // .orderBy('createdAt', descending: true) // تم التعليق لمعرفة سبب المشكلة
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -77,7 +76,6 @@ class CustomerOrderDetailsScreen extends StatelessWidget {
                   return const Text('Keine Angebote vorhanden. (no data)');
                 }
                 final offerDocs = snapshot.data!.docs;
-                // DEBUG: Print number of offers
                 if (offerDocs.isEmpty) {
                   return Text('Keine Angebote vorhanden. (offers count: 0)');
                 }
@@ -86,14 +84,45 @@ class CustomerOrderDetailsScreen extends StatelessWidget {
                   children: [
                     Text('DEBUG: offers count = \\${offerDocs.length}',
                         style: const TextStyle(color: Colors.red)),
-                    ...offerDocs
-                        .map((doc) => OfferModel.fromFirestore(doc))
-                        .map((offer) => OfferWithArtisanInfo(
-                              offerId: offer.offerId,
-                              artisanId: offer.artisanId,
-                              price: offer.price,
-                            ))
-                        .toList(),
+                    ...offerDocs.map((doc) {
+                      final offer = OfferModel.fromFirestore(doc);
+                      return FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(offer.artisanId)
+                            .get(),
+                        builder: (context, artisanSnapshot) {
+                          print(
+                              'DEBUG: Fetching artisan data for artisanId = ${offer.artisanId}');
+                          if (artisanSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            print('DEBUG: Artisan data is loading...');
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          if (!artisanSnapshot.hasData ||
+                              !artisanSnapshot.data!.exists) {
+                            print(
+                                'DEBUG: Artisan data not found for artisanId = ${offer.artisanId}');
+                            return const Text(
+                                'Daten des Handwerkers nicht gefunden.');
+                          }
+                          final artisanData = artisanSnapshot.data!.data()
+                              as Map<String, dynamic>;
+                          print(
+                              'DEBUG: Artisan data fetched successfully = $artisanData');
+                          return OfferWithArtisanInfo(
+                            offerId: offer.offerId,
+                            artisanId: offer.artisanId,
+                            price: offer.price,
+                            artisanName:
+                                '${artisanData['firstName'] ?? 'Unbekannt'} ${artisanData['lastName'] ?? ''}',
+                            artisanProfession:
+                                artisanData['profession'] ?? 'Keine Angabe',
+                          );
+                        },
+                      );
+                    }).toList(),
                   ],
                 );
               },

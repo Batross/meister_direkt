@@ -50,7 +50,7 @@ flutter:
     - assets/images/default_profile.png
     - assets/data/initial_services.json
     - assets/icons/carpentry.png
-    - assets/icons/electrical.png # Stellen Sie sicher, dass dieser Name korrekt ist (und nicht electrical.png)
+    - assets/icons/electricity.png
     - assets/icons/plumbing.png
     - assets/icons/painting.png
     - assets/icons/cleaning.png
