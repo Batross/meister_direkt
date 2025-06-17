@@ -9,6 +9,7 @@ import 'package:meisterdirekt/shared/providers/user_provider.dart';
 import '../widgets/video_preview_widget.dart';
 import '../widgets/file_preview_widget.dart';
 import '../widgets/customer_order_post_card.dart';
+import 'customer_order_details_screen.dart';
 
 class CustomerMyOrdersScreen extends StatelessWidget {
   const CustomerMyOrdersScreen({super.key});
@@ -123,47 +124,71 @@ class CustomerMyOrdersScreen extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('requests')
-          .where('clientId', isEqualTo: user.uid)
-          .orderBy('createdAt', descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Center(child: Text('Fehler beim Laden der Bestellungen.'));
-        }
-        final docs = snapshot.data?.docs ?? [];
-        if (docs.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(Icons.assignment, size: 80, color: Colors.grey),
-                SizedBox(height: 20),
-                Text('Keine Bestellungen vorhanden.',
-                    style: TextStyle(fontSize: 18, color: Colors.grey)),
-                SizedBox(height: 10),
-                Text(
-                    'Sie können eine neue Bestellung über die Seite "Neue Bestellung erstellen" anlegen.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: Colors.grey)),
-              ],
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Meine Aufträge',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+        centerTitle: true,
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 2,
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('requests')
+            .where('clientId', isEqualTo: user.uid)
+            .orderBy('createdAt', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Fehler beim Laden der Bestellungen.'));
+          }
+          final docs = snapshot.data?.docs ?? [];
+          if (docs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.assignment, size: 80, color: Colors.grey),
+                  SizedBox(height: 20),
+                  Text('Keine Bestellungen vorhanden.',
+                      style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  SizedBox(height: 10),
+                  Text(
+                      'Sie können eine neue Bestellung über die Seite "Neue Bestellung erstellen" anlegen.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14, color: Colors.grey)),
+                ],
+              ),
+            );
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: docs.length,
+            itemBuilder: (context, index) {
+              final request = RequestModel.fromSnapshot(docs[index]);
+              return GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          CustomerOrderDetailsScreen(request: request),
+                    ),
+                  );
+                },
+                child: CustomerOrderPostCard(request: request),
+              );
+            },
           );
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: docs.length,
-          itemBuilder: (context, index) {
-            final request = RequestModel.fromSnapshot(docs[index]);
-            return CustomerOrderPostCard(request: request);
-          },
-        );
-      },
+        },
+      ),
     );
   }
 }

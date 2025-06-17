@@ -18,7 +18,7 @@ class ServiceSelectionCard extends StatelessWidget {
     switch (serviceId) {
       case 'carpentry':
         return Icons.carpenter;
-      case 'electricity': // تأكد من استخدام هذا الـ ID
+      case 'electrical': // تأكد من استخدام هذا الـ ID
         return Icons.electrical_services;
       case 'plumbing':
         return Icons.plumbing;

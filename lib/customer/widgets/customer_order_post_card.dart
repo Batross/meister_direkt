@@ -84,19 +84,22 @@ class _CustomerOrderPostCardState extends State<CustomerOrderPostCard> {
                         ? TextOverflow.visible
                         : TextOverflow.ellipsis,
                   ),
-                  if (!_showFullDescription &&
-                      widget.request.description.length > 120)
-                    TextButton(
-                      onPressed: () =>
-                          setState(() => _showFullDescription = true),
-                      child: const Text('إظهار المزيد',
-                          style: TextStyle(fontSize: 13)),
+                  if (widget.request.description.length > 120)
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: TextButton(
+                        onPressed: () => setState(
+                            () => _showFullDescription = !_showFullDescription),
+                        child: Text(
+                            _showFullDescription ? 'إخفاء' : 'إظهار المزيد',
+                            style: const TextStyle(fontSize: 13)),
+                      ),
                     ),
                 ],
               ),
             ),
-            const SizedBox(height: 8),
-            if (hasFiles)
+            if (hasFiles) ...[
+              const SizedBox(height: 8),
               SizedBox(
                 height: height,
                 width: width,
@@ -140,47 +143,7 @@ class _CustomerOrderPostCardState extends State<CustomerOrderPostCard> {
                   },
                 ),
               ),
-            if (widget.request.location != null)
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: Row(
-                  children: [
-                    const Icon(Icons.location_on, size: 15, color: Colors.grey),
-                    const SizedBox(width: 3),
-                    Text(
-                      "${widget.request.location!.latitude.toStringAsFixed(2)}, ${widget.request.location!.longitude.toStringAsFixed(2)}",
-                      style: const TextStyle(fontSize: 13, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 8),
-            if (widget.request.budget != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text('الميزانية: ${widget.request.budget} €',
-                    style: const TextStyle(fontSize: 13, color: Colors.teal)),
-              ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              child: Text('الحالة: ${widget.request.status}',
-                  style: const TextStyle(fontSize: 13, color: Colors.grey)),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              child: Text(
-                  'تاريخ الإنشاء: ${widget.request.createdAt.day}.${widget.request.createdAt.month}.${widget.request.createdAt.year}',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
-            ),
-            if (widget.request.serviceDetails.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 12.0, left: 12, right: 12),
-                child: Text(
-                    'تفاصيل إضافية: ${widget.request.serviceDetails.toString()}',
-                    style:
-                        const TextStyle(fontSize: 13, color: Colors.black54)),
-              ),
+            ],
           ],
         ),
       ),

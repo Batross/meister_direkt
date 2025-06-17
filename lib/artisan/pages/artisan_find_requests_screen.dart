@@ -8,6 +8,7 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../data/models/request_model.dart';
 import 'offer_dialog.dart';
+import 'ask_info_dialog.dart';
 
 // Einfache Extension zur Umwandlung von String in Title Case für Anzeigezwecke
 extension StringCasingExtension on String {
@@ -422,6 +423,8 @@ class _RequestPostCardState extends State<RequestPostCard> {
   VideoPlayerController? _currentVideoController;
   int? _currentVideoIndex;
   Timer? _autoPageTimer;
+  bool _showFullDescription = false;
+  static const int _descMaxLines = 4;
 
   @override
   void dispose() {
@@ -501,12 +504,10 @@ class _RequestPostCardState extends State<RequestPostCard> {
   Widget build(BuildContext context) {
     final files = widget.request.images ?? [];
     final hasFiles = files.isNotEmpty;
-    final height =
-        MediaQuery.of(context).size.height * 0.40; // تقليل ارتفاع الصورة قليلاً
+    final height = MediaQuery.of(context).size.height * 0.40;
     final width = MediaQuery.of(context).size.width;
     return Card(
-      margin: const EdgeInsets.symmetric(
-          vertical: 10, horizontal: 2), // تقليل الهوامش الجانبية
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Stack(
@@ -517,27 +518,44 @@ class _RequestPostCardState extends State<RequestPostCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                      12, 10, 44, 6), // تقليل الهوامش العلوية والجانبية
+                  padding: const EdgeInsets.fromLTRB(12, 10, 44, 6),
                   child: Text(
-                    'Serviceanfrage:  {widget.request.serviceId}',
+                    'Serviceanfrage: ${widget.request.serviceId}',
                     style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold), // تقليل حجم الخط
+                        fontSize: 16, fontWeight: FontWeight.bold),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12), // تقليل الهامش الجانبي
-                  child: Text(
-                    widget.request.description,
-                    style: const TextStyle(
-                        fontSize: 14, color: Colors.black87), // تقليل حجم الخط
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.request.description,
+                        style: const TextStyle(
+                            fontSize: 14, color: Colors.black87),
+                        maxLines: _showFullDescription ? null : _descMaxLines,
+                        overflow: _showFullDescription
+                            ? TextOverflow.visible
+                            : TextOverflow.ellipsis,
+                      ),
+                      if (widget.request.description.length > 120)
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: TextButton(
+                            onPressed: () => setState(() =>
+                                _showFullDescription = !_showFullDescription),
+                            child: Text(
+                                _showFullDescription ? 'إخفاء' : 'إظهار المزيد',
+                                style: const TextStyle(fontSize: 13)),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8), // تقليل المسافة
+                const SizedBox(height: 8),
                 if (hasFiles)
                   SizedBox(
                     height: height,
@@ -581,8 +599,7 @@ class _RequestPostCardState extends State<RequestPostCard> {
                                         'Fehler beim Laden der Textdatei'));
                               }
                               return Padding(
-                                padding: const EdgeInsets.all(
-                                    12.0), // تقليل الهامش الداخلي
+                                padding: const EdgeInsets.all(12.0),
                                 child: Text(snapshot.data ?? '',
                                     style: const TextStyle(fontSize: 15)),
                               );
@@ -597,8 +614,7 @@ class _RequestPostCardState extends State<RequestPostCard> {
                                 child: CircularProgressIndicator()),
                             errorWidget: (context, url, error) => const Center(
                                 child: Icon(Icons.broken_image,
-                                    size: 50,
-                                    color: Colors.grey)), // تقليل حجم الأيقونة
+                                    size: 50, color: Colors.grey)),
                           );
                         }
                       },
@@ -650,7 +666,21 @@ class _RequestPostCardState extends State<RequestPostCard> {
                       Expanded(
                         flex: 2,
                         child: OutlinedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            final result = await showDialog(
+                              context: context,
+                              builder: (context) => AskInfoDialog(
+                                  requestId: widget.request.requestId),
+                            );
+                            if (result != null &&
+                                result is String &&
+                                result.trim().isNotEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('تم إرسال طلب المعلومات!')),
+                              );
+                            }
+                          },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Theme.of(context).primaryColor,
                             side: BorderSide(
